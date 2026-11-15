@@ -93,6 +93,7 @@ body.homeon .app{visibility:hidden}
 .pick.lock{opacity:.9;background:rgba(0,0,0,.35)}
 .pick.lock img{filter:grayscale(1) brightness(.6)}
 .stages{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+#stages{display:none!important}
 .stg{font:inherit;color:#fff;background:rgba(255,255,255,.12);border:3px solid var(--panel-line);border-radius:16px;padding:8px 6px;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center}
 .stg b{font-size:15px}.stg small{font-size:11px;opacity:.85}
 .stg.on{background:var(--accent);border-color:#fff}
@@ -199,11 +200,13 @@ function seabedAt(x){
   if(SV.stage==="beach")return 1600-1100*Math.max(0,Math.min(1,(x+3200)/6400));
   if(SV.stage==="cave")return 2300;
   return 2600}
+var ZB=[3800,7000,10200,13400],ZN=["sea","ice","volcano","ruins","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
+function zoneAt(x){if(x<-3300)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
 function applyStage(snap){
   var px=(P&&P.x)||0;ZS=SV.stage;if(who==="R")ZS="town";
-  if(SV.stage==="sea"){if(inCave)ZS="cave";else if(px<-3300)ZS="beach"}
+  if(SV.stage==="sea"){ZS=inCave?"cave":zoneAt(px)}
   SEABEDT=seabedAt(px);if(snap!==false)SEABED=SEABEDT;
-  if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inCave){BL=-3200;BR=3200}else{BL=-6400;BR=3600}}else{BL=-1e9;BR=1e9}
+  if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inCave){BL=-3200;BR=3200}else{BL=-6400;BR=16600}}else{BL=-1e9;BR=1e9}
   if(who==="R"){BL=-5000;BR=5000}}
 function allowed(k){var K=KINDS[k];if(K.sp)return ZS==="town"&&!!P&&P.y<-800;if(K.ho&&who!=="H"&&ZS!=="beach")return false;if(K.so&&ZS!=="sea")return false;if(K.st&&K.st!==ZS)return false;if(K.y0>SEABEDT-250)return false;if(ZS==="town"&&!K.st)return false;if(ZS==="cave"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if((ZS==="ice"||ZS==="volcano"||ZS==="ruins")&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if(who==="H"&&HBAN[k])return false;return true}
 function teleportZone(x,y,txt){zoneCD=2;inCave=!inCave;applyStage(true);P.x=x;P.y=y;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;fadeT=.8;banner(txt);decoys=[];
@@ -212,8 +215,8 @@ function zoneCheck(){
   if(SV.stage!=="sea"||who==="R")return;if(zoneCD>0){zoneCD-=1/60}
   if(!inCave){
     if(zoneCD<=0&&P.x>3040&&P.x<3360&&P.y>SEABED-320){teleportZone(-2850,1900,"どうくつに はいったよ！");return}
-    var nz=ZS;if(ZS==="sea"&&P.x<-3300)nz="beach";else if(ZS==="beach"&&P.x>-3000)nz="sea";
-    if(nz!==ZS){ZS=nz;banner(ZS==="beach"?"うみべに きたよ！":"ふつうの うみに もどったよ");for(var zi=0;zi<10;zi++)fill(false)}
+    var nz=zoneAt(P.x);
+    if(nz!==ZS){ZS=nz;if(time>zbT){zbT=time+3;banner(ZMSG[ZS])}fadeT=.35;for(var zi=0;zi<10;zi++)fill(false)}
   }else{
     if(zoneCD<=0&&P.x<-2740&&P.x>-3060&&P.y>SEABED-320){teleportZone(3200,1900,"うみに もどったよ！");return}
   }
@@ -284,7 +287,7 @@ var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eat
 var cam={x:0,y:300,z:1};
 var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
 var SV={stage:"sea",coins:0,own:{S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
-try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;if(_o.stage==="coral"||_o.stage==="cave"||_o.stage==="beach"||_o.stage==="ice"||_o.stage==="volcano"||_o.stage==="ruins")SV.stage=_o.stage;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
+try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
 best=SV.best;who=SV.sel;
