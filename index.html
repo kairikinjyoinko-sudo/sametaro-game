@@ -1074,7 +1074,7 @@ bb.addEventListener("pointerdown",bon);bb.addEventListener("pointerup",boff);bb.
   jb.addEventListener("pointerup",joff);jb.addEventListener("pointercancel",joff);
   var cv=document.getElementById("cv"),cid=null;
   function cset(e){ptr.x=e.clientX;ptr.y=e.clientY}
-  cv.addEventListener("pointerdown",function(e){if(state!=="playing")return;cid=e.pointerId;ptr.on=true;ptr.type=e.pointerType;cset(e);try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  cv.addEventListener("pointerdown",function(e){if(state!=="playing"||e.pointerType==="mouse")return;cid=e.pointerId;ptr.on=true;ptr.type=e.pointerType;cset(e);try{cv.setPointerCapture(e.pointerId)}catch(_){}});
   cv.addEventListener("pointermove",function(e){if(e.pointerId===cid)cset(e)});
   function coff(e){if(e.pointerId===cid){cid=null;ptr.on=false}}
   cv.addEventListener("pointerup",coff);cv.addEventListener("pointercancel",coff);
@@ -1084,7 +1084,7 @@ var tutPage=0,tutThenStart=false;
 function tutPages(){
   var t=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
   return [
-    {a:"🐟↔️🐟",h:"うごかしかた",p:t?"ひだりしたの まるい スティックを ゆびで うごかすと、ぐるっと 360どう すきな むきに およげるよ！ がめんを ゆびで おして ひっぱっても およげるよ。":"やじるしキー か WASDキーで うごくよ。ななめにも いけるよ！ マウスの ボタンを おしながら うごかしても およげるよ。"},
+    {a:"🐟↔️🐟",h:"うごかしかた",p:t?"ひだりしたの まるい スティックを ゆびで うごかすと、ぐるっと 360どう すきな むきに およげるよ！ がめんを ゆびで おして ひっぱっても およげるよ。":"やじるしキー か WASDキーで うごくよ。ななめにも いけるよ！ キーを 2つ いっしょに おすと、ななめに すすめるよ。"},
     {a:"🐟➡️🐠",h:"たべよう！",p:"じぶんより ちいさい おさかなに ちかづくと、ぱくっ！と たべるよ。まるい てんせんの わっかが ついた さかなは、まだ たべられないよ。"},
     {a:"🍙❤️",h:"おなかに ちゅうい",p:"おなかゲージは だんだん へるよ。ゼロに なると ゲームオーバー！ くらげや ウニに あたっても へるから、きをつけてね。"},
     {a:"💨",h:"ダッシュ",p:(t?"みぎしたの オレンジの「ダッシュ」ボタンを おすと":"スペースキー か Shiftキーを おすと")+"、はやく およげるよ。でも きいろい スタミナゲージが へるから、つかいすぎに ちゅうい！"},
