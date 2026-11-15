@@ -308,7 +308,7 @@ function spawn(k,anywhere){
   var d=KINDS[k],e={k:k,r:d.r,def:d,t:rnd(0,6),dir:Math.random()<.5?-1:1,vx:0,vy:0,hit:0};
   if(d.sp)e.r=Math.max(30,PW()*rnd(.42,.5));
   var off=anywhere?rnd(-1700,1700):(Math.random()<.5?-1:1)*rnd(900,1700);
-  e.x=P.x+off;if(BR<1e8)e.x=Math.max(BL+150,Math.min(BR-150,e.x));
+  e.x=P.x+off;if(BR<1e8&&(e.x<BL+150||e.x>BR-150)){e.x=P.x-off;if(e.x<BL+150||e.x>BR-150)e.x=rnd(Math.max(BL+150,P.x-1700),Math.min(BR-150,P.x+1700))}
   if(k==="urchin"){e.y=SEABED-d.r*0.8;e.x=Math.round(e.x/60)*60}
   else if(k==="hirame"){e.y=SEABED-d.r*0.7}
   else if(d.crab){e.y=SEABED-d.r*0.75}
