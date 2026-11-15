@@ -116,7 +116,7 @@ body.homeon .app{visibility:hidden}
       <div class="bar st" id="sb"><i></i></div>
     </div>
     <div class="chip" id="lv">レベル 1</div>
-    <button id="mute" aria-label="おと">🔊</button><button id="mute2" aria-label="おやすみ" style="pointer-events:auto;background:var(--panel);border:2px solid var(--panel-line);color:#fff;border-radius:14px;min-height:40px;min-width:46px;font:inherit;font-size:20px">⏸</button>
+    <button id="mute" aria-label="おと">🔊</button><button id="petbtn" aria-label="ペット" style="pointer-events:auto;background:var(--panel);border:2px solid var(--panel-line);color:#fff;border-radius:14px;min-height:40px;min-width:46px;font:inherit;font-size:16px;font-weight:800">🐾 なし</button><button id="mute2" aria-label="おやすみ" style="pointer-events:auto;background:var(--panel);border:2px solid var(--panel-line);color:#fff;border-radius:14px;min-height:40px;min-width:46px;font:inherit;font-size:20px">⏸</button>
   </div>
 </div>
 <button id="boost" aria-label="ダッシュ">ダッシュ</button>
@@ -1087,7 +1087,7 @@ function start(){
   document.getElementById("boost").style.visibility="";document.getElementById("pad").style.visibility="";document.getElementById("joy").style.visibility="";
   snd(440,.15,"triangle",.15);
 }
-Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){SV.pet=SV.pet===k?"":k;save();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
+Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){SV.pet=SV.pet===k?"":k;save();petLabel();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
 Array.prototype.forEach.call(document.querySelectorAll(".pick"),function(b){var k=b.getAttribute("data-w");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){pickChar(k)})});
 Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.addEventListener("click",function(){SV.stage=b.getAttribute("data-s");save();who=SV.sel;reset();renderHome();msg({coral:"さんごの うみに いくよ！ ルリスズメと チョウチョウウオが いるよ。",cave:"どうくつに いくよ！ くらいから きをつけてね。チョウチンアンコウが いるよ。",beach:"うみべに いくよ！ あさいから カニが いっぱい いるよ。",ice:"こおりの うみに いくよ！ ペンギンウオや オーロラダイが いるよ。",volcano:"かざんの うみに いくよ！ マグマで ひかる さかなが いるよ。",ruins:"いせきの うみに いくよ！ ひかる コガネウオや ステンドウオが いるよ。",sea:"ふつうの うみに もどったよ。"}[SV.stage])})});
 document.getElementById("homeBtn").addEventListener("click",goHome);
@@ -1100,6 +1100,11 @@ document.getElementById("fsbtn").addEventListener("click",function(){
 });
 document.getElementById("again").addEventListener("click",start);
 document.getElementById("mute").addEventListener("click",function(){muted=!muted;this.textContent=muted?"🔇":"🔊"});
+var PETN={"":"🐾 なし",M:"🐾 ミニマーダイ",S:"🐾 ミニサメ太郎",G:"🐾 ミニブロきち"};
+function petLabel(){var b=document.getElementById("petbtn");if(b)b.textContent=PETN[SV.pet||""]}
+function petNext(){var o=["","M","S","G"];SV.pet=o[(o.indexOf(SV.pet||"")+1)%4];save();if(P){pet.x=P.x-120;pet.y=P.y}petLabel();if(SV.pet)banner("ミニの ペットが ついてくるよ！")}
+document.getElementById("petbtn").addEventListener("click",function(){petNext();this.blur()});
+petLabel();
 window.addEventListener("keydown",function(e){keys[e.code]=true;if(e.code==="KeyE")useInst();if(e.code==="Space"||e.code.indexOf("Arrow")===0)e.preventDefault();if((e.key==="p"||e.key==="P"||e.key==="Escape")&&(state==="playing"||state==="paused"))togglePause();if(state==="title"&&"1234567890".indexOf(e.key)>=0&&e.key.length===1){pickChar(["G","M","S","H","T","g","m","s","K","R"]["1234567890".indexOf(e.key)])}if(e.key==="Enter"&&state==="paused")togglePause();if(e.key==="Enter"&&(state==="title"||state==="over")){start()}});
 window.addEventListener("keyup",function(e){keys[e.code]=false;if(e.key==="Shift"){keys.ShiftLeft=false;keys.ShiftRight=false}});
 Array.prototype.forEach.call(document.querySelectorAll("#pad button"),function(b){var k=b.getAttribute("data-k");
