@@ -45,11 +45,11 @@ body{margin:0;background:var(--ink);color:var(--ui);font-family:"Hiragino Maru G
 .big:active{transform:translateY(3px);box-shadow:0 3px 0 rgba(0,0,0,.25)}
 .big:focus-visible,#mute:focus-visible,#boost:focus-visible{outline:4px solid #ffe45e;outline-offset:3px}
 .picks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
-.pick{flex:1;min-width:0;font:inherit;color:#fff;background:rgba(255,255,255,.12);border:3px solid var(--panel-line);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
-.pick img{width:100%;height:46px;object-fit:contain}
-.pick b{font-size:15px}.pick small{font-size:12px;opacity:.85}
-.pick.on{background:var(--accent);border-color:#fff}
-.pick:focus-visible{outline:4px solid #ffe45e;outline-offset:2px}
+.pick,.ppick{flex:1;min-width:0;font:inherit;color:#fff;background:rgba(255,255,255,.12);border:3px solid var(--panel-line);border-radius:16px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.pick img,.ppick img{width:100%;height:46px;object-fit:contain}
+.pick b,.ppick b{font-size:15px}.pick small,.ppick small{font-size:12px;opacity:.85}.petbox{width:100%;max-width:420px;margin-top:6px}.pethd{font-weight:900;font-size:16px;margin-bottom:6px}
+.pick.on,.ppick.on{background:var(--accent);border-color:#fff}
+.pick:focus-visible,.ppick:focus-visible{outline:4px solid #ffe45e;outline-offset:2px}
 #pad{position:fixed;left:max(16px,env(safe-area-inset-left,0px));bottom:max(18px,env(safe-area-inset-bottom,0px));width:168px;height:132px;display:none;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(2,1fr);gap:6px;z-index:3}
 #pad button{font:inherit;font-size:22px;font-weight:900;border-radius:14px;border:3px solid #fff;background:rgba(6,35,61,.7);color:#fff;touch-action:none}
 #pad button.on{background:var(--accent)}
@@ -129,7 +129,8 @@ body.homeon .app{visibility:hidden}
     <div class="hbar"><span class="chip">🪙 <b id="hc">0</b></span><span class="chip">ベスト ⭐ <b id="hbst">0</b></span><button class="chipbtn" id="tutbtn">❓ あそびかた</button><button class="chipbtn" id="fsbtn" aria-label="ぜんがめん">⛶ ぜんがめん</button></div>
     <h1>はらぺこ<br>サメ太郎</h1>
     <div class="hcols">
-      <div class="hero"><img id="heroimg" alt=""><div id="heroname"></div><div class="small" id="herostat"></div></div>
+      <div class="hero"><img id="heroimg" alt=""><div id="heroname"></div><div class="small" id="herostat"></div>
+        <div class="petbox"><div class="pethd">🐾 ペット（おすと ついてくるよ）</div><div class="picks" id="petpicks"><button class="ppick" data-p="M"><img alt=""><b>ミニマーダイ</b></button><button class="ppick" data-p="S"><img alt=""><b>ミニサメ太郎</b></button><button class="ppick" data-p="G"><img alt=""><b>ミニブロきち</b></button></div></div></div>
       <div class="hside">
         <div class="picks" id="picks">
           <button class="pick" data-w="G"><img alt=""><b>ブロきち</b><small>3mまで</small></button>
@@ -286,12 +287,12 @@ var inst={t:0,cd:0},decoys=[],nEat=0,NEED=100;
 var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eatT,shakeT,levelT,best=0,muted=false;
 var cam={x:0,y:300,z:1};
 var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
-var SV={stage:"sea",coins:0,own:{S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{S:{spd:0,food:0,dash:0,pet:0},M:{spd:0,food:0,dash:0,pet:0},G:{spd:0,food:0,dash:0,pet:0},H:{spd:0,food:0,dash:0,pet:0},T:{spd:0,food:0,dash:0,pet:0},g:{spd:0,food:0,dash:0,pet:0},m:{spd:0,food:0,dash:0,pet:0},s:{spd:0,food:0,dash:0,pet:0},K:{spd:0,food:0,dash:0,pet:0},R:{spd:0,food:0,dash:0,pet:0}},best:0,sel:"G",prog:{S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
-try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
+var SV={stage:"sea",pet:"",coins:0,own:{S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
+try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
 best=SV.best;who=SV.sel;
-var CP={M:2000,S:10000,H:15000,T:20000,g:3000,m:6000,s:15000,K:8000,R:30000},UC=[40,80,140,220,320],UN={pet:"ペット",spd:"スピード",food:"おなか",dash:"ダッシュ"};
+var CP={M:2000,S:10000,H:15000,T:20000,g:3000,m:6000,s:15000,K:8000,R:30000},UC=[40,80,140,220,320],UN={spd:"スピード",food:"おなか",dash:"ダッシュ"};
 function rnd(a,b){return a+Math.random()*(b-a)}
 function lvDef(){return LV[lv-1]}
 function lenM(){return LMAX[who]*(0.14+0.86*(lv-1)/10)}
@@ -435,7 +436,7 @@ function update(dt){
   var wasIn=P.y>=0||ZS==="town";
   P.x+=P.vx*dt;P.y+=P.vy*dt;
   if(BR<1e8){var pb=BR-W*.5,pl=BL+W*.5;if(P.x>pb){P.x=pb;if(P.vx>0)P.vx=0}else if(P.x<pl){P.x=pl;if(P.vx<0)P.vx=0}}
-  var pl_=SV.ups[who].pet;if(pl_>0){var tx=P.x-Math.cos(P.h)*PW()*.9,ty=P.y-PW()*.5+Math.sin(time*2)*14;pet.vx=tx-pet.x;pet.x+=(tx-pet.x)*Math.min(1,dt*2.6);pet.y+=(ty-pet.y)*Math.min(1,dt*2.6);if(Math.abs(pet.vx)>4)pet.face=pet.vx>0?1:-1;pet.ph+=dt*8;pet.cd-=dt;if(Math.hypot(pet.x-P.x,pet.y-P.y)>2500){pet.x=P.x;pet.y=P.y}}
+  if(SV.pet){var tx=P.x-Math.cos(P.h)*PW()*.9,ty=P.y-PW()*.5+Math.sin(time*2)*14;pet.vx=tx-pet.x;pet.x+=(tx-pet.x)*Math.min(1,dt*2.6);pet.y+=(ty-pet.y)*Math.min(1,dt*2.6);if(Math.abs(pet.vx)>4)pet.face=pet.vx>0?1:-1;pet.ph+=dt*8;pet.cd-=dt;if(Math.hypot(pet.x-P.x,pet.y-P.y)>2500){pet.x=P.x;pet.y=P.y}}
   zoneCheck();SEABED+=(SEABEDT-SEABED)*Math.min(1,dt*2.2);if(((time*10)|0)%7===0)ents=ents.filter(function(e){return e.k==="friend"||allowed(e.k)||Math.abs(e.x-P.x)<1000});fadeT=Math.max(0,fadeT-dt);
   if(ZS==="cave"&&P.y<70){P.y=70;if(P.vy<0)P.vy=0}
   if(ZS==="town"&&lv-1<10&&P.y<-400){P.y=-400;if(P.vy<0)P.vy=0;if(time>spaceMsgT){spaceMsgT=time+4;banner("レベル10から うちゅうに いけるよ")}}
@@ -498,7 +499,7 @@ function update(dt){
     if(BR<1e8){if(e.x>BR-e.r){e.x=BR-e.r;e.vx=-Math.abs(e.vx);e.dir=-1;e.face=-1}else if(e.x<BL+e.r){e.x=BL+e.r;e.vx=Math.abs(e.vx);e.dir=1;e.face=1}}
     if(state!=="playing")continue;
     var cd=Math.hypot(e.x-P.mx,e.y-P.my);
-    if(SV.ups[who].pet>0&&pet.cd<=0&&!d.danger&&!d.bite&&e.k!=="friend"&&d.lv<=lv&&e.r<PW()*.55&&Math.hypot(e.x-pet.x,e.y-pet.y)<230+50*SV.ups[who].pet+e.r){pet.cd=4.2-.6*SV.ups[who].pet;eat(e);float(pet.x,pet.y-50,"ペットが たべたよ！","#ffd0f0");continue}
+    if(SV.pet&&pet.cd<=0&&!d.danger&&!d.bite&&e.k!=="friend"&&d.lv<=lv&&e.r<PW()*.55&&Math.hypot(e.x-pet.x,e.y-pet.y)<330+e.r){pet.cd=3;eat(e);float(pet.x,pet.y-50,"ペットが たべたよ！","#ffd0f0");continue}
     if(d.danger){
       var edD=(lv-1)>=5&&((d.danger===1&&(wb()==="S"||wb()==="M"||wb()==="T"))||(d.danger===2&&wb()==="S"));
       if(edD){
@@ -574,9 +575,10 @@ function renderHome(){
     b.classList.toggle("on",own&&SV.sel===k);b.classList.toggle("lock",!own);
     var sm=b.querySelector("small");sm.textContent=own?("レベル"+(SV.prog[k].lv-1)+"・"+CHR[k].note):"🔒 "+CP[k]+"🪙";
   });
+  Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){b.classList.toggle("on",b.getAttribute("data-p")===SV.pet)});
   Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.classList.toggle("on",b.getAttribute("data-s")===SV.stage)});
   var ups=document.getElementById("ups");ups.innerHTML="";
-  ["pet","spd","food","dash"].forEach(function(u){
+  ["spd","food","dash"].forEach(function(u){
     var lvl=SV.ups[SV.sel][u],row=document.createElement("div");row.className="up";
     var nm=document.createElement("b");nm.textContent=UN[u];row.appendChild(nm);
     var pips=document.createElement("div");pips.className="pips";
@@ -1039,7 +1041,7 @@ function draw(){
   for(var i=0;i<ents.length;i++)drawFish(ents[i]);
   // player
   var ps=worldToScreen(P.x,P.y),W=PW()*cam.z;
-  if(state==="playing"&&SV.ups[who].pet>0){var pp=worldToScreen(pet.x,pet.y),pr=(16+3*SV.ups[who].pet)*cam.z,sw=Math.sin(pet.ph)*.3;ctx.save();ctx.translate(pp.x,pp.y);ctx.scale(pet.face,1);ctx.fillStyle="#ff8fc8";ctx.beginPath();ctx.ellipse(0,0,pr*1.2,pr*.8,0,0,6.283);ctx.fill();ctx.fillStyle="#ffc4e4";ctx.beginPath();ctx.ellipse(pr*.1,pr*.2,pr*.8,pr*.4,0,0,6.283);ctx.fill();ctx.fillStyle="#ff8fc8";ctx.beginPath();ctx.moveTo(-pr*1.1,0);ctx.lineTo(-pr*1.9,-pr*(.7+sw));ctx.lineTo(-pr*1.9,pr*(.7-sw));ctx.closePath();ctx.fill();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(pr*.6,-pr*.2,pr*.28,0,6.283);ctx.fill();ctx.fillStyle="#222";ctx.beginPath();ctx.arc(pr*.68,-pr*.2,pr*.14,0,6.283);ctx.fill();ctx.restore()}
+  if(state==="playing"&&SV.pet){var pp=worldToScreen(pet.x,pet.y);drawChar(SV.pet,pp.x,pp.y,PW()*.26*cam.z,pet.face>0?0:Math.PI,time*6,.6,0,1)}
   var ph0=(P.y<0&&ZS!=="town")?Math.atan2(P.vy,P.vx):P.h;
   var amp=Math.min(1.5,.45+(P.sp0||0)/lvDef().sp*.9);
   drawChar(who,ps.x,ps.y,W,ph0,P.ph,amp,P.mo,(inst.t>0&&who==="g")?.28:((invul>0&&Math.floor(time*14)%2===0)?.45:1),function(){if(levelT>0){var k=1+Math.sin(levelT*Math.PI)*0.25;ctx.scale(k,k)}});
@@ -1085,6 +1087,7 @@ function start(){
   document.getElementById("boost").style.visibility="";document.getElementById("pad").style.visibility="";document.getElementById("joy").style.visibility="";
   snd(440,.15,"triangle",.15);
 }
+Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){SV.pet=SV.pet===k?"":k;save();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
 Array.prototype.forEach.call(document.querySelectorAll(".pick"),function(b){var k=b.getAttribute("data-w");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){pickChar(k)})});
 Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.addEventListener("click",function(){SV.stage=b.getAttribute("data-s");save();who=SV.sel;reset();renderHome();msg({coral:"さんごの うみに いくよ！ ルリスズメと チョウチョウウオが いるよ。",cave:"どうくつに いくよ！ くらいから きをつけてね。チョウチンアンコウが いるよ。",beach:"うみべに いくよ！ あさいから カニが いっぱい いるよ。",ice:"こおりの うみに いくよ！ ペンギンウオや オーロラダイが いるよ。",volcano:"かざんの うみに いくよ！ マグマで ひかる さかなが いるよ。",ruins:"いせきの うみに いくよ！ ひかる コガネウオや ステンドウオが いるよ。",sea:"ふつうの うみに もどったよ。"}[SV.stage])})});
 document.getElementById("homeBtn").addEventListener("click",goHome);
