@@ -54,7 +54,18 @@ body{margin:0;background:var(--ink);color:var(--ui);font-family:"Hiragino Maru G
 #pad button{font:inherit;font-size:22px;font-weight:900;border-radius:14px;border:3px solid #fff;background:rgba(6,35,61,.7);color:#fff;touch-action:none}
 #pad button.on{background:var(--accent)}
 #pad [data-k=ArrowUp]{grid-column:2;grid-row:1}#pad [data-k=ArrowLeft]{grid-column:1;grid-row:2}#pad [data-k=ArrowDown]{grid-column:2;grid-row:2}#pad [data-k=ArrowRight]{grid-column:3;grid-row:2}
-@media (pointer:coarse){#pad{display:grid}#boost{display:block}}
+#joy{position:fixed;left:max(22px,env(safe-area-inset-left,0px));bottom:max(26px,env(safe-area-inset-bottom,0px));width:156px;height:156px;border-radius:50%;background:rgba(6,35,61,.45);border:4px solid rgba(255,255,255,.85);display:none;z-index:3;touch-action:none}
+#joy::before{content:"";position:absolute;inset:14px;border-radius:50%;border:2px dashed rgba(255,255,255,.35)}
+#joyk{position:absolute;left:50%;top:50%;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:rgba(255,255,255,.9);border:5px solid var(--accent);box-shadow:0 4px 0 rgba(0,0,0,.25);pointer-events:none}
+@media (pointer:coarse){#joy{display:block}#boost{display:block}}
+#tut{z-index:9;background:rgba(4,25,46,.82)}
+#tut .card{width:min(460px,100%)}
+#tut .art{font-size:64px;line-height:1.1;min-height:84px;display:flex;align-items:center;justify-content:center;gap:6px}
+#tut h2{margin:0;font-size:clamp(26px,7vw,34px);color:#ffe45e;text-shadow:0 3px 0 #b45309}
+#tut p{font-size:19px;line-height:1.7}
+#tut .dots{display:flex;gap:8px;justify-content:center}#tut .dots i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.35)}#tut .dots i.on{background:#ffe45e}
+#tut .row{display:flex;gap:10px}#tut .row .big{flex:1;font-size:20px}
+#tut .skip{background:transparent;border:3px solid rgba(255,255,255,.6);box-shadow:none;font-size:16px!important;flex:.6!important}
 @media (pointer:fine){#boost{display:none!important}}
 #xform{position:fixed;left:50%;transform:translateX(-50%);bottom:max(24px,env(safe-area-inset-bottom,0px));z-index:4;font:inherit;font-weight:900;font-size:20px;line-height:1.25;padding:10px 18px;border-radius:20px;border:4px solid #fff;background:#ff4f87;color:#fff;box-shadow:0 6px 0 rgba(0,0,0,.25);animation:pul 1s infinite}
 #xform[hidden]{display:none}
@@ -109,11 +120,12 @@ body.homeon .app{visibility:hidden}
 </div>
 <button id="boost" aria-label="ダッシュ">ダッシュ</button>
 <button id="inst" hidden aria-label="ほんのう">本能<small>Eキー</small></button>
+<div id="joy" aria-label="スティック"><div id="joyk"></div></div>
 <div id="pad"><button data-k="ArrowUp" aria-label="うえ">▲</button><button data-k="ArrowLeft" aria-label="ひだり">◀</button><button data-k="ArrowDown" aria-label="した">▼</button><button data-k="ArrowRight" aria-label="みぎ">▶</button></div>
 <div id="banner">レベルアップ！</div>
 <div class="ov" id="title">
   <div class="home">
-    <div class="hbar"><span class="chip">🪙 <b id="hc">0</b></span><span class="chip">ベスト ⭐ <b id="hbst">0</b></span><button class="chipbtn" id="fsbtn" aria-label="ぜんがめん">⛶ ぜんがめん</button></div>
+    <div class="hbar"><span class="chip">🪙 <b id="hc">0</b></span><span class="chip">ベスト ⭐ <b id="hbst">0</b></span><button class="chipbtn" id="tutbtn">❓ あそびかた</button><button class="chipbtn" id="fsbtn" aria-label="ぜんがめん">⛶ ぜんがめん</button></div>
     <h1>はらぺこ<br>サメ太郎</h1>
     <div class="hcols">
       <div class="hero"><img id="heroimg" alt=""><div id="heroname"></div><div class="small" id="herostat"></div></div>
@@ -137,6 +149,15 @@ body.homeon .app{visibility:hidden}
     </div>
     <button class="big" id="go">あそぶ</button>
     <div class="small">やじるしキー(WASD)で うごく ／ スペースで ダッシュ ／ Pで おやすみ</div>
+  </div>
+</div>
+<div class="ov" id="tut" hidden>
+  <div class="card" role="dialog" aria-labelledby="tuth">
+    <div class="art" id="tuta"></div>
+    <h2 id="tuth"></h2>
+    <p id="tutp"></p>
+    <div class="dots" id="tutd"></div>
+    <div class="row"><button class="big skip" id="tutskip">スキップ</button><button class="big" id="tutnext">つぎへ</button></div>
   </div>
 </div>
 <div class="ov" id="pausev" hidden>
@@ -246,9 +267,9 @@ var KINDS={
 var inst={t:0,cd:0},decoys=[],nEat=0,NEED=100;
 var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eatT,shakeT,levelT,best=0,muted=false;
 var cam={x:0,y:300,z:1};
-var ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
+var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
 var SV={stage:"sea",coins:0,own:{S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
-try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){SV.coins=+_o.coins||0;if(_o.stage==="coral"||_o.stage==="cave"||_o.stage==="beach")SV.stage=_o.stage;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
+try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;if(_o.stage==="coral"||_o.stage==="cave"||_o.stage==="beach")SV.stage=_o.stage;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
 best=SV.best;who=SV.sel;
@@ -315,6 +336,7 @@ function inputVec(){
     var s=worldToScreen(P.x,P.y),dx=ptr.x-s.x,dy=ptr.y-s.y,l=Math.hypot(dx,dy);
     if(l>1){mag=Math.min(1,l/80);ix=dx/l;iy=dy/l}
   }
+  if(joy.on&&joy.m>0){ix=joy.x;iy=joy.y;mag=joy.m}
   var kx=(keys.ArrowRight||keys.KeyD?1:0)-(keys.ArrowLeft||keys.KeyA?1:0);
   var ky=(keys.ArrowDown||keys.KeyS?1:0)-(keys.ArrowUp||keys.KeyW?1:0);
   if(kx||ky){var l2=Math.hypot(kx,ky);ix=kx/l2;iy=ky/l2;mag=1}
@@ -503,13 +525,13 @@ function gameOver(){
   document.getElementById("fs").textContent="⭐ "+score;
   document.getElementById("fc").textContent="コイン +"+c+" 🪙　（ベスト "+SV.best+(nb?"　しんきろく！":"")+"）";
   document.getElementById("over").hidden=false;
-  document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";
+  document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 }
 function goHome(){
   document.getElementById("over").hidden=true;document.getElementById("pausev").hidden=true;
   state="title";who=SV.sel;reset();
   document.getElementById("title").hidden=false;document.body.classList.add("homeon");renderHome();
-  document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";
+  document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 }
 function togglePause(){
   if(state==="playing"){state="paused";document.getElementById("pausev").hidden=false}
@@ -1011,7 +1033,7 @@ function start(){
   who=SV.sel;
   reset();state="playing";
   document.getElementById("title").hidden=true;document.body.classList.remove("homeon");document.getElementById("over").hidden=true;document.getElementById("pausev").hidden=true;
-  document.getElementById("boost").style.visibility="";document.getElementById("pad").style.visibility="";
+  document.getElementById("boost").style.visibility="";document.getElementById("pad").style.visibility="";document.getElementById("joy").style.visibility="";
   snd(440,.15,"triangle",.15);
 }
 Array.prototype.forEach.call(document.querySelectorAll(".pick"),function(b){var k=b.getAttribute("data-w");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){pickChar(k)})});
@@ -1020,7 +1042,7 @@ document.getElementById("homeBtn").addEventListener("click",goHome);
 document.getElementById("resume").addEventListener("click",togglePause);
 document.getElementById("mute2").addEventListener("click",togglePause);
 document.getElementById("pausehome").addEventListener("click",function(){if(state==="paused"){endRun()}goHome()});
-document.getElementById("go").addEventListener("click",start);
+document.getElementById("go").addEventListener("click",function(){if(!SV.tut){showTut(true)}else{start()}});
 document.getElementById("fsbtn").addEventListener("click",function(){
   try{if(document.fullscreenElement){document.exitFullscreen()}else if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(function(){msg("この がめんでは ぜんがめんに できないよ")})}else{msg("この がめんでは ぜんがめんに できないよ")}}catch(e){msg("この がめんでは ぜんがめんに できないよ")}
 });
@@ -1039,7 +1061,48 @@ var bb=document.getElementById("boost");
 function bon(e){e.preventDefault();boostBtn=true;bb.classList.add("on")}
 function boff(){boostBtn=false;bb.classList.remove("on")}
 bb.addEventListener("pointerdown",bon);bb.addEventListener("pointerup",boff);bb.addEventListener("pointercancel",boff);bb.addEventListener("pointerleave",boff);
-document.body.classList.add("homeon");renderHome();reset();bb.style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";
+
+// ---- 360° スティック・がめんドラッグ
+(function(){
+  var jb=document.getElementById("joy"),jk=document.getElementById("joyk"),jid=null,R=56;
+  function jset(e){var r=jb.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,dx=e.clientX-cx,dy=e.clientY-cy,l=Math.hypot(dx,dy)||1,m=Math.min(1,l/R);
+    if(m<.12){joy.x=0;joy.y=0;joy.m=0}else{joy.x=dx/l;joy.y=dy/l;joy.m=m}
+    var kl=Math.min(l,R);jk.style.transform="translate("+(dx/l*kl)+"px,"+(dy/l*kl)+"px)"}
+  function joff(e){if(jid!==null&&e&&e.pointerId!==jid)return;jid=null;joy.on=false;joy.m=0;jk.style.transform=""}
+  jb.addEventListener("pointerdown",function(e){e.preventDefault();jid=e.pointerId;joy.on=true;try{jb.setPointerCapture(e.pointerId)}catch(_){}jset(e)});
+  jb.addEventListener("pointermove",function(e){if(e.pointerId===jid)jset(e)});
+  jb.addEventListener("pointerup",joff);jb.addEventListener("pointercancel",joff);
+  var cv=document.getElementById("cv"),cid=null;
+  function cset(e){ptr.x=e.clientX;ptr.y=e.clientY}
+  cv.addEventListener("pointerdown",function(e){if(state!=="playing")return;cid=e.pointerId;ptr.on=true;ptr.type=e.pointerType;cset(e);try{cv.setPointerCapture(e.pointerId)}catch(_){}});
+  cv.addEventListener("pointermove",function(e){if(e.pointerId===cid)cset(e)});
+  function coff(e){if(e.pointerId===cid){cid=null;ptr.on=false}}
+  cv.addEventListener("pointerup",coff);cv.addEventListener("pointercancel",coff);
+})();
+// ---- チュートリアル
+var tutPage=0,tutThenStart=false;
+function tutPages(){
+  var t=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
+  return [
+    {a:"🐟↔️🐟",h:"うごかしかた",p:t?"ひだりしたの まるい スティックを ゆびで うごかすと、ぐるっと 360どう すきな むきに およげるよ！ がめんを ゆびで おして ひっぱっても およげるよ。":"やじるしキー か WASDキーで うごくよ。ななめにも いけるよ！ マウスの ボタンを おしながら うごかしても およげるよ。"},
+    {a:"🐟➡️🐠",h:"たべよう！",p:"じぶんより ちいさい おさかなに ちかづくと、ぱくっ！と たべるよ。まるい てんせんの わっかが ついた さかなは、まだ たべられないよ。"},
+    {a:"🍙❤️",h:"おなかに ちゅうい",p:"おなかゲージは だんだん へるよ。ゼロに なると ゲームオーバー！ くらげや ウニに あたっても へるから、きをつけてね。"},
+    {a:"💨",h:"ダッシュ",p:(t?"みぎしたの オレンジの「ダッシュ」ボタンを おすと":"スペースキー か Shiftキーを おすと")+"、はやく およげるよ。でも きいろい スタミナゲージが へるから、つかいすぎに ちゅうい！"},
+    {a:"⭐🔼",h:"おおきくなろう！",p:"たべると レベルアップして からだが おおきくなり、あたらしい さかなも たべられるよ。ハロウィンの なかまは、さかなを 100ひき たべると「ほんのう」で とくべつな ちからが つかえるよ"+(t?"（みぎしたの ボタン）":"（Eキー）")+"。"}
+  ];
+}
+function tutShow(){
+  var ps=tutPages(),pg=ps[tutPage];
+  document.getElementById("tuta").textContent=pg.a;document.getElementById("tuth").textContent=pg.h;document.getElementById("tutp").textContent=pg.p;
+  var d="";for(var i=0;i<ps.length;i++)d+='<i'+(i===tutPage?' class="on"':'')+'></i>';document.getElementById("tutd").innerHTML=d;
+  document.getElementById("tutnext").textContent=tutPage===ps.length-1?(tutThenStart?"はじめる！":"とじる"):"つぎへ";
+}
+function showTut(thenStart){tutThenStart=!!thenStart;tutPage=0;tutShow();document.getElementById("tut").hidden=false;document.getElementById("tutnext").focus()}
+function tutClose(){document.getElementById("tut").hidden=true;SV.tut=1;save();if(tutThenStart){tutThenStart=false;start()}}
+document.getElementById("tutnext").addEventListener("click",function(){if(tutPage>=tutPages().length-1)tutClose();else{tutPage++;tutShow()}});
+document.getElementById("tutskip").addEventListener("click",tutClose);
+document.getElementById("tutbtn").addEventListener("click",function(){showTut(false)});
+document.body.classList.add("homeon");renderHome();reset();bb.style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 requestAnimationFrame(loop);
 })();
 </script>
