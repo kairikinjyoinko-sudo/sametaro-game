@@ -872,6 +872,7 @@ function drawFish(e){
     ctx.fillStyle="#222";ctx.beginPath();ctx.arc(r*.6,-r*.15,r*.1,0,6.283);ctx.fill();
   }else if(RF[e.k]){
     ctx.scale(face,1);
+    if(e.k==="kajiki")ctx.scale(1,.55);else if(e.k==="maguro")ctx.scale(1,.68);
     var sw=Math.sin(e.t*8+e.x*.01)*r*.22,lc=d.c1,dc=d.c2;
     if(e.k==="kajiki"){ctx.fillStyle=dc;ctx.beginPath();ctx.moveTo(r*.7,-r*.55);ctx.quadraticCurveTo(r*.4,-r*1.6,-r*.2,-r*1.55-sw*.2);ctx.quadraticCurveTo(-r*.5,-r*1.0,-r*.9,-r*.5);ctx.closePath();ctx.fill();ctx.fillStyle="#cfe0f5";ctx.beginPath();ctx.moveTo(r*1.15,-r*.12);ctx.lineTo(r*2.35,-r*.04);ctx.lineTo(r*1.15,r*.1);ctx.closePath();ctx.fill()}
     // tail (forked)
