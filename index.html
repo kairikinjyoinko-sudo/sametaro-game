@@ -150,6 +150,7 @@ body.homeon .app{visibility:hidden}
       </div>
     </div>
     <button class="big" id="go">あそぶ</button>
+    <button class="big" id="olbtn" style="background:#8a4fd6">🌐 オンライン たいせん</button>
     <div class="small">やじるしキー(WASD)で うごく ／ スペースで ダッシュ ／ Pで おやすみ</div>
   </div>
 </div>
@@ -169,6 +170,8 @@ body.homeon .app{visibility:hidden}
     <button class="big" id="pausehome" style="background:#2e7bd6">ホームへ</button>
   </div>
 </div>
+<div class="ov" id="olv" hidden><div class="card"><h1 id="olh" style="font-size:clamp(26px,7vw,38px)"></h1><p id="olp"></p><button class="big" id="olok" style="background:#2e7bd6">やめる</button></div></div>
+<div id="btHud" hidden style="position:fixed;top:max(64px,calc(env(safe-area-inset-top,0px) + 56px));left:50%;transform:translateX(-50%);z-index:6;background:var(--panel);border:2px solid var(--panel-line);border-radius:14px;padding:6px 14px;color:#fff;font-weight:900;font-size:17px;white-space:nowrap"></div>
 <div class="ov" id="over" hidden>
   <div class="card">
     <h1 style="font-size:clamp(28px,8vw,40px)">おなかが ぺこぺこ…</h1>
@@ -380,7 +383,7 @@ function transform(){
   ents=ents.filter(function(e){return e.k!=="friend"});fill(false);
 }
 function eat(e){
-  var d=e.def;
+  var d=e.def;if(BT)BT.mine++;
   hunger=Math.min(100,hunger+d.food);xp+=d.xp;score+=d.pts;eatT=.28;if(BASE[who]&&inst.t<=0&&nEat<NEED){nEat++;if(nEat===NEED)banner("本能が つかえるよ！")}
   burst(e.x,e.y,d.c1,10,200);float(e.x,e.y-e.r,"+"+d.pts,"#ffe45e");if(d.nm)float(e.x,e.y-e.r*2-14,d.nm+"！","#ffffff");
   snd(380+Math.random()*120,.12,"square",.1,720);
@@ -451,6 +454,7 @@ function update(dt){
   P.mx=P.x+Math.cos(P.h)*md;P.my=P.y+Math.sin(P.h)*md;
   var spd0=Math.hypot(P.vx,P.vy);P.ph+=dt*(4+spd0/50+(boosting?5:0));P.sp0=spd0;
   if(state==="playing"){
+    if(BT&&state==="playing"){BT.t-=dt;if(BT.t<=0)battleEnd()}
     hunger-=(3.0+0.9*lv)*CHR[who].dec*(1-0.06*SV.ups[who].food)*dt*(boosting?1.35:1);
     if(hunger<=0){hunger=0;gameOver()}
   }
@@ -542,6 +546,7 @@ function endRun(){
   if(score>SV.best)SV.best=score;best=SV.best;save();return c;
 }
 function gameOver(){
+  if(BT){battleEnd();return}
   state="over";
   var nb=score>=SV.best&&score>0;
   var c=endRun();
@@ -552,12 +557,14 @@ function gameOver(){
   document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 }
 function goHome(){
+  BT=null;olCleanup();document.getElementById("btHud").hidden=true;document.getElementById("olv").hidden=true;
   document.getElementById("over").hidden=true;document.getElementById("pausev").hidden=true;
   state="title";who=SV.sel;reset();
   document.getElementById("title").hidden=false;document.body.classList.add("homeon");renderHome();
   document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 }
 function togglePause(){
+  if(BT)return;
   if(state==="playing"){state="paused";document.getElementById("pausev").hidden=false}
   else if(state==="paused"){state="playing";document.getElementById("pausev").hidden=true}
 }
@@ -1082,6 +1089,86 @@ function loop(ts){
   var dt=Math.min(0.05,(ts-last)/1000||0.016);last=ts;
   if(state!=="paused")update(dt);draw();requestAnimationFrame(loop);
 }
+var BT=null,olPeer=null,olConn=null,olTok=0,olTimer=0,olSendT=0,olHudT=0,PRE="sametaro-lobby-v1-";
+function olShow(h,t,b){document.getElementById("olh").textContent=h;document.getElementById("olp").textContent=t;document.getElementById("olok").textContent=b||"やめる";document.getElementById("olv").hidden=false}
+function olCleanup(){olTok++;clearTimeout(olTimer);clearInterval(olSendT);clearInterval(olHudT);try{olConn&&olConn.close()}catch(e){}try{olPeer&&olPeer.destroy()}catch(e){}olConn=null;olPeer=null}
+function olFail(t){olCleanup();olShow("つながらなかったよ",t,"もどる")}
+function loadPeer(cb){if(window.Peer)return cb();var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";sc.onload=cb;sc.onerror=function(){olFail("ネットに つながって いないみたい。")};document.head.appendChild(sc)}
+function olStart(){
+  if(!SV.tut){showTut(true);return}
+  olCleanup();var tok=olTok;olShow("あいてを さがしてるよ…","いま あそんでる ひとと ランダムで たいせん！ 60びょうで たくさん たべた ほうが かち。","やめる");
+  loadPeer(function(){if(tok===olTok)trySlot(1,tok)})
+}
+function trySlot(i,tok){
+  if(tok!==olTok)return;
+  if(i>6){olFail("いま あそんでる ひとが いないみたい。ともだちに リンクを おしえて、いっしょに ためしてね。");return}
+  var host=new Peer(PRE+i);
+  host.on("open",function(){
+    if(tok!==olTok){host.destroy();return}
+    olPeer=host;olTimer=setTimeout(function(){if(tok===olTok&&!BT)olFail("あいてが きなかったよ。もういちど ためしてね。")},25000);
+  });
+  host.on("connection",function(c){
+    if(tok!==olTok)return;
+    if(olConn){c.on("open",function(){c.send({t:"busy"});setTimeout(function(){try{c.close()}catch(e){}},400)});return}
+    olConn=c;c.on("open",function(){if(tok!==olTok)return;c.send({t:"hello"});olWire(c);clearTimeout(olTimer);beginBattle()});
+  });
+  host.on("error",function(err){
+    if(tok!==olTok)return;
+    if(err&&err.type==="unavailable-id"){try{host.destroy()}catch(e){}joinSlot(i,tok)}
+    else olFail("サーバーに つながらなかったよ。")
+  });
+}
+function joinSlot(i,tok){
+  if(tok!==olTok)return;
+  var g=new Peer(),moved=false;
+  function next(){if(moved)return;moved=true;clearTimeout(tm);try{g.destroy()}catch(e){}trySlot(i+1,tok)}
+  var tm=setTimeout(next,6000);
+  g.on("error",function(){next()});
+  g.on("open",function(){
+    if(tok!==olTok)return;
+    var c=g.connect(PRE+i,{reliable:true});
+    c.on("error",next);
+    c.on("data",function(d){
+      if(tok!==olTok||moved)return;
+      if(d&&d.t==="hello"){moved=true;clearTimeout(tm);olPeer=g;olConn=c;olWire(c);beginBattle()}
+      else if(d&&d.t==="busy")next()
+    })
+  })
+}
+function olWire(c){
+  c.on("data",function(d){if(!BT||!d)return;
+    if(d.t==="c")BT.opp=d.c|0;
+    else if(d.t==="end"){BT.opp=d.c|0;BT.oppEnd=true;battleFinish()}
+  });
+  c.on("close",function(){if(BT&&!BT.fin){BT.gone=true;BT.oppEnd=true;battleFinish()}})
+}
+function olSend(o){try{olConn&&olConn.open&&olConn.send(o)}catch(e){}}
+function beginBattle(){
+  clearTimeout(olTimer);document.getElementById("olv").hidden=true;
+  start();BT={t:60,mine:0,opp:0,myEnd:false,oppEnd:false,fin:false,gone:false};
+  document.getElementById("btHud").hidden=false;
+  clearInterval(olSendT);olSendT=setInterval(function(){if(BT)olSend({t:"c",c:BT.mine})},500);
+  clearInterval(olHudT);olHudT=setInterval(function(){if(BT&&!BT.fin)document.getElementById("btHud").textContent=(BT.myEnd?"おわったよ！ ":"のこり "+Math.max(0,Math.ceil(BT.t))+"びょう　")+"じぶん "+BT.mine+" ／ あいて "+BT.opp+"ひき"},200);
+  banner("たいせん スタート！ たくさん たべよう！");
+}
+function battleEnd(){
+  if(!BT||BT.myEnd)return;BT.myEnd=true;state="over";
+  olSend({t:"end",c:BT.mine});
+  document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
+  banner("おわり！ あいてを まってるよ…");
+  setTimeout(function(){if(BT&&!BT.fin){BT.oppEnd=true;battleFinish()}},8000);
+  battleFinish();
+}
+function battleFinish(){
+  if(!BT||BT.fin||!(BT.myEnd&&BT.oppEnd))return;BT.fin=true;
+  var m=BT.mine,o=BT.opp,c=endRun();
+  snd(m>o?784:300,.4,"triangle",.2);
+  document.getElementById("btHud").hidden=true;
+  olShow(m>o?"かち！ 🎉":(m<o?"まけちゃった…":"ひきわけ！"),"じぶん "+m+"ひき ／ あいて "+o+"ひき"+(BT.gone?"（あいてが ぬけたよ）":"")+"　コイン +"+c+" 🪙","ホームへ");
+  clearInterval(olSendT);clearInterval(olHudT)
+}
+document.getElementById("olok").addEventListener("click",function(){goHome()});
+document.getElementById("olbtn").addEventListener("click",olStart);
 function start(){
   who=SV.sel;
   reset();state="playing";
