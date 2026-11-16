@@ -236,6 +236,8 @@ var KINDS={
  small:{r:17,lv:2,food:10,xp:2,pts:20,spd:110,c1:"#7ee8ff",c2:"#2aa6ff",y0:200,y1:1500,n:13},
  gold:{r:26,lv:3,food:15,xp:3,pts:40,spd:120,c1:"#ff8d9a",c2:"#ff3f60",y0:500,y1:2200,n:9},
  tuna:{r:44,lv:4,food:24,xp:5,pts:80,spd:170,c1:"#8ea2cc",c2:"#3d4d78",y0:900,y1:2500,n:6,bite:1},
+ maguro:{r:185,lv:9,food:70,xp:22,pts:600,spd:130,c1:"#4a6fa8",c2:"#16264a",c3:"#d8e6ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"マグロ"},
+ kajiki:{r:230,lv:10,food:80,xp:28,pts:800,spd:150,c1:"#5b8be0",c2:"#1a2d66",c3:"#bcd4ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"カジキマグロ"},
  friend:{r:34,friend:1,spd:105,y0:150,y1:1800,n:2},
  hirame:{r:30,lv:3,food:16,xp:3,pts:50,spd:55,c1:"#cdb98f",c2:"#8f7a55",y0:0,y1:0,n:5,nm:"ヒラメ"},
  taman:{r:38,lv:4,food:22,xp:4,pts:70,spd:130,c1:"#dfe5c8",c2:"#7f9166",y0:700,y1:2100,n:6,nm:"タマン"},
@@ -329,7 +331,7 @@ function spawn(k,anywhere){
   ents.push(e);
 }
 var pet={x:0,y:0,vx:0,cd:2,ph:0,face:1};
-var HBAN={urchin:1,jelly:1,tuna:1,big:1,giant:1,hirame:1};
+var HBAN={maguro:1,kajiki:1,urchin:1,jelly:1,tuna:1,big:1,giant:1,hirame:1};
 var DENS=.25;
 function fill(any){
   for(var k in KINDS){if(!allowed(k))continue;var n=((ZS==="coral"||ZS==="beach")&&KINDS[k].nc)?KINDS[k].nc:KINDS[k].n;if(!KINDS[k].sp)n=Math.max(1,Math.round(n*DENS));var c=countKind(k);var cnt=n-c;
@@ -639,7 +641,7 @@ function drawChar(w,sx,sy,W,h,ph,amp,mouth,alpha,extra){
   ctx.restore();
 }
 function drawPalm(x,y,s){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.strokeStyle="#8a5a2b";ctx.lineWidth=14;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(18,-70,6,-140);ctx.stroke();ctx.fillStyle="#2e9a4a";for(var q=0;q<6;q++){var a=-1.57+(q-2.5)*.55;ctx.save();ctx.translate(6,-140);ctx.rotate(a);ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(50,-26,110,16);ctx.quadraticCurveTo(50,-4,0,0);ctx.fill();ctx.restore()}ctx.fillStyle="#6b4423";ctx.beginPath();ctx.arc(2,-136,7,0,6.283);ctx.arc(14,-134,7,0,6.283);ctx.fill();ctx.restore()}
-var RF={koriuo:1,yukifugu:1,aurorai:1,pengiuo:1,yukidara:1,yougan:1,honofugu:1,hinotai:1,homuradai:1,magmaei:1,koganeuo:1,kinkaiu:1,takarai:1,stained:1,guardian:1,tiny:1,small:1,gold:1,ruri:1,chou:1,tuna:1,taman:1,big:1,giant:1,hadaka:1,dokutsu:1};
+var RF={maguro:1,kajiki:1,koriuo:1,yukifugu:1,aurorai:1,pengiuo:1,yukidara:1,yougan:1,honofugu:1,hinotai:1,homuradai:1,magmaei:1,koganeuo:1,kinkaiu:1,takarai:1,stained:1,guardian:1,tiny:1,small:1,gold:1,ruri:1,chou:1,tuna:1,taman:1,big:1,giant:1,hadaka:1,dokutsu:1};
 function drawSpace(t){
   ctx.save();
   var ng=ctx.createRadialGradient(CW*.7-cam.x*.02,CH*.35-cam.y*.02,20,CW*.7-cam.x*.02,CH*.35-cam.y*.02,CW*.5);ng.addColorStop(0,"rgba(190,90,255,"+(.28*t)+")");ng.addColorStop(1,"rgba(190,90,255,0)");ctx.fillStyle=ng;ctx.fillRect(0,0,CW,CH);
@@ -869,6 +871,7 @@ function drawFish(e){
   }else if(RF[e.k]){
     ctx.scale(face,1);
     var sw=Math.sin(e.t*8+e.x*.01)*r*.22,lc=d.c1,dc=d.c2;
+    if(e.k==="kajiki"){ctx.fillStyle=dc;ctx.beginPath();ctx.moveTo(r*.7,-r*.55);ctx.quadraticCurveTo(r*.4,-r*1.6,-r*.2,-r*1.55-sw*.2);ctx.quadraticCurveTo(-r*.5,-r*1.0,-r*.9,-r*.5);ctx.closePath();ctx.fill();ctx.fillStyle="#cfe0f5";ctx.beginPath();ctx.moveTo(r*1.15,-r*.12);ctx.lineTo(r*2.35,-r*.04);ctx.lineTo(r*1.15,r*.1);ctx.closePath();ctx.fill()}
     // tail (forked)
     ctx.fillStyle=dc;ctx.beginPath();ctx.moveTo(-r*.8,0);ctx.quadraticCurveTo(-r*1.3,-r*.1+sw*.4,-r*1.75,-r*.75+sw);ctx.quadraticCurveTo(-r*1.45,sw*.5,-r*1.75,r*.75+sw);ctx.quadraticCurveTo(-r*1.3,r*.1+sw*.4,-r*.8,0);ctx.fill();
     if(e.k==="ruri"){ctx.fillStyle="#ffe14a";ctx.fill()}
