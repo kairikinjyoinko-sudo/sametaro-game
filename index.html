@@ -1082,11 +1082,30 @@ function draw(){
     var wk=({ice:1,volcano:1,ruins:1})[SV.stage]?SV.stage:null,lk=who==="R"?"town":wk?wk:SV.stage==="beach"?"cliff":(SV.stage==="sea"&&!inCave?"sand":"cave"),rk2=who==="R"?"town":wk?wk:SV.stage==="beach"?"sand":(SV.stage==="sea"&&!inCave?"cliff":"cave");
     drawWall(wxr,CW+400,true,rk2);drawWall(wxl-400,wxl,false,lk);
   }
-  if(inCave){ctx.save();var mz0=CW/2-cam.x*cam.z,mz1=CH/2-cam.y*cam.z;
-    for(var mq=0;mq<MZ.length;mq++){var mm=MZ[mq],ax=mz0+mm.x0*cam.z,ay=mz1+mm.y0*cam.z,aw=(mm.x1-mm.x0)*cam.z,ah=(mm.y1-mm.y0)*cam.z;if(ax>CW||ay>CH||ax+aw<0||ay+ah<0)continue;
-      var sg=ctx.createLinearGradient(ax,ay,ax+aw,ay+ah);sg.addColorStop(0,"#6a6478");sg.addColorStop(1,"#3a3548");ctx.fillStyle=sg;ctx.fillRect(ax,ay,aw,ah);
-      ctx.strokeStyle="rgba(0,0,0,.4)";ctx.lineWidth=Math.max(2,5*cam.z);ctx.beginPath();var big=aw>ah,len=big?aw:ah,step=150*cam.z;for(var bs2=step;bs2<len;bs2+=step){if(big){ctx.moveTo(ax+bs2,ay);ctx.lineTo(ax+bs2,ay+ah)}else{ctx.moveTo(ax,ay+bs2);ctx.lineTo(ax+aw,ay+bs2)}}ctx.rect(ax,ay,aw,ah);ctx.stroke();
-      ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=Math.max(1,3*cam.z);ctx.strokeRect(ax+2*cam.z,ay+2*cam.z,aw-4*cam.z,ah-4*cam.z)}
+  if(inCave){ctx.save();var mz0=CW/2-cam.x*cam.z,mz1=CH/2-cam.y*cam.z,cz=cam.z;
+    var hs=function(n){var v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v)};
+    for(var mq=0;mq<MZ.length;mq++){var mm=MZ[mq],ax=mz0+mm.x0*cz,ay=mz1+mm.y0*cz,aw=(mm.x1-mm.x0)*cz,ah=(mm.y1-mm.y0)*cz;if(ax>CW+60||ay>CH+60||ax+aw<-60||ay+ah<-60)continue;
+      var sd=mq*17.3,pts=[],stp=85*cz,jt=26*cz,k2,nx,ny;
+      // jagged perimeter
+      nx=Math.max(1,Math.round(aw/stp));for(k2=0;k2<nx;k2++)pts.push([ax+aw*k2/nx,ay-hs(sd+k2)*jt]);
+      ny=Math.max(1,Math.round(ah/stp));for(k2=0;k2<ny;k2++)pts.push([ax+aw+hs(sd+50+k2)*jt,ay+ah*k2/ny]);
+      for(k2=0;k2<nx;k2++)pts.push([ax+aw-aw*k2/nx,ay+ah+hs(sd+100+k2)*jt]);
+      for(k2=0;k2<ny;k2++)pts.push([ax-hs(sd+150+k2)*jt,ay+ah-ah*k2/ny]);
+      // stalactites under horizontal walls and the ceiling
+      if(aw>ah){var ns=Math.floor(aw/(190*cz));for(k2=0;k2<ns;k2++){var sx2=ax+(k2+.3+hs(sd+200+k2)*.4)*aw/ns,sl=(60+hs(sd+250+k2)*120)*cz,sw2=(24+hs(sd+300+k2)*22)*cz;ctx.fillStyle="#4a4458";ctx.beginPath();ctx.moveTo(sx2-sw2,ay+ah-4*cz);ctx.lineTo(sx2+(hs(sd+k2)-.5)*10*cz,ay+ah+sl);ctx.lineTo(sx2+sw2,ay+ah-4*cz);ctx.closePath();ctx.fill()}}
+      var rg=ctx.createLinearGradient(ax,ay,ax+aw*.6,ay+ah+aw*.4);rg.addColorStop(0,"#6b6579");rg.addColorStop(.5,"#4a4458");rg.addColorStop(1,"#2c2838");
+      ctx.beginPath();ctx.moveTo(pts[0][0],pts[0][1]);for(k2=1;k2<pts.length;k2++)ctx.lineTo(pts[k2][0],pts[k2][1]);ctx.closePath();ctx.fillStyle=rg;ctx.fill();
+      ctx.strokeStyle="rgba(10,6,20,.7)";ctx.lineWidth=Math.max(2,4*cz);ctx.stroke();
+      ctx.save();ctx.clip();
+      // rock cracks, specks and moss
+      ctx.strokeStyle="rgba(10,6,20,.45)";ctx.lineWidth=Math.max(1,3*cz);ctx.beginPath();var nc=Math.max(2,Math.floor((aw+ah)/(260*cz)));
+      for(k2=0;k2<nc;k2++){var cx0=ax+hs(sd+400+k2)*aw,cy0=ay+hs(sd+450+k2)*ah;ctx.moveTo(cx0,cy0);var ccx=cx0,ccy=cy0;for(var q2=0;q2<3;q2++){ccx+=(hs(sd+k2*3+q2)-.5)*90*cz;ccy+=(hs(sd+500+k2*3+q2)-.2)*80*cz;ctx.lineTo(ccx,ccy)}}ctx.stroke();
+      ctx.fillStyle="rgba(255,255,255,.07)";for(k2=0;k2<nc*3;k2++){ctx.beginPath();ctx.arc(ax+hs(sd+600+k2)*aw,ay+hs(sd+650+k2)*ah,(3+hs(sd+k2)*6)*cz,0,6.283);ctx.fill()}
+      ctx.fillStyle="rgba(70,120,80,.28)";ctx.fillRect(ax,ay,aw,Math.min(ah,16*cz));
+      ctx.restore();
+      // glowing crystals
+      if(hs(sd+700)>.45){var cxx=ax+(.2+hs(sd+710)*.6)*aw,cyy=ay+(aw>ah?ah+2*cz:ah*(.2+hs(sd+720)*.6)),cc=hs(sd+730)>.5?"#b58cff":"#6ff0ff";ctx.shadowColor=cc;ctx.shadowBlur=22*cz;ctx.fillStyle=cc;for(k2=0;k2<3;k2++){var cl=(40+hs(sd+740+k2)*50)*cz;ctx.beginPath();ctx.moveTo(cxx+(k2-1)*16*cz-7*cz,cyy);ctx.lineTo(cxx+(k2-1)*16*cz,cyy+(aw>ah?cl:-cl*0));ctx.lineTo(cxx+(k2-1)*16*cz+7*cz,cyy);ctx.closePath();ctx.fill()}ctx.shadowBlur=0}
+    }
     ctx.restore()}
   // entities
   for(var i=0;i<ents.length;i++)drawFish(ents[i]);
