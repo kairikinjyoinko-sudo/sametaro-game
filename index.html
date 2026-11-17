@@ -1317,7 +1317,7 @@ function makeUbaSprite(open){
   f.translate(bw,0);f.scale(-1,1);f.drawImage(oc,x0,y0,bw,bh,0,0,bw,bh);
   var im=new Image();im.src=fc.toDataURL("image/png");return im;
 }
-(function(){SPR.U=[makeUbaSprite(0),makeUbaSprite(1)];SPR.J=[makeFishSprite("kajiki",100,0),makeFishSprite("kajiki",100,1)];SPR.N=[makeFishSprite("maguro",100,0),makeFishSprite("maguro",100,1)]})();
+(function(){SPR.U=[makeUbaSprite(1),makeUbaSprite(1)];SPR.J=[makeFishSprite("kajiki",100,0),makeFishSprite("kajiki",100,1)];SPR.N=[makeFishSprite("maguro",100,0),makeFishSprite("maguro",100,1)]})();
 Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){if(!SV.petOwn[k]){if(SV.coins>=PCP[k]){SV.coins-=PCP[k];SV.petOwn[k]=1;SV.pet=k;save();petLabel();renderHome();msg("ペットを かったよ！");return}msg("コインが たりないよ");return}SV.pet=SV.pet===k?"":k;save();petLabel();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
 Array.prototype.forEach.call(document.querySelectorAll(".pick"),function(b){var k=b.getAttribute("data-w");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){pickChar(k)})});
 Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.addEventListener("click",function(){SV.stage=b.getAttribute("data-s");save();who=SV.sel;reset();renderHome();msg({coral:"さんごの うみに いくよ！ ルリスズメと チョウチョウウオが いるよ。",cave:"どうくつに いくよ！ くらいから きをつけてね。チョウチンアンコウが いるよ。",beach:"うみべに いくよ！ あさいから カニが いっぱい いるよ。",ice:"こおりの うみに いくよ！ ペンギンウオや オーロラダイが いるよ。",volcano:"かざんの うみに いくよ！ マグマで ひかる さかなが いるよ。",ruins:"いせきの うみに いくよ！ ひかる コガネウオや ステンドウオが いるよ。",sea:"ふつうの うみに もどったよ。"}[SV.stage])})});
