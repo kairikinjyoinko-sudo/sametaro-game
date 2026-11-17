@@ -486,7 +486,7 @@ function update(dt){
   if(boosting)stam=Math.max(0,stam-38*(1-0.07*SV.ups[who].dash)*dt);else stam=Math.min(100,stam+(state==="playing"?16*(1+0.12*SV.ups[who].dash):30)*dt);
   stun=Math.max(0,stun-dt);invul=Math.max(0,invul-dt);eatT=Math.max(0,eatT-dt);shakeT=Math.max(0,shakeT-dt);levelT=Math.max(0,levelT-dt);
   if(inWater){
-    var sp=def.sp*CHR[who].sp*(1+0.04*SV.ups[who].spd)*(boosting?1.75:1)*(stun>0?.25:1);
+    var sp=def.sp*CHR[who].sp*(1+0.04*SV.ups[who].spd)*(boosting?1.75:1)*(stun>0?.25:1)*(who==="A"?(.3+1.3*Math.pow(Math.abs(Math.sin(time*4.4)),1.6)):1);
     var tx=inp.x*sp*inp.m,ty=inp.y*sp*inp.m;
     P.kb=Math.max(0,(P.kb||0)-dt);
     var k=P.kb>0?Math.min(1,dt*3):(inp.m>0?Math.min(1,dt*14):1);
@@ -684,7 +684,7 @@ function skyGrad(){
   return g;
 }
 function drawChar(w,sx,sy,W,h,ph,amp,mouth,alpha,extra){
-  var A=SPR[w][0],B=SPR[w][1];if(w==="A"&&SQF.length){var fi=Math.floor((((ph*.9+time*5)%6.283)+6.283)%6.283/6.283*8)%8;A=SQF[fi][0];B=SQF[fi][1]}if(!A.complete||!A.naturalWidth)return;
+  var A=SPR[w][0],B=SPR[w][1];if(w==="A"&&SQF.length){var fi=Math.floor((((ph*.9+time*8)%6.283)+6.283)%6.283/6.283*8)%8;A=SQF[fi][0];B=SQF[fi][1]}if(!A.complete||!A.naturalWidth)return;
   var ww=W*(w==="A"?1:A.naturalWidth/360),hh=ww*A.naturalHeight/A.naturalWidth;
   var fc=Math.cos(h)>=0?1:-1,ang=fc===1?h:h-Math.PI;
   while(ang>Math.PI)ang-=6.283;while(ang<-Math.PI)ang+=6.283;
