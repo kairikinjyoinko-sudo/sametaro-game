@@ -464,7 +464,8 @@ function update(dt){
   var wasIn=P.y>=0||ZS==="town";
   P.x+=P.vx*dt;P.y+=P.vy*dt;
   if(inCave){var prr=Math.max(40,PW()*.15);for(var mi=0;mi<4;mi++){var wm=wallHit(P.x,P.y,prr);if(!wm)break;var cx_=Math.max(wm.x0,Math.min(P.x,wm.x1)),cy_=Math.max(wm.y0,Math.min(P.y,wm.y1)),dx_=P.x-cx_,dy_=P.y-cy_,dd=Math.hypot(dx_,dy_);if(dd<.001){dx_=0;dy_=-1;dd=1}var pu=prr-dd+1;P.x+=dx_/dd*pu;P.y+=dy_/dd*pu;var vn=P.vx*dx_/dd+P.vy*dy_/dd;if(vn<0){P.vx-=vn*dx_/dd;P.vy-=vn*dy_/dd}}}
-  if(BR<1e8){var pb=BR-W*.5,pl=BL+W*.5;if(P.x>pb){P.x=pb;if(P.vx>0)P.vx=0}else if(P.x<pl){P.x=pl;if(P.vx<0)P.vx=0}}
+  if(BR<1e8&&!inCave&&who!=="R"){if(P.x>BR-120||P.x<BL+120){P.x=P.x>0?BL+400:BR-400;cam.x=P.x;pet.x=P.x-120;pet.y=P.y;fadeT=.7;banner("はしに ついたよ！ はんたいがわに ワープ！");decoys=[];ents=[];for(var wz=0;wz<12;wz++)fill(true)}}
+  else if(BR<1e8){var pb=BR-W*.5,pl=BL+W*.5;if(P.x>pb){P.x=pb;if(P.vx>0)P.vx=0}else if(P.x<pl){P.x=pl;if(P.vx<0)P.vx=0}}
   if(SV.pet){var tx=P.x-Math.cos(P.h)*PW()*.9,ty=P.y-PW()*.5+Math.sin(time*2)*14;pet.vx=tx-pet.x;pet.x+=(tx-pet.x)*Math.min(1,dt*2.6);pet.y+=(ty-pet.y)*Math.min(1,dt*2.6);if(Math.abs(pet.vx)>4)pet.face=pet.vx>0?1:-1;pet.ph+=dt*8;pet.cd-=dt;if(Math.hypot(pet.x-P.x,pet.y-P.y)>2500){pet.x=P.x;pet.y=P.y}}
   zoneCheck();SEABED+=(SEABEDT-SEABED)*Math.min(1,dt*2.2);if(((time*10)|0)%7===0)ents=ents.filter(function(e){return e.k==="friend"||allowed(e.k)||Math.abs(e.x-P.x)<1000});fadeT=Math.max(0,fadeT-dt);
   if(ZS==="cave"&&P.y<70){P.y=70;if(P.vy<0)P.vy=0}
@@ -1067,7 +1068,7 @@ function draw(){
       else{var lg5=ctx.createRadialGradient(hx,hy,5,hx,hy,hw*1.3);lg5.addColorStop(0,"rgba(180,235,255,.95)");lg5.addColorStop(.6,"rgba(90,190,230,.55)");lg5.addColorStop(1,"rgba(90,190,230,0)");ctx.fillStyle=lg5;ctx.beginPath();ctx.ellipse(hx,hy,hw*1.3,hh3*1.8,0,0,6.283);ctx.fill();
         ctx.strokeText("でぐち ↓",hx,hy-hh3*2.2);ctx.fillStyle="#fff";ctx.fillText("でぐち ↓",hx,hy-hh3*2.2)}}
   }
-  if(BR<1e8){
+  if(BR<1e8&&inCave){
     var wxr=CW/2+(BR-cam.x)*cam.z,wxl=CW/2+(BL-cam.x)*cam.z;
     var drawWall=function(x0,x1,right,kind){if(x1<0||x0>CW)return;var near=right?x0:x1,far=right?x1:x0;var wg=ctx.createLinearGradient(near,0,far,0);
       if(kind==="town"){wg.addColorStop(0,"#5a6070");wg.addColorStop(1,"#252932")}else if(kind==="sand"){wg.addColorStop(0,"#e9d19a");wg.addColorStop(1,"#f6e6b8")}else if(kind==="cliff"){wg.addColorStop(0,"#6f6252");wg.addColorStop(1,"#3d352c")}else if(kind==="ice"){wg.addColorStop(0,"#bfe6f5");wg.addColorStop(1,"#4f86ad")}else if(kind==="volcano"){wg.addColorStop(0,"#5a2a22");wg.addColorStop(1,"#1a0a0a")}else if(kind==="ruins"){wg.addColorStop(0,"#7fa592");wg.addColorStop(1,"#2d4f45")}else{wg.addColorStop(0,"#4a3a68");wg.addColorStop(1,"#150f25")}
