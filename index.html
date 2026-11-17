@@ -174,6 +174,7 @@ body.homeon .app{visibility:hidden}
         <div class="small" id="hmsg">レベル5から、サメ太郎は くらげと ウニ、マーダイは くらげが たべられるよ。ブロきちは たべられないよ。</div>
       </div>
     </div>
+    <button id="setbtn" aria-label="せってい" style="position:fixed;top:max(8px,env(safe-area-inset-top,0px));right:max(8px,env(safe-area-inset-right,0px));z-index:30;width:42px;height:42px;border-radius:14px;background:var(--panel);border:2px solid var(--panel-line);color:#fff;font-size:22px;cursor:pointer">⚙️</button>
     <div class="playbar"><button class="big" id="go">あそぶ</button>
     <button class="big" id="olbtn" style="background:#8a4fd6">🌐 オンラインたいせん</button></div>
     <div class="small">やじるしキー(WASD)で うごく ／ スペースで ダッシュ ／ Pで おやすみ</div>
@@ -195,6 +196,7 @@ body.homeon .app{visibility:hidden}
     <button class="big" id="pausehome" style="background:#2e7bd6">ホームへ</button>
   </div>
 </div>
+<div class="ov" id="setv" hidden style="z-index:60"><div class="card"><h1 style="font-size:28px">⚙️ せってい</h1><p>コードを いれてね</p><input id="codein" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="font:inherit;font-size:20px;padding:10px;border-radius:12px;border:3px solid var(--panel-line);background:rgba(255,255,255,.95);color:#111;text-align:center"><button class="big" id="codeok">つかう</button><p id="codemsg" style="min-height:1.4em"></p><button class="big" id="secgo" hidden style="background:#8a4fd6">⭐ ひみつのうみに いく</button><button class="big" id="setx" style="background:#2e7bd6">とじる</button></div></div>
 <div class="ov" id="olv" hidden><div class="card"><h1 id="olh" style="font-size:clamp(26px,7vw,38px)"></h1><p id="olp"></p><button class="big" id="olok" style="background:#2e7bd6">やめる</button></div></div>
 <div id="btHud" hidden style="position:fixed;top:max(64px,calc(env(safe-area-inset-top,0px) + 56px));left:50%;transform:translateX(-50%);z-index:6;background:var(--panel);border:2px solid var(--panel-line);border-radius:14px;padding:6px 14px;color:#fff;font-weight:900;font-size:17px;white-space:nowrap"></div>
 <div class="ov" id="over" hidden>
@@ -219,14 +221,14 @@ var CHR={J:{note:"5mまで・でっかい",name:"カジキマグロ",sp:1.1,dec:
 var BASE={g:"G",m:"M",s:"S"};function wb(){return BASE[who]||who}
 var who="G";
 var SBD=4800,CAVEB=6300,SEABED=4800,SEABEDT=4800,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
-var PAL={sea:{ridge:"rgba(18,48,72,.7)",g0:"#2d5873",g1:"#0e2236",hi:"rgba(140,200,230,.35)",rock:"#2c4256"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(40,26,66,.85)",g0:"#3d2f58",g1:"#120c20",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"}};
-var SBZ={sea:2600,coral:2600,cave:2300,beach:1100,ice:2600,volcano:2600,ruins:2600};
-var inCave=false,zoneCD=0,spaceSeen=false,spaceMsgT=0;function spaceT(){return ZS==="town"?Math.max(0,Math.min(1,(400-cam.y)/2800)):0}
+var PAL={sea:{ridge:"rgba(18,48,72,.7)",g0:"#2d5873",g1:"#0e2236",hi:"rgba(140,200,230,.35)",rock:"#2c4256"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(40,26,66,.85)",g0:"#3d2f58",g1:"#120c20",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"},star:{ridge:"rgba(120,70,190,.6)",g0:"#6a38a8",g1:"#1d0f42",hi:"rgba(255,220,255,.55)",rock:"#4a2a80"}};
+var SBZ={sea:2600,coral:2600,cave:2300,beach:1100,ice:2600,volcano:2600,ruins:2600,star:3200};
+var inSecret=false,inCave=false,zoneCD=0,spaceSeen=false,spaceMsgT=0;function spaceT(){return ZS==="town"?Math.max(0,Math.min(1,(400-cam.y)/2800)):0}
 function mixc(a,b,t){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16),r=function(sh){return Math.round(((x>>sh)&255)*(1-t)+((y>>sh)&255)*t)};return"rgb("+r(16)+","+r(8)+","+r(0)+")"}
 function HF(x){if(ZS==="town"||who==="R")return 0;return Math.sin(x*.0034)*70+Math.sin(x*.0087+1)*40+Math.sin(x*.013)*18}
 function seabedAt(x){
   if(who==="R")return 1500;
-  if(SV.stage==="sea"){if(who==="R")return 2600;if(inCave)return CAVEB;if(x>=-1500)return SBD;return SBD-(SBD-500)*Math.min(1,(-1500-x)/6000)}
+  if(SV.stage==="sea"){if(who==="R")return 2600;if(inSecret)return 3200;if(inCave)return CAVEB;if(x>=-1500)return SBD;return SBD-(SBD-500)*Math.min(1,(-1500-x)/6000)}
   if(SV.stage==="beach")return 1600-1100*Math.max(0,Math.min(1,(x+3200)/6400));
   if(SV.stage==="cave")return 2300;
   return 2600}
@@ -234,9 +236,9 @@ var ZB=[3800,7800,11800,15800],ZN=["sea","ice","volcano","ruins","coral"],ZMSG={
 function zoneAt(x){if(x<-3300)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
 function applyStage(snap){
   var px=(P&&P.x)||0;ZS=SV.stage;if(who==="R")ZS="town";
-  if(SV.stage==="sea"){ZS=inCave?"cave":zoneAt(px)}
+  if(SV.stage==="sea"){ZS=inSecret?"star":(inCave?"cave":zoneAt(px))}
   SEABEDT=seabedAt(px);if(snap!==false)SEABED=SEABEDT;
-  if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inCave){BL=-6160;BR=6160}else{BL=-9600;BR=19800}}else{BL=-1e9;BR=1e9}
+  if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inSecret){BL=-4500;BR=4500}else if(inCave){BL=-6160;BR=6160}else{BL=-9600;BR=19800}}else{BL=-1e9;BR=1e9}
   if(who==="R"){BL=-5000;BR=5000}}
 var MZ=[],MZB={},MZC=560,MZX0=-6160,MZY0=600,MZCOLS=22,MZROWS=10;
 function mzAdd(x,y,r){var c={x:x,y:y,r:r};MZ.push(c);var k=Math.floor(x/400)+","+Math.floor(y/400);(MZB[k]=MZB[k]||[]).push(c)}
@@ -261,11 +263,11 @@ function mzAdd(x,y,r){var c={x:x,y:y,r:r};MZ.push(c);var k=Math.floor(x/400)+","
 })();
 function wallHit(x,y,rad){var bx=Math.floor(x/400),by=Math.floor(y/400);for(var a=bx-1;a<=bx+1;a++)for(var b=by-1;b<=by+1;b++){var L=MZB[a+","+b];if(!L)continue;for(var i=0;i<L.length;i++){var m=L[i],dx=x-m.x,dy=y-m.y,rr=m.r+rad;if(dx*dx+dy*dy<rr*rr)return m}}return null}
 function DYf(){return ZS==="town"?1:Math.max(.5,SEABEDT/2600)}
-function allowed(k){var K=KINDS[k];if(K.sp)return ZS==="town"&&!!P&&P.y<-800;if(K.ho&&who!=="H"&&ZS!=="beach")return false;if(K.so&&ZS!=="sea")return false;if(K.st&&K.st!==ZS)return false;if(K.y0*DYf()>SEABEDT-250)return false;if(ZS==="town"&&!K.st)return false;if(ZS==="cave"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if((ZS==="ice"||ZS==="volcano"||ZS==="ruins")&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if(who==="H"&&HBAN[k])return false;return true}
+function allowed(k){var K=KINDS[k];if(K.sp)return ZS==="town"&&!!P&&P.y<-800;if(K.ho&&who!=="H"&&ZS!=="beach")return false;if(K.so&&ZS!=="sea")return false;if(K.st&&K.st!==ZS)return false;if(K.y0*DYf()>SEABEDT-250)return false;if(ZS==="town"&&!K.st)return false;if(ZS==="star"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,friend:1}[k])return false;if(ZS==="cave"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if((ZS==="ice"||ZS==="volcano"||ZS==="ruins")&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if(who==="H"&&HBAN[k])return false;return true}
 function teleportZone(x,y,txt){zoneCD=2;inCave=!inCave;applyStage(true);P.x=x;P.y=y;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;fadeT=.8;banner(txt);decoys=[];
   ents=[];for(var zi=0;zi<14;zi++)fill(true)}
 function zoneCheck(){
-  if(SV.stage!=="sea"||who==="R")return;if(zoneCD>0){zoneCD-=1/60}
+  if(SV.stage!=="sea"||who==="R")return;if(inSecret){ZS="star";SEABEDT=seabedAt(P.x);return}if(zoneCD>0){zoneCD-=1/60}
   if(!inCave){
     if(zoneCD<=0&&P.x>3040&&P.x<3360&&P.y>SEABED-HF(P.x)-320){teleportZone(-5880,5920,"どうくつに はいったよ！ めいろだよ");return}
     var nz=zoneAt(P.x);
@@ -286,6 +288,10 @@ var KINDS={
  tuna:{r:44,lv:4,food:24,xp:5,pts:80,spd:170,c1:"#8ea2cc",c2:"#3d4d78",y0:900,y1:2500,n:6,bite:1},
  maguro:{r:152,lv:9,food:70,xp:22,pts:600,spd:130,c1:"#4a6fa8",c2:"#16264a",c3:"#d8e6ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"マグロ"},
  kajiki:{r:175,lv:10,food:80,xp:28,pts:800,spd:150,c1:"#5b8be0",c2:"#1a2d66",c3:"#bcd4ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"カジキマグロ"},
+ hoshiuo:{r:16,lv:1,food:9,xp:1,pts:16,spd:80,c1:"#ffe45e",c2:"#ff9d2e",c3:"#fff7b0",pat:"glow",y0:300,y1:2400,n:20,st:"star",nm:"ホシウオ"},
+ tsukiuo:{r:30,lv:3,food:16,xp:3,pts:50,spd:60,c1:"#e9e4ff",c2:"#8a7cc8",c3:"#b9b0ff",pat:"spots",y0:400,y1:2400,n:12,st:"star",nm:"ツキウオ"},
+ nijiuo:{r:52,lv:5,food:26,xp:5,pts:110,spd:75,c1:"#7fe8c8",c2:"#7a5cff",c3:"#ff7ad9",pat:"stripes",y0:500,y1:2500,n:10,st:"star",nm:"ニジウオ"},
+ ougonuo:{r:84,lv:8,food:40,xp:10,pts:260,spd:55,c1:"#ffd24a",c2:"#b8741a",c3:"#fff2a0",pat:"gold",y0:900,y1:2600,n:6,st:"star",nm:"オウゴンウオ"},
  friend:{r:34,friend:1,spd:105,y0:150,y1:1800,n:2},
  hirame:{r:30,lv:3,food:16,xp:3,pts:50,spd:55,c1:"#cdb98f",c2:"#8f7a55",y0:0,y1:0,n:5,nm:"ヒラメ"},
  taman:{r:38,lv:4,food:22,xp:4,pts:70,spd:130,c1:"#dfe5c8",c2:"#7f9166",y0:700,y1:2100,n:6,nm:"タマン"},
@@ -341,8 +347,8 @@ var inst={t:0,cd:0},decoys=[],nEat=0,NEED=100;
 var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eatT,shakeT,levelT,best=0,muted=false;
 var cam={x:0,y:300,z:1};
 var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
-var SV={stage:"sea",pet:"",petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
-try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;if(SV.pet&&!(_o.petOwn&&_o.petOwn[SV.pet]))SV.pet="";if(_o.petOwn)for(var _pk in SV.petOwn)SV.petOwn[_pk]=_o.petOwn[_pk]?1:0;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
+var SV={stage:"sea",pet:"",secret:0,goSecret:0,petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
+try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;if(SV.pet&&!(_o.petOwn&&_o.petOwn[SV.pet]))SV.pet="";if(_o.secret)SV.secret=1;if(_o.petOwn)for(var _pk in SV.petOwn)SV.petOwn[_pk]=_o.petOwn[_pk]?1:0;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
 best=SV.best;who=SV.sel;
@@ -352,7 +358,7 @@ function lvDef(){return LV[lv-1]}
 function lenM(){return LMAX[who]*(0.14+0.86*(lv-1)/10)}
 function PW(){var nw=SPR[who][0].naturalWidth||360;return lenM()*246*.85*(wb()==="S"?0.7:1)*360/nw}
 function reset(){
-  P=null;inCave=false;applyStage();
+  P=null;inCave=false;inSecret=!!SV.goSecret;applyStage();
   P={x:0,y:200,vx:0,vy:0,h:0,mx:0,my:0,ph:0,mo:0};
   pet.x=P.x-120;pet.y=P.y;pet.cd=2;ents=[];parts=[];texts=[];score=0;hunger=100;xp=(SV.prog[who]||{xp:0}).xp;lv=(SV.prog[who]||{lv:1}).lv;stam=100;stun=0;invul=2;time=0;eatT=0;shakeT=0;levelT=0;
   if(who==="H"){P.y=SEABED-PW()*.22-4;P.x=0}
@@ -663,6 +669,7 @@ function skyGrad(){
   var g=ctx.createLinearGradient(0,a,0,b);
   var f=function(y){return Math.min(1,Math.max(0,(y+1300)/(SEABED+1500)))};
   if(ZS==="town"){var st_=spaceT(),g2=ctx.createLinearGradient(0,0,0,CH);g2.addColorStop(0,mixc("#5fb8ff","#02030d",st_));g2.addColorStop(.55,mixc("#bfe3ff","#0b0f30",Math.min(1,st_*1.15)));g2.addColorStop(1,mixc("#ffe6c4","#3a2070",st_));return g2}
+  if(ZS==="star"){g.addColorStop(0,"#3a1470");g.addColorStop(f(-100),"#b86ad8");g.addColorStop(f(0),"#7a3fc0");g.addColorStop(f(600),"#3c1f86");g.addColorStop(f(1400),"#1c1054");g.addColorStop(1,"#07041f");return g}
   if(ZS==="cave"){g.addColorStop(0,"#1a1430");g.addColorStop(1,"#05030c");return g}
   if(ZS==="ice"){g.addColorStop(0,"#dff3ff");g.addColorStop(f(-100),"#ffffff");g.addColorStop(f(0),"#9fe3f2");g.addColorStop(f(600),"#4fb3d8");g.addColorStop(f(1400),"#256a9c");g.addColorStop(1,"#0b2745");return g}
   if(ZS==="volcano"){g.addColorStop(0,"#ff9a5a");g.addColorStop(f(-100),"#ffd0a0");g.addColorStop(f(0),"#a04a4a");g.addColorStop(f(600),"#5a1f2e");g.addColorStop(f(1400),"#2a0f1c");g.addColorStop(1,"#12060c");return g}
@@ -692,7 +699,7 @@ function drawChar(w,sx,sy,W,h,ph,amp,mouth,alpha,extra){
   ctx.restore();
 }
 function drawPalm(x,y,s){ctx.save();ctx.translate(x,y);ctx.scale(s,s);ctx.strokeStyle="#8a5a2b";ctx.lineWidth=14;ctx.lineCap="round";ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(18,-70,6,-140);ctx.stroke();ctx.fillStyle="#2e9a4a";for(var q=0;q<6;q++){var a=-1.57+(q-2.5)*.55;ctx.save();ctx.translate(6,-140);ctx.rotate(a);ctx.beginPath();ctx.moveTo(0,0);ctx.quadraticCurveTo(50,-26,110,16);ctx.quadraticCurveTo(50,-4,0,0);ctx.fill();ctx.restore()}ctx.fillStyle="#6b4423";ctx.beginPath();ctx.arc(2,-136,7,0,6.283);ctx.arc(14,-134,7,0,6.283);ctx.fill();ctx.restore()}
-var RF={maguro:1,kajiki:1,koriuo:1,yukifugu:1,aurorai:1,pengiuo:1,yukidara:1,yougan:1,honofugu:1,hinotai:1,homuradai:1,magmaei:1,koganeuo:1,kinkaiu:1,takarai:1,stained:1,guardian:1,tiny:1,small:1,gold:1,ruri:1,chou:1,tuna:1,taman:1,big:1,giant:1,hadaka:1,dokutsu:1};
+var RF={hoshiuo:1,tsukiuo:1,nijiuo:1,ougonuo:1,maguro:1,kajiki:1,koriuo:1,yukifugu:1,aurorai:1,pengiuo:1,yukidara:1,yougan:1,honofugu:1,hinotai:1,homuradai:1,magmaei:1,koganeuo:1,kinkaiu:1,takarai:1,stained:1,guardian:1,tiny:1,small:1,gold:1,ruri:1,chou:1,tuna:1,taman:1,big:1,giant:1,hadaka:1,dokutsu:1};
 function drawSpace(t){
   ctx.save();
   var ng=ctx.createRadialGradient(CW*.7-cam.x*.02,CH*.35-cam.y*.02,20,CW*.7-cam.x*.02,CH*.35-cam.y*.02,CW*.5);ng.addColorStop(0,"rgba(190,90,255,"+(.28*t)+")");ng.addColorStop(1,"rgba(190,90,255,0)");ctx.fillStyle=ng;ctx.fillRect(0,0,CW,CH);
@@ -1051,6 +1058,11 @@ function draw(){
         if(gl===2){ctx.fillStyle="#ffd6f4";ctx.beginPath();ctx.ellipse(cw2,sb-hc2*.55,hc2*.45,hc2*.22,0,Math.PI,0);ctx.fill();ctx.fillStyle="#d8b6c8";ctx.fillRect(cw2-5*cam.z,sb-hc2*.55,10*cam.z,hc2*.6)}
         else{for(var cr=-1;cr<=1;cr++){ctx.beginPath();ctx.moveTo(cw2+cr*16*cam.z-9*cam.z,sb+4*cam.z);ctx.lineTo(cw2+cr*16*cam.z,sb-hc2*(cr?.7:1));ctx.lineTo(cw2+cr*16*cam.z+9*cam.z,sb+4*cam.z);ctx.closePath();ctx.fill()}}
         ctx.restore()}
+    }else if(ZS==="star"){
+      for(var si=-1;si<CW/(120*cam.z)+3;si++){var sq=Math.floor((cam.x-CW/2/cam.z)/120)+si,ssd=Math.abs(Math.sin(sq*7.1));if(ssd<.4)continue;var swx=sq*120+ssd*70,sx3=CW/2+(swx-cam.x)*cam.z,sy3=sb-HF(swx)*cam.z+6*cam.z,sh3=(50+ssd*130)*cam.z,col3=["#ffe45e","#ff7ad9","#6ff0ff","#b58cff"][sq&3];
+        ctx.shadowColor=col3;ctx.shadowBlur=20*cam.z;ctx.fillStyle=col3;ctx.beginPath();ctx.moveTo(sx3-14*cam.z,sy3);ctx.lineTo(sx3,sy3-sh3);ctx.lineTo(sx3+14*cam.z,sy3);ctx.closePath();ctx.fill();
+        if(ssd>.8){var st3=Math.sin(time*2+sq)*.3+.7,rr3=(14+ssd*10)*cam.z*st3,cy3=sy3-sh3-30*cam.z;ctx.beginPath();for(var pt=0;pt<10;pt++){var an3=-1.5708+pt*.6283,rd3=pt%2?rr3*.45:rr3;ctx.lineTo(sx3+Math.cos(an3)*rd3,cy3+Math.sin(an3)*rd3)}ctx.closePath();ctx.fill()}
+        ctx.shadowBlur=0}
     }else if(ZS==="beach"){
       for(var bw=-40;bw<CW+80;bw+=130){var bq=cam.x+(bw-CW/2)/cam.z,bi=Math.round(bq/130),bs=Math.abs(Math.sin(bi*8.3));sb=sbB-HF(bq)*cam.z;if(bs<.3)continue;var by2=sb-12*cam.z,br2=(10+bs*14)*cam.z;
         if(bi%3===0){ctx.fillStyle="#ff8f6b";ctx.beginPath();for(var pt=0;pt<10;pt++){var an=pt/10*6.283-1.57,rr2=(pt%2?br2*.45:br2*1.3);ctx.lineTo(bw+Math.cos(an)*rr2,by2+Math.sin(an)*rr2)}ctx.closePath();ctx.fill()}
@@ -1109,6 +1121,7 @@ function draw(){
     var wk=({ice:1,volcano:1,ruins:1})[SV.stage]?SV.stage:null,lk=who==="R"?"town":wk?wk:SV.stage==="beach"?"cliff":(SV.stage==="sea"&&!inCave?"sand":"cave"),rk2=who==="R"?"town":wk?wk:SV.stage==="beach"?"sand":(SV.stage==="sea"&&!inCave?"cliff":"cave");
     drawWall(wxr,CW+400,true,rk2);drawWall(wxl-400,wxl,false,lk);
   }
+  if(ZS==="star"&&state!=="title"){ctx.save();for(var tw=0;tw<60;tw++){var tx=((tw*137.5+cam.x*.15*(1+tw%3*.2))%CW+CW)%CW,ty=((tw*71.3+cam.y*.12*(1+tw%4*.15))%CH+CH)%CH,ta=.25+.6*Math.abs(Math.sin(time*1.6+tw));ctx.fillStyle="rgba(255,240,255,"+ta+")";ctx.beginPath();ctx.arc(tx,ty,(1+tw%3)*.9,0,6.283);ctx.fill()}ctx.restore()}
   if(inCave){ctx.save();var mz0=CW/2-cam.x*cam.z,mz1=CH/2-cam.y*cam.z,cz=cam.z,vis2=[];
     for(var mq=0;mq<MZ.length;mq++){var mm=MZ[mq],sx=mz0+mm.x*cz,sy=mz1+mm.y*cz,sr=mm.r*cz;if(sx<-sr-8||sx>CW+sr+8||sy<-sr-8||sy>CH+sr+8)continue;vis2.push([sx,sy,sr,mq])}
     ctx.fillStyle="#0a0612";for(var v1=0;v1<vis2.length;v1++){var q1=vis2[v1];ctx.beginPath();ctx.arc(q1[0],q1[1],q1[2]+5*cz,0,6.283);ctx.fill()}
@@ -1146,7 +1159,7 @@ function draw(){
   if(ZS==="cave"){var lg3=ctx.createRadialGradient(ps.x,ps.y,40,ps.x,ps.y,Math.max(CW,CH)*.62);lg3.addColorStop(0,"rgba(0,0,12,0)");lg3.addColorStop(.5,"rgba(0,0,12,.3)");lg3.addColorStop(1,"rgba(0,0,12,.74)");ctx.fillStyle=lg3;ctx.fillRect(0,0,CW,CH)}
   var vg=ctx.createRadialGradient(CW/2,CH/2,Math.min(CW,CH)*.45,CW/2,CH/2,Math.max(CW,CH)*.78);vg.addColorStop(0,"rgba(0,20,50,0)");vg.addColorStop(1,"rgba(0,20,50,.28)");ctx.fillStyle=vg;ctx.fillRect(0,0,CW,CH);
   if(fadeT>0){ctx.fillStyle="rgba(0,0,0,"+Math.min(.6,fadeT*.9)+")";ctx.fillRect(0,0,CW,CH)}
-  if(state!=="title"&&ZS!=="town"&&P){var dk=Math.max(0,Math.min(1,(cam.y-500)/Math.max(1500,SEABED-900)))*.86;if(dk>.01){var pp3=worldToScreen(P.x,P.y),dg=ctx.createRadialGradient(pp3.x,pp3.y,CH*.1,pp3.x,pp3.y,CH*.85);dg.addColorStop(0,"rgba(0,3,12,"+(dk*.3)+")");dg.addColorStop(1,"rgba(0,3,12,"+dk+")");ctx.fillStyle=dg;ctx.fillRect(0,0,CW,CH)}}
+  if(state!=="title"&&ZS!=="town"&&P){var dk=Math.max(0,Math.min(1,(cam.y-500)/Math.max(1500,SEABED-900)))*(ZS==="star"?.35:.86);if(dk>.01){var pp3=worldToScreen(P.x,P.y),dg=ctx.createRadialGradient(pp3.x,pp3.y,CH*.1,pp3.x,pp3.y,CH*.85);dg.addColorStop(0,"rgba(0,3,12,"+(dk*.3)+")");dg.addColorStop(1,"rgba(0,3,12,"+dk+")");ctx.fillStyle=dg;ctx.fillRect(0,0,CW,CH)}}
   // hud
   var ib=document.getElementById("inst");ib.hidden=!(state==="playing"&&BASE[who]);
   if(!ib.hidden){var act=inst.t>0,rdy=nEat>=NEED;ib.disabled=act||!rdy;ib.classList.toggle("act",act);ib.classList.toggle("rdy",rdy&&!act);ib.innerHTML=act?"つかってる<small>あと "+Math.ceil(inst.t)+"</small>":(rdy?"本能<small>Eキー</small>":"本能<small>"+nEat+"/"+NEED+"</small>")}
@@ -1167,6 +1180,7 @@ function olCleanup(){olTok++;clearTimeout(olTimer);clearInterval(olSendT);clearI
 function olFail(t){olCleanup();olShow("つながらなかったよ",t,"もどる")}
 function loadPeer(cb){if(window.Peer)return cb();var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";sc.onload=cb;sc.onerror=function(){olFail("ネットに つながって いないみたい。")};document.head.appendChild(sc)}
 function olStart(){
+  SV.goSecret=0;
   if(!SV.tut){showTut(true);return}
   olCleanup();var tok=olTok;olShow("あいてを さがしてるよ…","いま あそんでる ひとと ランダムで たいせん！ 60びょうで たくさん たべた ほうが かち。","やめる");
   loadPeer(function(){if(tok===olTok)trySlot(1,tok)})
@@ -1270,7 +1284,7 @@ document.getElementById("homeBtn").addEventListener("click",goHome);
 document.getElementById("resume").addEventListener("click",togglePause);
 document.getElementById("mute2").addEventListener("click",togglePause);
 document.getElementById("pausehome").addEventListener("click",function(){if(state==="paused"){endRun()}goHome()});
-document.getElementById("go").addEventListener("click",function(){if(!SV.tut){showTut(true)}else{start()}});
+document.getElementById("go").addEventListener("click",function(){SV.goSecret=0;if(!SV.tut){showTut(true)}else{start()}});
 document.getElementById("fsbtn").addEventListener("click",function(){
   try{if(document.fullscreenElement){document.exitFullscreen()}else if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(function(){msg("この がめんでは ぜんがめんに できないよ")})}else{msg("この がめんでは ぜんがめんに できないよ")}}catch(e){msg("この がめんでは ぜんがめんに できないよ")}
 });
@@ -1335,6 +1349,16 @@ function tutClose(){document.getElementById("tut").hidden=true;SV.tut=1;save();i
 document.getElementById("tutnext").addEventListener("click",function(){if(tutPage>=tutPages().length-1)tutClose();else{tutPage++;tutShow()}});
 document.getElementById("tutskip").addEventListener("click",tutClose);
 document.getElementById("tutbtn").addEventListener("click",function(){showTut(false)});
+(function(){var sv=document.getElementById("setv"),inp=document.getElementById("codein"),mg=document.getElementById("codemsg"),go=document.getElementById("secgo");
+  var CODES={"kairikinjyo":1,"かいりきんじょ":1,"かいりきんじょう":1};
+  function sync(){go.hidden=!SV.secret}
+  document.getElementById("setbtn").addEventListener("click",function(){inp.value="";mg.textContent=SV.secret?"ひみつのうみが ひらいて いるよ！":"";sync();sv.hidden=false});
+  document.getElementById("setx").addEventListener("click",function(){sv.hidden=true});
+  function tryCode(){var v=inp.value.trim().toLowerCase().replace(/[\s\u3000]/g,"");if(CODES[v]){SV.secret=1;save();mg.textContent="ひみつのうみが ひらいたよ！ ⭐";sync();snd(880,.2,"triangle",.2)}else mg.textContent="コードが ちがうよ"}
+  document.getElementById("codeok").addEventListener("click",tryCode);
+  inp.addEventListener("keydown",function(e){e.stopPropagation();if(e.key==="Enter")tryCode()});
+  inp.addEventListener("keyup",function(e){e.stopPropagation()});
+  go.addEventListener("click",function(){if(SV.sel==="R"||SV.sel==="H"){mg.textContent="この キャラは いけないよ。ほかの キャラを えらんでね";return}sv.hidden=true;SV.goSecret=1;start()})})();
 document.body.classList.add("homeon");renderHome();reset();bb.style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 requestAnimationFrame(loop);
 })();
