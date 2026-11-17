@@ -521,7 +521,7 @@ function update(dt){
   if(boosting)stam=Math.max(0,stam-38*(1-0.07*SV.ups[who].dash)*dt);else stam=Math.min(100,stam+(state==="playing"?16*(1+0.12*SV.ups[who].dash):30)*dt);
   stun=Math.max(0,stun-dt);invul=Math.max(0,invul-dt);eatT=Math.max(0,eatT-dt);shakeT=Math.max(0,shakeT-dt);levelT=Math.max(0,levelT-dt);
   if(inWater){
-    var sp=def.sp*CHR[who].sp*(1+0.04*SV.ups[who].spd)*(boosting?1.75:1)*(stun>0?.25:1)*(who==="A"?(.3+1.3*Math.pow(Math.abs(Math.sin(time*4.4)),1.6)):1);
+    var sp=def.sp*CHR[who].sp*(1+0.04*SV.ups[who].spd)*(boosting?1.75:1)*(stun>0?.25:1)*((who==="A"||who==="O")?(.3+1.3*Math.pow(Math.abs(Math.sin(time*4.4)),1.6)):1);
     var tx=inp.x*sp*inp.m,ty=inp.y*sp*inp.m;
     P.kb=Math.max(0,(P.kb||0)-dt);
     var k=P.kb>0?Math.min(1,dt*3):(inp.m>0?Math.min(1,dt*14):1);
@@ -546,7 +546,7 @@ function update(dt){
   if(ZS!=="town"&&wasIn&&P.y<0){burst(P.x,0,"#ffffff",14,220);snd(300,.2,"sine",.1,600)}
   if(Math.hypot(P.vx,P.vy)>20){var th=Math.atan2(P.vy,P.vx);var dd=th-P.h;while(dd>Math.PI)dd-=6.283;while(dd<-Math.PI)dd+=6.283;P.h+=dd*Math.min(1,dt*7)}
   var fc=Math.cos(P.h)>=0?1:-1;
-  var md=who==="A"?-W*.3:W*0.40;
+  var md=(who==="A"||who==="O")?-W*.3:W*0.40;
   P.mx=P.x+Math.cos(P.h)*md;P.my=P.y+Math.sin(P.h)*md;
   var spd0=Math.hypot(P.vx,P.vy);P.ph+=dt*(4+spd0/50+(boosting?5:0));P.sp0=spd0;
   if(state==="playing"){
@@ -554,7 +554,7 @@ function update(dt){
     hunger-=(3.0+0.9*lv)*CHR[who].dec*(1-0.06*SV.ups[who].food)*dt*(boosting?1.35:1);
     if(hunger<=0){hunger=0;gameOver()}
   }
-  var er=W*0.32*CHR[who].eatr*(who==="A"?.55:1);
+  var er=W*0.32*CHR[who].eatr*((who==="A"||who==="O")?.55:1);
   P.near=false;
   for(var i=0;i<ents.length;i++){
     var e=ents[i],d=e.def;
@@ -1423,9 +1423,6 @@ function makeOctoSprite(open){
   o.fillStyle="#e0a23a";o.beginPath();o.arc(146,cy-28,22,0,6.283);o.fill();o.fillStyle="#10141a";o.beginPath();o.ellipse(146,cy-28,19,6,0,0,6.283);o.fill();o.fillStyle="rgba(255,255,255,.9)";o.beginPath();o.arc(138,cy-38,5,0,6.283);o.fill();
   // brow lid
   o.strokeStyle=dk;o.lineWidth=5;o.beginPath();o.arc(150,cy-30,36,3.5,5.9);o.stroke();
-  // mouth under the head
-  if(open){o.fillStyle="#4a1a1a";o.beginPath();o.ellipse(88,cy+48,19,24,.3,0,6.283);o.fill();o.strokeStyle=dk;o.lineWidth=4;o.stroke();o.fillStyle="#f1e6d0";o.beginPath();o.moveTo(80,cy+32);o.lineTo(94,cy+34);o.lineTo(86,cy+50);o.closePath();o.fill()}
-  else{o.strokeStyle="#8a4a3a";o.lineWidth=6;o.beginPath();o.moveTo(74,cy+46);o.quadraticCurveTo(88,cy+60,102,cy+46);o.stroke()}
   var im=new Image();im.src=oc.toDataURL("image/png");return im}
 function makeSquidSprite(open,ph){ph=ph||0;
   var W0=1020,H0=460,oc=document.createElement("canvas");oc.width=W0;oc.height=H0;var o=oc.getContext("2d");
