@@ -277,7 +277,7 @@ function teleportDeep(on){zoneCD=2;inDeep=on;applyStage(true);ents=[];decoys=[];
   for(var zi=0;zi<14;zi++)fill(true);
   if(on){var d=KINDS.mega;ents.push({k:"mega",r:d.r,def:d,t:0,dir:-1,face:-1,vx:0,vy:0,hit:0,x:700,y:4200,boss:1,hp:d.hp,mhp:d.hp,mode:"swim",mt:3,cool:0,pcool:0,flash:0})}}
 function megaAI(e,dt,W){
-  var d=e.def;e.pcool=Math.max(0,e.pcool-dt);e.flash=Math.max(0,e.flash-dt);e.mt-=dt;
+  var d=e.def;e.biteT=Math.max(0,(e.biteT||0)-dt);e.pcool=Math.max(0,e.pcool-dt);e.flash=Math.max(0,e.flash-dt);e.mt-=dt;
   var dx=P.x-e.x,dy=P.y-e.y,dist=Math.hypot(dx,dy)||1;
   if(e.mode==="swim"){e.vx+=(dx/dist*170-e.vx)*dt*1.4;e.vy+=(dy/dist*120-e.vy)*dt*1.4;if(Math.abs(dx)>60)e.face=dx<0?-1:1;if(e.mt<=0&&dist<1700){e.mode="wind";e.mt=.9}}
   else if(e.mode==="wind"){e.vx*=1-Math.min(1,dt*3);e.vy*=1-Math.min(1,dt*3);if(Math.abs(dx)>60)e.face=dx<0?-1:1;if(e.mt<=0){e.mode="lunge";e.mt=.75;e.lx=dx/dist;e.ly=dy/dist;snd(110,.4,"sawtooth",.2,60)}}
@@ -288,7 +288,7 @@ function megaAI(e,dt,W){
   var fl=SEABED-HF(e.x)-e.r*.45;if(e.y>fl)e.y=fl;if(e.y<SEABED-3600)e.y=SEABED-3600;
   if(state!=="playing")return;
   var mx=e.x+e.face*e.r*1.0,my=e.y+e.r*.1;
-  if(Math.hypot(mx-P.x,my-P.y)<e.r*.3+W*.3)hurt(e,e.mode==="lunge"?30:14);
+  if(Math.hypot(mx-P.x,my-P.y)<e.r*.3+W*.3){var wi=invul>0;hurt(e,e.mode==="lunge"?30:14);if(!wi){e.biteT=.5;snd(140,.15,"square",.2,60)}}
   var cdist=Math.hypot(e.x-P.mx,e.y-P.my);
   if(e.pcool<=0&&cdist<e.r*.8&&Math.hypot(mx-P.mx,my-P.my)>e.r*.22){
     var dm=Math.round(5+(lv-1)*1.5);e.hp-=dm;e.pcool=.5;e.flash=.22;burst(P.mx,P.my,"#ff4a4a",14,300);float(P.mx,P.my-60,"-"+dm,"#ffe45e");snd(220,.12,"square",.18,120);eatT=.28;
@@ -789,7 +789,7 @@ function drawSpaceFish(e,r,face){
 function drawMega(e){
   var s=worldToScreen(e.x,e.y),r=e.r*cam.z;if(s.x<-r*2.2||s.x>CW+r*2.2||s.y<-r*2||s.y>CH+r*2)return;
   ctx.save();ctx.translate(s.x,s.y);ctx.scale(e.face||-1,1);
-  var open=e.mode==="lunge"?1:(e.mode==="wind"?.55:.18+.06*Math.sin(e.t*2)),sw=Math.sin(e.t*2.2)*r*.12,fl=e.flash>0;
+  var open=e.biteT>0?.5+.5*Math.cos(e.biteT/.5*Math.PI*4):e.mode==="lunge"?1:(e.mode==="wind"?.55:.18+.06*Math.sin(e.t*2)),sw=Math.sin(e.t*2.2)*r*.12,fl=e.flash>0;
   var bg=ctx.createLinearGradient(0,-r*.4,0,r*.4);bg.addColorStop(0,fl?"#ffffff":"#4b5662");bg.addColorStop(.55,fl?"#ffffff":"#7a8794");bg.addColorStop(.56,fl?"#ffffff":"#dfe5ea");bg.addColorStop(1,fl?"#ffffff":"#f4f7f9");
   // tail
   ctx.fillStyle=fl?"#fff":"#4b5662";ctx.beginPath();ctx.moveTo(-r*.85,0);ctx.lineTo(-r*1.3,-r*.55+sw);ctx.lineTo(-r*1.18,sw*.3);ctx.lineTo(-r*1.05,r*.34+sw);ctx.closePath();ctx.fill();
