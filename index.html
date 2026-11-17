@@ -511,7 +511,7 @@ function update(dt){
   if(ZS!=="town"&&wasIn&&P.y<0){burst(P.x,0,"#ffffff",14,220);snd(300,.2,"sine",.1,600)}
   if(Math.hypot(P.vx,P.vy)>20){var th=Math.atan2(P.vy,P.vx);var dd=th-P.h;while(dd>Math.PI)dd-=6.283;while(dd<-Math.PI)dd+=6.283;P.h+=dd*Math.min(1,dt*7)}
   var fc=Math.cos(P.h)>=0?1:-1;
-  var md=W*0.40;
+  var md=who==="A"?W*.1:W*0.40;
   P.mx=P.x+Math.cos(P.h)*md;P.my=P.y+Math.sin(P.h)*md;
   var spd0=Math.hypot(P.vx,P.vy);P.ph+=dt*(4+spd0/50+(boosting?5:0));P.sp0=spd0;
   if(state==="playing"){
@@ -689,7 +689,7 @@ function drawChar(w,sx,sy,W,h,ph,amp,mouth,alpha,extra){
   var fc=Math.cos(h)>=0?1:-1,ang=fc===1?h:h-Math.PI;
   while(ang>Math.PI)ang-=6.283;while(ang<-Math.PI)ang+=6.283;
   ang=Math.max(-0.95,Math.min(0.95,ang));
-  ctx.save();ctx.translate(sx,sy);ctx.rotate(ang);if(fc===1)ctx.scale(-1,1);
+  ctx.save();ctx.translate(sx,sy);ctx.rotate(ang);if((fc===1)!==(w==="A"))ctx.scale(-1,1);
   if(extra)extra();
   var N=22,sw=A.naturalWidth/N,dw=ww/N,i,u,off;
   ctx.globalAlpha=alpha;
