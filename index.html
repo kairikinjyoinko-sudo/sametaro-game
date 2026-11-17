@@ -130,7 +130,7 @@ body.homeon .app{visibility:hidden}
     <h1>はらぺこ<br>サメ太郎</h1>
     <div class="hcols">
       <div class="hero"><img id="heroimg" alt=""><div id="heroname"></div><div class="small" id="herostat"></div>
-        <div class="petbox"><div class="pethd">🐾 ペット（おすと ついてくるよ）</div><div class="picks" id="petpicks"><button class="ppick" data-p="M"><img alt=""><b>ミニマーダイ</b></button><button class="ppick" data-p="S"><img alt=""><b>ミニサメ太郎</b></button><button class="ppick" data-p="G"><img alt=""><b>ミニブロきち</b></button></div></div></div>
+        <div class="petbox"><div class="pethd">🐾 ペット（おすと ついてくるよ）</div><div class="picks" id="petpicks"><button class="ppick" data-p="M"><img alt=""><b>ミニマーダイ</b><small></small></button><button class="ppick" data-p="S"><img alt=""><b>ミニサメ太郎</b><small></small></button><button class="ppick" data-p="G"><img alt=""><b>ミニブロきち</b><small></small></button></div></div></div>
       <div class="hside">
         <div class="picks" id="picks">
           <button class="pick" data-w="G"><img alt=""><b>ブロきち</b><small>3mまで</small></button>
@@ -195,7 +195,7 @@ var SPR={S:[mkImg("iVBORw0KGgoAAAANSUhEUgAAAWgAAADSCAYAAABnw1pyAACX2UlEQVR42uy9d
 var CHR={J:{note:"5mまで・でっかい",name:"カジキマグロ",sp:1.1,dec:1.1,eatr:1,dmg:1,sc:1},N:{note:"4mまで・はやい",name:"マグロ",sp:1.25,dec:1.1,eatr:.95,dmg:1,sc:.95},S:{note:"5mまで",name:"サメ太郎",sp:1,dec:1,eatr:1,dmg:1,sc:1},M:{note:"4mまで・はやい",name:"マーダイ",sp:1.18,dec:1.05,eatr:.95,dmg:1,sc:.9},G:{note:"3mまで",name:"ブロきち",sp:.85,dec:.7,eatr:1.3,dmg:.7,sc:1.1},H:{note:"2mまで",name:"ヒラメ",sp:.8,dec:.6,eatr:1.15,dmg:.6,sc:1},T:{note:"3.5mまで・はやい",name:"タマン",sp:1.1,dec:.9,eatr:1,dmg:.85,sc:.95},g:{note:"3mまで",name:"ハロウィンブロきち",sp:.85,dec:.7,eatr:1.3,dmg:.7,sc:1.1},m:{note:"4mまで・はやい",name:"ハロウィンマーダイ",sp:1.18,dec:1.05,eatr:.95,dmg:1,sc:.9},s:{note:"5mまで",name:"ハロウィンサメ太郎",sp:1,dec:1,eatr:1,dmg:1,sc:1},K:{note:"2.5mまで・すばやい",name:"キンギョ",sp:1.12,dec:.9,eatr:1.1,dmg:.9,sc:1},R:{note:"8mまで・まち",name:"ロボキンギョ",sp:.95,dec:.5,eatr:1,dmg:.5,sc:1}};
 var BASE={g:"G",m:"M",s:"S"};function wb(){return BASE[who]||who}
 var who="G";
-var SEABED=2600,SEABEDT=2600,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
+var SBD=4800,CAVEB=6300,SEABED=4800,SEABEDT=4800,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
 var PAL={sea:{ridge:"rgba(18,48,72,.7)",g0:"#2d5873",g1:"#0e2236",hi:"rgba(140,200,230,.35)",rock:"#2c4256"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(40,26,66,.85)",g0:"#3d2f58",g1:"#120c20",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"}};
 var SBZ={sea:2600,coral:2600,cave:2300,beach:1100,ice:2600,volcano:2600,ruins:2600};
 var inCave=false,zoneCD=0,spaceSeen=false,spaceMsgT=0;function spaceT(){return ZS==="town"?Math.max(0,Math.min(1,(400-cam.y)/2800)):0}
@@ -203,29 +203,48 @@ function mixc(a,b,t){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16),r=f
 function HF(x){if(ZS==="town"||who==="R")return 0;return Math.sin(x*.0034)*70+Math.sin(x*.0087+1)*40+Math.sin(x*.013)*18}
 function seabedAt(x){
   if(who==="R")return 1500;
-  if(SV.stage==="sea"){if(inCave)return 2300;if(x>=-1500)return 2600;return 2600-2100*Math.min(1,(-1500-x)/4500)}
+  if(SV.stage==="sea"){if(who==="R")return 2600;if(inCave)return CAVEB;if(x>=-1500)return SBD;return SBD-(SBD-500)*Math.min(1,(-1500-x)/6000)}
   if(SV.stage==="beach")return 1600-1100*Math.max(0,Math.min(1,(x+3200)/6400));
   if(SV.stage==="cave")return 2300;
   return 2600}
-var ZB=[3800,7000,10200,13400],ZN=["sea","ice","volcano","ruins","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
+var ZB=[3800,7800,11800,15800],ZN=["sea","ice","volcano","ruins","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
 function zoneAt(x){if(x<-3300)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
 function applyStage(snap){
   var px=(P&&P.x)||0;ZS=SV.stage;if(who==="R")ZS="town";
   if(SV.stage==="sea"){ZS=inCave?"cave":zoneAt(px)}
   SEABEDT=seabedAt(px);if(snap!==false)SEABED=SEABEDT;
-  if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inCave){BL=-3200;BR=3200}else{BL=-6400;BR=16600}}else{BL=-1e9;BR=1e9}
+  if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inCave){BL=-6600;BR=6600}else{BL=-9600;BR=19800}}else{BL=-1e9;BR=1e9}
   if(who==="R"){BL=-5000;BR=5000}}
-function allowed(k){var K=KINDS[k];if(K.sp)return ZS==="town"&&!!P&&P.y<-800;if(K.ho&&who!=="H"&&ZS!=="beach")return false;if(K.so&&ZS!=="sea")return false;if(K.st&&K.st!==ZS)return false;if(K.y0>SEABEDT-250)return false;if(ZS==="town"&&!K.st)return false;if(ZS==="cave"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if((ZS==="ice"||ZS==="volcano"||ZS==="ruins")&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if(who==="H"&&HBAN[k])return false;return true}
+var MZ=[],MZC=1100,MZT=150,MZX0=-6600,MZY0=700,MZCOLS=12,MZROWS=5;
+(function(){var seed=7;function rn(){seed=(seed*16807)%2147483647;return seed/2147483647}
+  var vis=[],R=[],D=[],c,r;for(r=0;r<MZROWS;r++){vis[r]=[];R[r]=[];D[r]=[];for(c=0;c<MZCOLS;c++){vis[r][c]=0;R[r][c]=1;D[r][c]=1}}
+  var st=[[MZROWS-1,0]];vis[MZROWS-1][0]=1;
+  while(st.length){var cur=st[st.length-1],nb=[];r=cur[0];c=cur[1];
+    if(r>0&&!vis[r-1][c])nb.push([r-1,c,"U"]);if(r<MZROWS-1&&!vis[r+1][c])nb.push([r+1,c,"D"]);if(c>0&&!vis[r][c-1])nb.push([r,c-1,"L"]);if(c<MZCOLS-1&&!vis[r][c+1])nb.push([r,c+1,"R"]);
+    if(!nb.length){st.pop();continue}
+    var n=nb[Math.floor(rn()*nb.length)];
+    if(n[2]==="U")D[n[0]][n[1]]=0;else if(n[2]==="D")D[r][c]=0;else if(n[2]==="L")R[n[0]][n[1]]=0;else R[r][c]=0;
+    vis[n[0]][n[1]]=1;st.push([n[0],n[1]])}
+  // extra loops so it is less of a pure tree
+  for(var ex=0;ex<10;ex++){var rr=Math.floor(rn()*(MZROWS-1)),cc=Math.floor(rn()*(MZCOLS-1));if(rn()<.5)R[rr][cc]=0;else D[rr][cc]=0}
+  var h=MZT/2;
+  for(r=0;r<MZROWS;r++)for(c=0;c<MZCOLS-1;c++)if(R[r][c]){var x=MZX0+(c+1)*MZC;MZ.push({x0:x-h,x1:x+h,y0:MZY0+r*MZC-h,y1:MZY0+(r+1)*MZC+h})}
+  for(r=0;r<MZROWS-1;r++)for(c=0;c<MZCOLS;c++)if(D[r][c]){var y=MZY0+(r+1)*MZC;MZ.push({x0:MZX0+c*MZC-h,x1:MZX0+(c+1)*MZC+h,y0:y-h,y1:y+h})}
+  MZ.push({x0:MZX0-400,x1:MZX0+MZCOLS*MZC+400,y0:MZY0-h-1400,y1:MZY0+h*0});
+})();
+function wallHit(x,y,rad){for(var i=0;i<MZ.length;i++){var m=MZ[i];if(x>m.x0-rad&&x<m.x1+rad&&y>m.y0-rad&&y<m.y1+rad){var cx=Math.max(m.x0,Math.min(x,m.x1)),cy=Math.max(m.y0,Math.min(y,m.y1));if((x-cx)*(x-cx)+(y-cy)*(y-cy)<rad*rad)return m}}return null}
+function DYf(){return ZS==="town"?1:Math.max(.5,SEABEDT/2600)}
+function allowed(k){var K=KINDS[k];if(K.sp)return ZS==="town"&&!!P&&P.y<-800;if(K.ho&&who!=="H"&&ZS!=="beach")return false;if(K.so&&ZS!=="sea")return false;if(K.st&&K.st!==ZS)return false;if(K.y0*DYf()>SEABEDT-250)return false;if(ZS==="town"&&!K.st)return false;if(ZS==="cave"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if((ZS==="ice"||ZS==="volcano"||ZS==="ruins")&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if(who==="H"&&HBAN[k])return false;return true}
 function teleportZone(x,y,txt){zoneCD=2;inCave=!inCave;applyStage(true);P.x=x;P.y=y;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;fadeT=.8;banner(txt);decoys=[];
   ents=[];for(var zi=0;zi<14;zi++)fill(true)}
 function zoneCheck(){
   if(SV.stage!=="sea"||who==="R")return;if(zoneCD>0){zoneCD-=1/60}
   if(!inCave){
-    if(zoneCD<=0&&P.x>3040&&P.x<3360&&P.y>SEABED-HF(P.x)-320){teleportZone(-2850,1900,"どうくつに はいったよ！");return}
+    if(zoneCD<=0&&P.x>3040&&P.x<3360&&P.y>SEABED-HF(P.x)-320){teleportZone(-6050,5650,"どうくつに はいったよ！ めいろだよ");return}
     var nz=zoneAt(P.x);
     if(nz!==ZS){ZS=nz;if(time>zbT){zbT=time+3;banner(ZMSG[ZS])}fadeT=.35;for(var zi=0;zi<10;zi++)fill(false)}
   }else{
-    if(zoneCD<=0&&P.x<-2740&&P.x>-3060&&P.y>SEABED-HF(P.x)-320){teleportZone(3200,1900,"うみに もどったよ！");return}
+    if(zoneCD<=0&&P.x>5800&&P.x<6150&&P.y>SEABED-HF(P.x)-340){teleportZone(3200,1900,"うみに もどったよ！");return}
   }
   SEABEDT=seabedAt(P.x);
 }
@@ -295,8 +314,8 @@ var inst={t:0,cd:0},decoys=[],nEat=0,NEED=100;
 var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eatT,shakeT,levelT,best=0,muted=false;
 var cam={x:0,y:300,z:1};
 var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
-var SV={stage:"sea",pet:"",coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
-try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
+var SV={stage:"sea",pet:"",petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
+try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;if(SV.pet&&!(_o.petOwn&&_o.petOwn[SV.pet]))SV.pet="";if(_o.petOwn)for(var _pk in SV.petOwn)SV.petOwn[_pk]=_o.petOwn[_pk]?1:0;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
 best=SV.best;who=SV.sel;
@@ -326,13 +345,14 @@ function spawn(k,anywhere){
   else if(d.crab){e.y=SEABED-HF(e.x)-d.r*0.75}
   else if(d.town){e.y=SEABED-HF(e.x)-d.r*(d.by||1)+8}
   else if(d.sp){e.y=Math.min(-1150,P.y+rnd(-900,900))}
-  else e.y=rnd(d.y0,Math.min(d.y1,SEABED-HF(e.x)-120));
+  else e.y=rnd(d.y0*DYf(),Math.min(d.y1*DYf(),SEABED-HF(e.x)-120));
   if(anywhere&&(d.danger||d.bite)&&Math.hypot(e.x-P.x,e.y-P.y)<800){e.x=P.x+(e.x<P.x?-1:1)*rnd(900,1500)}
   if(k==="friend"){var ks=["S","M","G","H","T","g","m","s","K","R"].filter(function(c){return c!==who&&!(who==="H"&&c==="S")});var used={};for(var q=0;q<ents.length;q++)if(ents[q].k==="friend")used[ents[q].who]=1;e.who=ks[0];for(var z=0;z<ks.length;z++)if(!used[ks[z]]){e.who=ks[z];break}e.cool=0;e.ph=rnd(0,6);e.h=e.dir>0?0:Math.PI}
+  if(inCave){for(var ct=0;ct<40;ct++){e.x=P.x+rnd(-3200,3200);e.y=rnd(MZY0+200,MZY0+MZROWS*MZC-200);e.x=Math.max(BL+300,Math.min(BR-300,e.x));if(!wallHit(e.x,e.y,e.r*.6+40)&&Math.hypot(e.x-P.x,e.y-P.y)>(anywhere?500:1000))break}}
   e.by=e.y;e.vx=e.dir*d.spd;
   ents.push(e);
 }
-var pet={x:0,y:0,vx:0,cd:2,ph:0,face:1};
+var PCP={G:1000,M:1500,S:2000};var pet={x:0,y:0,vx:0,cd:2,ph:0,face:1};
 var HBAN={maguro:1,kajiki:1,urchin:1,jelly:1,tuna:1,big:1,giant:1,hirame:1};
 var DENS=.25;
 function fill(any){
@@ -443,6 +463,7 @@ function update(dt){
   }
   var wasIn=P.y>=0||ZS==="town";
   P.x+=P.vx*dt;P.y+=P.vy*dt;
+  if(inCave){var prr=Math.max(40,PW()*.15);for(var mi=0;mi<4;mi++){var wm=wallHit(P.x,P.y,prr);if(!wm)break;var cx_=Math.max(wm.x0,Math.min(P.x,wm.x1)),cy_=Math.max(wm.y0,Math.min(P.y,wm.y1)),dx_=P.x-cx_,dy_=P.y-cy_,dd=Math.hypot(dx_,dy_);if(dd<.001){dx_=0;dy_=-1;dd=1}var pu=prr-dd+1;P.x+=dx_/dd*pu;P.y+=dy_/dd*pu;var vn=P.vx*dx_/dd+P.vy*dy_/dd;if(vn<0){P.vx-=vn*dx_/dd;P.vy-=vn*dy_/dd}}}
   if(BR<1e8){var pb=BR-W*.5,pl=BL+W*.5;if(P.x>pb){P.x=pb;if(P.vx>0)P.vx=0}else if(P.x<pl){P.x=pl;if(P.vx<0)P.vx=0}}
   if(SV.pet){var tx=P.x-Math.cos(P.h)*PW()*.9,ty=P.y-PW()*.5+Math.sin(time*2)*14;pet.vx=tx-pet.x;pet.x+=(tx-pet.x)*Math.min(1,dt*2.6);pet.y+=(ty-pet.y)*Math.min(1,dt*2.6);if(Math.abs(pet.vx)>4)pet.face=pet.vx>0?1:-1;pet.ph+=dt*8;pet.cd-=dt;if(Math.hypot(pet.x-P.x,pet.y-P.y)>2500){pet.x=P.x;pet.y=P.y}}
   zoneCheck();SEABED+=(SEABEDT-SEABED)*Math.min(1,dt*2.2);if(((time*10)|0)%7===0)ents=ents.filter(function(e){return e.k==="friend"||allowed(e.k)||Math.abs(e.x-P.x)<1000});fadeT=Math.max(0,fadeT-dt);
@@ -501,7 +522,7 @@ function update(dt){
       else if(flee&&d.lv<=lv){var l2=dist||1;e.vx+=(dx/l2*d.spd*1.6-e.vx)*dt*3;e.vy+=(dy/l2*d.spd*1.2-e.vy)*dt*3}
       else{e.vx+=(e.dir*d.spd-e.vx)*dt;e.vy+=((e.by-e.y)*0.3+Math.sin(e.t*2+i)*30-e.vy)*dt}
       e.x+=e.vx*dt;e.y+=e.vy*dt;
-      if(e.k==="hirame")e.y=SEABED-HF(e.x)-d.r*0.7;if(e.k!=="bird"&&!d.sp){var top=e.r+8;if(e.y<top)e.y=top;if(e.y>SEABED-HF(e.x)-e.r)e.y=SEABED-HF(e.x)-e.r}
+      if(e.k==="hirame")e.y=SEABED-HF(e.x)-d.r*0.7;if(inCave&&e.k!=="friend"){if(wallHit(e.x,e.y,e.r*.55)){if(e.gx!=null){e.x=e.gx;e.y=e.gy}e.dir=-e.dir;e.vx=-e.vx;e.vy=-e.vy;e.face=e.dir}else{e.gx=e.x;e.gy=e.y}}if(e.k!=="bird"&&!d.sp){var top=e.r+8;if(e.y<top)e.y=top;if(e.y>SEABED-HF(e.x)-e.r)e.y=SEABED-HF(e.x)-e.r}
       if(Math.abs(e.vx)>8)e.face=e.vx<0?-1:1;
     }
     if(Math.abs(e.x-P.x)>2500||(d.sp&&Math.abs(e.y-P.y)>2200)){e.dead=true;continue}
@@ -587,7 +608,7 @@ function renderHome(){
     b.classList.toggle("on",own&&SV.sel===k);b.classList.toggle("lock",!own);
     var sm=b.querySelector("small");sm.textContent=own?("レベル"+(SV.prog[k].lv-1)+"・"+CHR[k].note):"🔒 "+CP[k]+"🪙";
   });
-  Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){b.classList.toggle("on",b.getAttribute("data-p")===SV.pet)});
+  Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var pk=b.getAttribute("data-p");b.classList.toggle("on",pk===SV.pet);b.querySelector("small").textContent=SV.petOwn[pk]?"もってる":"🔒 "+PCP[pk]+"🪙"});
   Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.classList.toggle("on",b.getAttribute("data-s")===SV.stage)});
   var ups=document.getElementById("ups");ups.innerHTML="";
   ["spd","food","dash"].forEach(function(u){
@@ -1038,7 +1059,7 @@ function draw(){
   ctx.fillStyle="rgba(10,40,80,.18)";
   if(ZS!=="town")for(var f=0;f<8;f++){var fx=((f*290+time*(18+f*4)-cam.x*0.3*cam.z)%(CW+300)+CW+300)%(CW+300)-150;var fy=surf+(300+f*260)*cam.z*0.7-cam.y*0.0;ctx.beginPath();ctx.ellipse(fx,fy,30,12,0,0,6.283);ctx.fill();ctx.beginPath();ctx.moveTo(fx-26,fy);ctx.lineTo(fx-48,fy-12);ctx.lineTo(fx-48,fy+12);ctx.fill()}
   if(SV.stage==="sea"){
-    var hxw=inCave?-2900:3200,hx=CW/2+(hxw-cam.x)*cam.z;
+    var hxw=inCave?5975:3200,hx=CW/2+(hxw-cam.x)*cam.z;
     if(hx>-400&&hx<CW+400){var hy=sb-(HF(hxw))*cam.z+6*cam.z,hw=170*cam.z,hh3=62*cam.z;
       ctx.font="900 "+Math.round(26*cam.z)+"px Hiragino Maru Gothic ProN, Yu Gothic, sans-serif";ctx.textAlign="center";ctx.lineWidth=5;ctx.strokeStyle="rgba(0,0,0,.6)";
       if(!inCave){ctx.fillStyle="#3a3046";ctx.beginPath();ctx.ellipse(hx,hy,hw*1.25,hh3*1.4,0,0,6.283);ctx.fill();var hg=ctx.createRadialGradient(hx,hy,5,hx,hy,hw);hg.addColorStop(0,"#000");hg.addColorStop(.7,"#0b0716");hg.addColorStop(1,"#241a38");ctx.fillStyle=hg;ctx.beginPath();ctx.ellipse(hx,hy,hw,hh3,0,0,6.283);ctx.fill();ctx.fillStyle="rgba(190,150,255,.35)";for(var sk=0;sk<5;sk++){ctx.beginPath();ctx.arc(hx+(sk-2)*hw*.4,hy-hh3*1.3+Math.sin(time*2+sk)*4*cam.z,3*cam.z,0,6.283);ctx.fill()}
@@ -1051,11 +1072,21 @@ function draw(){
     var drawWall=function(x0,x1,right,kind){if(x1<0||x0>CW)return;var near=right?x0:x1,far=right?x1:x0;var wg=ctx.createLinearGradient(near,0,far,0);
       if(kind==="town"){wg.addColorStop(0,"#5a6070");wg.addColorStop(1,"#252932")}else if(kind==="sand"){wg.addColorStop(0,"#e9d19a");wg.addColorStop(1,"#f6e6b8")}else if(kind==="cliff"){wg.addColorStop(0,"#6f6252");wg.addColorStop(1,"#3d352c")}else if(kind==="ice"){wg.addColorStop(0,"#bfe6f5");wg.addColorStop(1,"#4f86ad")}else if(kind==="volcano"){wg.addColorStop(0,"#5a2a22");wg.addColorStop(1,"#1a0a0a")}else if(kind==="ruins"){wg.addColorStop(0,"#7fa592");wg.addColorStop(1,"#2d4f45")}else{wg.addColorStop(0,"#4a3a68");wg.addColorStop(1,"#150f25")}
       ctx.fillStyle=wg;var topY=kind==="sand"?surf-40*cam.z:-10;ctx.beginPath();ctx.moveTo(x0,topY);ctx.lineTo(x1,topY);ctx.lineTo(x1,CH+10);ctx.lineTo(x0,CH+10);ctx.closePath();ctx.fill();
+      if(kind!=="sand"&&kind!=="town"){ctx.save();ctx.beginPath();ctx.rect(Math.min(x0,x1),0,Math.abs(x1-x0),CH);ctx.clip();var bw2=190*cam.z,bh2=105*cam.z,wy0=CH/2-cam.y*cam.z,r0=Math.floor((0-wy0)/bh2)-1;
+        ctx.lineWidth=Math.max(2,6*cam.z);for(var rr2=r0;wy0+rr2*bh2<CH+bh2;rr2++){var yy2=wy0+rr2*bh2,off2=(((rr2%2)+2)%2)*bw2/2;ctx.strokeStyle="rgba(0,0,0,.38)";ctx.beginPath();ctx.moveTo(Math.min(x0,x1),yy2);ctx.lineTo(Math.max(x0,x1),yy2);for(var bx2=near+(right?1:-1)*off2;right?bx2<far:bx2>far;bx2+=(right?1:-1)*bw2){ctx.moveTo(bx2,yy2);ctx.lineTo(bx2,yy2+bh2)}ctx.stroke();
+          ctx.strokeStyle="rgba(255,255,255,.09)";ctx.beginPath();ctx.moveTo(Math.min(x0,x1),yy2+3*cam.z);ctx.lineTo(Math.max(x0,x1),yy2+3*cam.z);ctx.stroke()}
+        ctx.restore()}
       ctx.strokeStyle=kind==="cave"?"rgba(190,150,255,.45)":(kind==="sand"?"rgba(255,255,255,.5)":"rgba(255,255,255,.2)");ctx.lineWidth=4*cam.z;ctx.beginPath();for(var wy=topY;wy<CH+40;wy+=48){var jx=near+(right?1:-1)*(Math.sin(wy*.05)*10)*cam.z;if(wy===topY)ctx.moveTo(jx,wy);else ctx.lineTo(jx,wy)}ctx.stroke();
       if(kind==="sand")drawPalm(near+(right?80:-80)*cam.z,surf-40*cam.z,cam.z*1.3)};
     var wk=({ice:1,volcano:1,ruins:1})[SV.stage]?SV.stage:null,lk=who==="R"?"town":wk?wk:SV.stage==="beach"?"cliff":(SV.stage==="sea"&&!inCave?"sand":"cave"),rk2=who==="R"?"town":wk?wk:SV.stage==="beach"?"sand":(SV.stage==="sea"&&!inCave?"cliff":"cave");
     drawWall(wxr,CW+400,true,rk2);drawWall(wxl-400,wxl,false,lk);
   }
+  if(inCave){ctx.save();var mz0=CW/2-cam.x*cam.z,mz1=CH/2-cam.y*cam.z;
+    for(var mq=0;mq<MZ.length;mq++){var mm=MZ[mq],ax=mz0+mm.x0*cam.z,ay=mz1+mm.y0*cam.z,aw=(mm.x1-mm.x0)*cam.z,ah=(mm.y1-mm.y0)*cam.z;if(ax>CW||ay>CH||ax+aw<0||ay+ah<0)continue;
+      var sg=ctx.createLinearGradient(ax,ay,ax+aw,ay+ah);sg.addColorStop(0,"#6a6478");sg.addColorStop(1,"#3a3548");ctx.fillStyle=sg;ctx.fillRect(ax,ay,aw,ah);
+      ctx.strokeStyle="rgba(0,0,0,.4)";ctx.lineWidth=Math.max(2,5*cam.z);ctx.beginPath();var big=aw>ah,len=big?aw:ah,step=150*cam.z;for(var bs2=step;bs2<len;bs2+=step){if(big){ctx.moveTo(ax+bs2,ay);ctx.lineTo(ax+bs2,ay+ah)}else{ctx.moveTo(ax,ay+bs2);ctx.lineTo(ax+aw,ay+bs2)}}ctx.rect(ax,ay,aw,ah);ctx.stroke();
+      ctx.strokeStyle="rgba(255,255,255,.14)";ctx.lineWidth=Math.max(1,3*cam.z);ctx.strokeRect(ax+2*cam.z,ay+2*cam.z,aw-4*cam.z,ah-4*cam.z)}
+    ctx.restore()}
   // entities
   for(var i=0;i<ents.length;i++)drawFish(ents[i]);
   // player
@@ -1085,6 +1116,7 @@ function draw(){
   if(ZS==="cave"){var lg3=ctx.createRadialGradient(ps.x,ps.y,40,ps.x,ps.y,Math.max(CW,CH)*.62);lg3.addColorStop(0,"rgba(0,0,12,0)");lg3.addColorStop(.5,"rgba(0,0,12,.3)");lg3.addColorStop(1,"rgba(0,0,12,.74)");ctx.fillStyle=lg3;ctx.fillRect(0,0,CW,CH)}
   var vg=ctx.createRadialGradient(CW/2,CH/2,Math.min(CW,CH)*.45,CW/2,CH/2,Math.max(CW,CH)*.78);vg.addColorStop(0,"rgba(0,20,50,0)");vg.addColorStop(1,"rgba(0,20,50,.28)");ctx.fillStyle=vg;ctx.fillRect(0,0,CW,CH);
   if(fadeT>0){ctx.fillStyle="rgba(0,0,0,"+Math.min(.6,fadeT*.9)+")";ctx.fillRect(0,0,CW,CH)}
+  if(state!=="title"&&ZS!=="town"&&P){var dk=Math.max(0,Math.min(1,(cam.y-500)/Math.max(1500,SEABED-900)))*.86;if(dk>.01){var pp3=worldToScreen(P.x,P.y),dg=ctx.createRadialGradient(pp3.x,pp3.y,CH*.1,pp3.x,pp3.y,CH*.85);dg.addColorStop(0,"rgba(0,3,12,"+(dk*.3)+")");dg.addColorStop(1,"rgba(0,3,12,"+dk+")");ctx.fillStyle=dg;ctx.fillRect(0,0,CW,CH)}}
   // hud
   var ib=document.getElementById("inst");ib.hidden=!(state==="playing"&&BASE[who]);
   if(!ib.hidden){var act=inst.t>0,rdy=nEat>=NEED;ib.disabled=act||!rdy;ib.classList.toggle("act",act);ib.classList.toggle("rdy",rdy&&!act);ib.innerHTML=act?"つかってる<small>あと "+Math.ceil(inst.t)+"</small>":(rdy?"本能<small>Eキー</small>":"本能<small>"+nEat+"/"+NEED+"</small>")}
@@ -1201,7 +1233,7 @@ function makeFishSprite(k,rr,mo){
   var im=new Image();im.src=fc.toDataURL("image/png");return im;
 }
 (function(){SPR.J=[makeFishSprite("kajiki",100,0),makeFishSprite("kajiki",100,1)];SPR.N=[makeFishSprite("maguro",100,0),makeFishSprite("maguro",100,1)]})();
-Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){SV.pet=SV.pet===k?"":k;save();petLabel();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
+Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){if(!SV.petOwn[k]){if(SV.coins>=PCP[k]){SV.coins-=PCP[k];SV.petOwn[k]=1;SV.pet=k;save();petLabel();renderHome();msg("ペットを かったよ！");return}msg("コインが たりないよ");return}SV.pet=SV.pet===k?"":k;save();petLabel();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
 Array.prototype.forEach.call(document.querySelectorAll(".pick"),function(b){var k=b.getAttribute("data-w");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){pickChar(k)})});
 Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.addEventListener("click",function(){SV.stage=b.getAttribute("data-s");save();who=SV.sel;reset();renderHome();msg({coral:"さんごの うみに いくよ！ ルリスズメと チョウチョウウオが いるよ。",cave:"どうくつに いくよ！ くらいから きをつけてね。チョウチンアンコウが いるよ。",beach:"うみべに いくよ！ あさいから カニが いっぱい いるよ。",ice:"こおりの うみに いくよ！ ペンギンウオや オーロラダイが いるよ。",volcano:"かざんの うみに いくよ！ マグマで ひかる さかなが いるよ。",ruins:"いせきの うみに いくよ！ ひかる コガネウオや ステンドウオが いるよ。",sea:"ふつうの うみに もどったよ。"}[SV.stage])})});
 document.getElementById("homeBtn").addEventListener("click",goHome);
@@ -1216,7 +1248,7 @@ document.getElementById("again").addEventListener("click",start);
 document.getElementById("mute").addEventListener("click",function(){muted=!muted;this.textContent=muted?"🔇":"🔊"});
 var PETN={"":"🐾 なし",M:"🐾 ミニマーダイ",S:"🐾 ミニサメ太郎",G:"🐾 ミニブロきち"};
 function petLabel(){var b=document.getElementById("petbtn");if(b)b.textContent=PETN[SV.pet||""]}
-function petNext(){var o=["","M","S","G"];SV.pet=o[(o.indexOf(SV.pet||"")+1)%4];save();if(P){pet.x=P.x-120;pet.y=P.y}petLabel();if(SV.pet)banner("ミニの ペットが ついてくるよ！")}
+function petNext(){var o=["","M","S","G"].filter(function(c){return !c||SV.petOwn[c]});SV.pet=o[(o.indexOf(SV.pet||"")+1)%o.length];save();if(P){pet.x=P.x-120;pet.y=P.y}petLabel();if(SV.pet)banner("ミニの ペットが ついてくるよ！")}
 document.getElementById("petbtn").addEventListener("click",function(){petNext();this.blur()});
 petLabel();
 window.addEventListener("keydown",function(e){keys[e.code]=true;if(e.code==="KeyE")useInst();if(e.code==="Space"||e.code.indexOf("Arrow")===0)e.preventDefault();if((e.key==="p"||e.key==="P"||e.key==="Escape")&&(state==="playing"||state==="paused"))togglePause();if(state==="title"&&"1234567890".indexOf(e.key)>=0&&e.key.length===1){pickChar(["G","M","S","H","T","g","m","s","K","R"]["1234567890".indexOf(e.key)])}if(e.key==="Enter"&&state==="paused")togglePause();if(e.key==="Enter"&&(state==="title"||state==="over")){start()}});
