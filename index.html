@@ -1312,17 +1312,18 @@ function makeUbaSprite(open){
   o.save();o.translate(0,50);
   o.fillStyle="#3d3529";o.beginPath();o.moveTo(690,368);o.bezierCurveTo(630,420,570,450,500,468);o.bezierCurveTo(550,412,586,386,610,370);o.closePath();o.fill();o.strokeStyle="rgba(20,16,10,.6)";o.lineWidth=3;o.stroke();
   o.restore();
-  o.save();o.translate(820,240);o.rotate(-.1);o.scale(.86,.86);
+  o.save();o.translate(808,244);o.rotate(-.1);o.scale(.86,.86);
   var mg=o.createLinearGradient(0,-96,0,96);mg.addColorStop(0,"#071a30");mg.addColorStop(.6,"#1b4163");mg.addColorStop(1,"#6fa3c4");
-  o.fillStyle=mg;o.beginPath();o.ellipse(0,0,60,96,0,0,6.283);o.fill();
-  o.save();o.beginPath();o.ellipse(0,0,56,92,0,0,6.283);o.clip();
-  for(var r=0;r<9;r++){var rx=-46+r*11;o.strokeStyle=r%2?"rgba(215,232,240,.95)":"rgba(10,28,48,.9)";o.lineWidth=5.5;o.beginPath();o.moveTo(rx,-92);o.quadraticCurveTo(rx+6,0,rx,92);o.stroke()}
+  function mp(k){o.beginPath();o.moveTo(-54*k,-94*k);o.bezierCurveTo(34*k,-108*k,84*k,-50*k,80*k,0);o.bezierCurveTo(84*k,50*k,34*k,108*k,-54*k,94*k);o.bezierCurveTo(-26*k,50*k,-26*k,-50*k,-54*k,-94*k);o.closePath()}
+  o.fillStyle=mg;mp(1);o.fill();
+  o.save();mp(.95);o.clip();
+  for(var r=0;r<13;r++){var rx=-34+r*9.5;o.strokeStyle=r%2?"rgba(215,232,240,.95)":"rgba(10,28,48,.9)";o.lineWidth=5.5;o.beginPath();o.moveTo(rx,-104);o.quadraticCurveTo(rx+4,0,rx,104);o.stroke()}
   var vg=o.createRadialGradient(-14,-20,10,0,0,100);vg.addColorStop(0,"rgba(0,0,0,0)");vg.addColorStop(1,"rgba(0,10,25,.45)");o.fillStyle=vg;o.fillRect(-70,-100,140,200);
   o.restore();
-  o.strokeStyle="#e9f2f6";o.lineWidth=9;o.beginPath();o.ellipse(0,0,60,96,0,0,6.283);o.stroke();
-  o.strokeStyle="rgba(20,16,10,.55)";o.lineWidth=2.5;o.beginPath();o.ellipse(0,0,65,101,0,0,6.283);o.stroke();
+  o.strokeStyle="#e9f2f6";o.lineWidth=9;mp(1);o.stroke();
+  o.strokeStyle="rgba(20,16,10,.55)";o.lineWidth=2.5;mp(1.07);o.stroke();
   o.restore();
-  o.fillStyle="#0c0a07";o.beginPath();o.arc(772,152,9,0,6.283);o.fill();o.fillStyle="#fff";o.beginPath();o.arc(775,149,3,0,6.283);o.fill();
+  o.fillStyle="#0c0a07";o.beginPath();o.arc(758,146,9,0,6.283);o.fill();o.fillStyle="#fff";o.beginPath();o.arc(761,143,3,0,6.283);o.fill();
   var id=o.getImageData(0,0,W0,H0).data,x0=W0,x1=0,y0=H0,y1=0;
   for(var yy=0;yy<H0;yy++)for(var xx=0;xx<W0;xx++){if(id[(yy*W0+xx)*4+3]>8){if(xx<x0)x0=xx;if(xx>x1)x1=xx;if(yy<y0)y0=yy;if(yy>y1)y1=yy}}
   var bw=x1-x0+1,bh=y1-y0+1,fc=document.createElement("canvas");fc.width=bw;fc.height=bh;var f=fc.getContext("2d");
