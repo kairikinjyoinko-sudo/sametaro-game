@@ -270,6 +270,7 @@ function mzAdd(x,y,r){var c={x:x,y:y,r:r};MZ.push(c);var k=Math.floor(x/400)+","
 function wallHit(x,y,rad){var bx=Math.floor(x/400),by=Math.floor(y/400);for(var a=bx-1;a<=bx+1;a++)for(var b=by-1;b<=by+1;b++){var L=MZB[a+","+b];if(!L)continue;for(var i=0;i<L.length;i++){var m=L[i],dx=x-m.x,dy=y-m.y,rr=m.r+rad;if(dx*dx+dy*dy<rr*rr)return m}}return null}
 function DYf(){return ZS==="town"?1:Math.max(.5,SEABEDT/2600)}
 function allowed(k){var K=KINDS[k];if(K.boss)return false;if(K.sp)return ZS==="town"&&!!P&&P.y<-800;if(K.ho&&who!=="H"&&ZS!=="beach")return false;if(K.so&&ZS!=="sea")return false;if(K.st&&K.st!==ZS)return false;if(K.y0*DYf()>SEABEDT-250)return false;if(ZS==="town"&&!K.st)return false;if(ZS==="star"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,friend:1}[k])return false;if(ZS==="cave"&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if((ZS==="ice"||ZS==="volcano"||ZS==="ruins")&&!K.st&&!{tiny:1,small:1,gold:1,jelly:1,urchin:1,friend:1}[k])return false;if(who==="H"&&HBAN[k])return false;return true}
+var caveRet=false;
 function teleportZone(x,y,txt){zoneCD=2;inCave=!inCave;applyStage(true);P.x=x;P.y=y;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;fadeT=.8;banner(txt);decoys=[];
   ents=[];for(var zi=0;zi<14;zi++)fill(true)}
 function teleportDeep(on){zoneCD=2;inDeep=on;applyStage(true);ents=[];decoys=[];
@@ -302,11 +303,13 @@ function zoneCheck(){
   if(inDeep){ZS="deep";if(zoneCD<=0&&P.x>2950&&P.y>SEABED-HF(P.x)-340){teleportDeep(false);return}SEABEDT=seabedAt(P.x);return}
   if(!inCave){
     if(zoneCD<=0&&P.x>-1250&&P.x<-950&&P.y>SEABED-HF(P.x)-320){teleportDeep(true);return}
-    if(zoneCD<=0&&P.x>3040&&P.x<3360&&P.y>SEABED-HF(P.x)-320){teleportZone(-5880,5920,"どうくつに はいったよ！ めいろだよ");return}
+    if(zoneCD<=0&&P.x>3040&&P.x<3360&&P.y>SEABED-HF(P.x)-320){teleportZone(-5880,5920,"どうくつに はいったよ！ めいろだよ");caveRet=false;return}
     var nz=zoneAt(P.x);
     if(nz!==ZS){ZS=nz;if(time>zbT){zbT=time+3;banner(ZMSG[ZS])}fadeT=.35;for(var zi=0;zi<10;zi++)fill(false)}
   }else{
+    if(!caveRet&&Math.hypot(P.x+5880,P.y-5920)>600)caveRet=true;
     if(zoneCD<=0&&P.x>5700&&P.x<6060&&P.y>SEABED-HF(P.x)-340){teleportZone(3200,1900,"うみに もどったよ！");return}
+    if(zoneCD<=0&&caveRet&&P.x>-6060&&P.x<-5700&&P.y>SEABED-HF(P.x)-340){teleportZone(3200,1900,"うみに もどったよ！");return}
   }
   SEABEDT=seabedAt(P.x);
 }
@@ -1212,15 +1215,15 @@ function draw(){
       else{var lg6=ctx.createRadialGradient(dxs,dys,5,dxs,dys,dw*1.3);lg6.addColorStop(0,"rgba(180,235,255,.95)");lg6.addColorStop(.6,"rgba(90,190,230,.55)");lg6.addColorStop(1,"rgba(90,190,230,0)");ctx.fillStyle=lg6;ctx.beginPath();ctx.ellipse(dxs,dys,dw*1.3,dh*1.8,0,0,6.283);ctx.fill()}
       ctx.font="900 "+Math.round(26*cam.z)+"px sans-serif";ctx.textAlign="center";ctx.lineWidth=5;ctx.strokeStyle="rgba(0,0,0,.6)";var dtx=inDeep?"うみへ ↑":"ふかみ ↓";ctx.strokeText(dtx,dxs,dys-dh*2.2);ctx.fillStyle="#fff";ctx.fillText(dtx,dxs,dys-dh*2.2)}
   }
-  if(SV.stage==="sea"&&!inDeep){
-    var hxw=inCave?5880:3200,hx=CW/2+(hxw-cam.x)*cam.z;
+  if(SV.stage==="sea"&&!inDeep)(inCave?[5880,-5880]:[3200]).forEach(function(hxw){
+    var hx=CW/2+(hxw-cam.x)*cam.z;
     if(hx>-400&&hx<CW+400){var hy=sb-(HF(hxw))*cam.z+6*cam.z,hw=170*cam.z,hh3=62*cam.z;
       ctx.font="900 "+Math.round(26*cam.z)+"px Hiragino Maru Gothic ProN, Yu Gothic, sans-serif";ctx.textAlign="center";ctx.lineWidth=5;ctx.strokeStyle="rgba(0,0,0,.6)";
       if(!inCave){ctx.fillStyle="#3a3046";ctx.beginPath();ctx.ellipse(hx,hy,hw*1.25,hh3*1.4,0,0,6.283);ctx.fill();var hg=ctx.createRadialGradient(hx,hy,5,hx,hy,hw);hg.addColorStop(0,"#000");hg.addColorStop(.7,"#0b0716");hg.addColorStop(1,"#241a38");ctx.fillStyle=hg;ctx.beginPath();ctx.ellipse(hx,hy,hw,hh3,0,0,6.283);ctx.fill();ctx.fillStyle="rgba(190,150,255,.35)";for(var sk=0;sk<5;sk++){ctx.beginPath();ctx.arc(hx+(sk-2)*hw*.4,hy-hh3*1.3+Math.sin(time*2+sk)*4*cam.z,3*cam.z,0,6.283);ctx.fill()}
         ctx.strokeText("どうくつ ↓",hx,hy-hh3*2.2);ctx.fillStyle="#fff";ctx.fillText("どうくつ ↓",hx,hy-hh3*2.2)}
       else{var lg5=ctx.createRadialGradient(hx,hy,5,hx,hy,hw*1.3);lg5.addColorStop(0,"rgba(180,235,255,.95)");lg5.addColorStop(.6,"rgba(90,190,230,.55)");lg5.addColorStop(1,"rgba(90,190,230,0)");ctx.fillStyle=lg5;ctx.beginPath();ctx.ellipse(hx,hy,hw*1.3,hh3*1.8,0,0,6.283);ctx.fill();
-        ctx.strokeText("でぐち ↓",hx,hy-hh3*2.2);ctx.fillStyle="#fff";ctx.fillText("でぐち ↓",hx,hy-hh3*2.2)}}
-  }
+        var ltx=hxw<0?"うみへ ↑":"でぐち ↓";ctx.strokeText(ltx,hx,hy-hh3*2.2);ctx.fillStyle="#fff";ctx.fillText(ltx,hx,hy-hh3*2.2)}}
+  });
   if(BR<1e8&&inCave){
     var wxr=CW/2+(BR-cam.x)*cam.z,wxl=CW/2+(BL-cam.x)*cam.z;
     var drawWall=function(x0,x1,right,kind){if(x1<0||x0>CW)return;var near=right?x0:x1,far=right?x1:x0;var wg=ctx.createLinearGradient(near,0,far,0);
