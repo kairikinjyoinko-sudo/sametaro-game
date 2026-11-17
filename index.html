@@ -236,7 +236,7 @@ var ZB=[3800,7800,11800,15800],ZN=["sea","ice","volcano","ruins","coral"],ZMSG={
 function zoneAt(x){if(x<-3300)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
 function applyStage(snap){
   var px=(P&&P.x)||0;ZS=SV.stage;if(who==="R")ZS="town";
-  if(SV.stage==="sea"){ZS=inSecret?"star":(inCave?"cave":zoneAt(px))}
+  if(SV.stage==="sea"&&who!=="R"){ZS=inSecret?"star":(inCave?"cave":zoneAt(px))}
   SEABEDT=seabedAt(px);if(snap!==false)SEABED=SEABEDT;
   if(SV.stage==="cave"||SV.stage==="beach"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inSecret){BL=-4500;BR=4500}else if(inCave){BL=-6160;BR=6160}else{BL=-9600;BR=19800}}else{BL=-1e9;BR=1e9}
   if(who==="R"){BL=-5000;BR=5000}}
@@ -1354,7 +1354,7 @@ document.getElementById("tutbtn").addEventListener("click",function(){showTut(fa
   function sync(){go.hidden=!SV.secret}
   document.getElementById("setbtn").addEventListener("click",function(){inp.value="";mg.textContent=SV.secret?"ひみつのうみが ひらいて いるよ！":"";sync();sv.hidden=false});
   document.getElementById("setx").addEventListener("click",function(){sv.hidden=true});
-  function tryCode(){var v=inp.value.trim().toLowerCase().replace(/[\s\u3000]/g,"").replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)});if(v==="0722"){if(SV.sel==="R"){mg.textContent="ロボキンギョは いけないよ。ほかの キャラを えらんでね";return}sv.hidden=true;SV.goMass=1;SV.goSecret=0;start();setTimeout(function(){banner("さかなが いっぱい！ たくさん たべよう！")},400);return}if(CODES[v]){SV.secret=1;save();mg.textContent="ひみつのうみが ひらいたよ！ ⭐";sync();snd(880,.2,"triangle",.2)}else mg.textContent="コードが ちがうよ"}
+  function tryCode(){var v=inp.value.trim().toLowerCase().replace(/[\s\u3000]/g,"").replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)});if(v==="0722"){sv.hidden=true;SV.goMass=1;SV.goSecret=0;start();setTimeout(function(){banner(SV.sel==="R"?"ロボきんぎょまちだよ！ いっぱい たべよう！":"さかなが いっぱい！ たくさん たべよう！")},400);return}if(CODES[v]){SV.secret=1;save();mg.textContent="ひみつのうみが ひらいたよ！ ⭐";sync();snd(880,.2,"triangle",.2)}else mg.textContent="コードが ちがうよ"}
   document.getElementById("codeok").addEventListener("click",tryCode);
   inp.addEventListener("keydown",function(e){e.stopPropagation();if(e.key==="Enter")tryCode()});
   inp.addEventListener("keyup",function(e){e.stopPropagation()});
