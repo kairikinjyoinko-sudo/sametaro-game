@@ -39,6 +39,7 @@ body{margin:0;background:var(--ink);color:var(--ui);font-family:"Hiragino Maru G
 .ov{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));background:rgba(4,25,46,.45);z-index:5}
 .ov[hidden]{display:none}
 .card{width:min(440px,100%);background:var(--panel);border:3px solid var(--panel-line);border-radius:24px;padding:22px 20px;text-align:center;backdrop-filter:blur(6px);display:flex;flex-direction:column;gap:14px}
+.rkrow{display:flex;align-items:center;gap:8px;padding:5px 12px;border-radius:12px;background:rgba(255,255,255,.12);font-weight:900;font-size:16px;margin:3px 0}.rkrow b{width:2.2em;text-align:left;color:#ffe45e}.rkrow span{flex:1;text-align:left;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.rkrow i{font-style:normal;color:#ffe45e}.rkrow.me{background:#ffe45e;color:#5a3300}.rkrow.me b,.rkrow.me i{color:#b45309}
 .card h1{margin:0;font-size:clamp(34px,10vw,52px);line-height:1.1;text-wrap:balance;color:#ffe45e;text-shadow:0 4px 0 #b45309}
 .card p{margin:0;font-size:17px;line-height:1.7}
 .big{font:inherit;font-size:24px;font-weight:900;min-height:60px;border-radius:18px;border:4px solid #fff;background:var(--accent);color:var(--accent-ink);cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.25)}
@@ -149,7 +150,7 @@ body.homeon .app{visibility:hidden}
 <div id="banner">レベルアップ！</div>
 <div class="ov" id="title">
   <div class="home">
-    <div class="hbar"><span class="chip">🪙 <b id="hc">0</b></span><span class="chip">ベスト ⭐ <b id="hbst">0</b></span><button class="chipbtn" id="tutbtn">❓ あそびかた</button><button class="chipbtn" id="fsbtn" aria-label="ぜんがめん">⛶ ぜんがめん</button></div>
+    <div class="hbar"><span class="chip">🪙 <b id="hc">0</b></span><span class="chip">ベスト ⭐ <b id="hbst">0</b></span><button class="chipbtn" id="rkbtn">🏆 ランキング</button><button class="chipbtn" id="tutbtn">❓ あそびかた</button><button class="chipbtn" id="fsbtn" aria-label="ぜんがめん">⛶ ぜんがめん</button></div>
     <h1>はらぺこ<br>サメ太郎</h1>
     <div class="hcols">
       <div class="hero"><img id="heroimg" alt=""><div id="heroname"></div><div class="small" id="herostat"></div>
@@ -199,6 +200,7 @@ body.homeon .app{visibility:hidden}
   </div>
 </div>
 <div class="ov" id="setv" hidden style="z-index:60"><div class="card"><h1 style="font-size:28px">⚙️ せってい</h1><p>コードを いれてね</p><input id="codein" type="text" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" style="font:inherit;font-size:20px;padding:10px;border-radius:12px;border:3px solid var(--panel-line);background:rgba(255,255,255,.95);color:#111;text-align:center"><button class="big" id="codeok">つかう</button><p id="codemsg" style="min-height:1.4em"></p><button class="big" id="secgo" hidden style="background:#8a4fd6">⭐ ひみつのうみに いく</button><button class="big" id="setx" style="background:#2e7bd6">とじる</button></div></div>
+<div class="ov" id="rkv" hidden style="z-index:60"><div class="card"><h1 style="font-size:28px">🏆 ランキング</h1><div id="rkl2"></div><p style="font-size:13px;opacity:.8">このスマホの ベスト10 だよ</p><button class="big" id="rkx" style="background:#2e7bd6">とじる</button></div></div>
 <div class="ov" id="olv" hidden><div class="card"><h1 id="olh" style="font-size:clamp(26px,7vw,38px)"></h1><p id="olp"></p><button class="big" id="olok" style="background:#2e7bd6">やめる</button></div></div>
 <div id="btHud" hidden style="position:fixed;top:max(64px,calc(env(safe-area-inset-top,0px) + 56px));left:50%;transform:translateX(-50%);z-index:6;background:var(--panel);border:2px solid var(--panel-line);border-radius:14px;padding:6px 14px;color:#fff;font-weight:900;font-size:17px;white-space:nowrap"></div>
 <div class="ov" id="over" hidden>
@@ -206,6 +208,7 @@ body.homeon .app{visibility:hidden}
     <h1 style="font-size:clamp(28px,8vw,40px)">おなかが ぺこぺこ…</h1>
     <div class="score" id="fs">0</div>
     <p id="fc"></p>
+    <div id="rkl"></div>
     <button class="big" id="again">もういちど</button>
     <button class="big" id="homeBtn" style="background:#2e7bd6">ホームへ</button>
   </div>
@@ -349,9 +352,10 @@ var inst={t:0,cd:0},decoys=[],nEat=0,NEED=100;
 var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eatT,shakeT,levelT,best=0,muted=false;
 var cam={x:0,y:300,z:1};
 var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
-var SV={stage:"sea",pet:"",secret:0,goSecret:0,goMass:0,goBeach:0,petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,A:0,Z:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},A:{spd:0,food:0,dash:0},Z:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},A:{lv:1,xp:0},Z:{lv:1,xp:0},R:{lv:1,xp:0}}};
-try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;if(SV.pet&&!(_o.petOwn&&_o.petOwn[SV.pet]))SV.pet="";if(_o.secret)SV.secret=1;if(_o.petOwn)for(var _pk in SV.petOwn)SV.petOwn[_pk]=_o.petOwn[_pk]?1:0;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
+var SV={stage:"sea",pet:"",secret:0,goSecret:0,goMass:0,goBeach:0,petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,A:0,Z:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},A:{spd:0,food:0,dash:0},Z:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,rank:[],sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},A:{lv:1,xp:0},Z:{lv:1,xp:0},R:{lv:1,xp:0}}};
+try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;if(SV.pet&&!(_o.petOwn&&_o.petOwn[SV.pet]))SV.pet="";if(_o.secret)SV.secret=1;if(_o.petOwn)for(var _pk in SV.petOwn)SV.petOwn[_pk]=_o.petOwn[_pk]?1:0;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(Array.isArray(_o.rank))SV.rank=_o.rank.filter(function(r){return r&&+r.s>0}).slice(0,10).map(function(r){return{s:+r.s,c:String(r.c||"S"),n:+r.n||0}});if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
+if(!SV.rank.length&&SV.best>0)SV.rank=[{s:SV.best,c:"S",n:0}];
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
 best=SV.best;who=SV.sel;
 var CP={J:25000,N:12000,M:2000,S:10000,H:15000,T:20000,g:3000,m:6000,s:15000,K:8000,A:10000,Z:12000,R:30000},UC=[40,80,140,220,320],UN={spd:"スピード",food:"おなか",dash:"ダッシュ"};
@@ -603,9 +607,11 @@ function update(dt){
   if(cam.y<minY)cam.y=minY;
   if(bannerT>0){bannerT-=dt;if(bannerT<=0)document.getElementById("banner").classList.remove("show")}
 }
+var lastRk=-1;
+function rankHtml(hl){var h="";if(!SV.rank.length)return "<p>まだ きろくが ないよ</p>";for(var i=0;i<SV.rank.length;i++){var r=SV.rank[i],nm=(CHR[r.c]||{name:"?"}).name;h+="<div class=\"rkrow"+(i===hl?" me":"")+"\"><b>"+(i<3?["🥇","🥈","🥉"][i]:(i+1)+"い")+"</b><span>"+nm+"</span><i>⭐ "+r.s+"</i></div>"}return h}
 function endRun(){
   var c=Math.floor(score/10)+lv*5;SV.coins+=c;SV.prog[who]={lv:lv,xp:xp};
-  if(score>SV.best)SV.best=score;best=SV.best;save();return c;
+  if(score>SV.best)SV.best=score;best=SV.best;lastRk=-1;if(score>0){var _r={s:score,c:who,n:Date.now()};SV.rank.push(_r);SV.rank.sort(function(a,b){return b.s-a.s||a.n-b.n});SV.rank=SV.rank.slice(0,10);lastRk=SV.rank.indexOf(_r)}save();return c;
 }
 function gameOver(){
   if(BT){battleEnd();return}
@@ -615,6 +621,7 @@ function gameOver(){
   snd(300,.5,"sawtooth",.15,80);
   document.getElementById("fs").textContent="⭐ "+score;
   document.getElementById("fc").textContent="コイン +"+c+" 🪙　（ベスト "+SV.best+(nb?"　しんきろく！":"")+"）";
+  document.getElementById("rkl").innerHTML=rankHtml(lastRk);
   document.getElementById("over").hidden=false;
   document.getElementById("boost").style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 }
@@ -1400,6 +1407,8 @@ function tutClose(){document.getElementById("tut").hidden=true;SV.tut=1;save();i
 document.getElementById("tutnext").addEventListener("click",function(){if(tutPage>=tutPages().length-1)tutClose();else{tutPage++;tutShow()}});
 document.getElementById("tutskip").addEventListener("click",tutClose);
 document.getElementById("tutbtn").addEventListener("click",function(){showTut(false)});
+document.getElementById("rkbtn").addEventListener("click",function(){document.getElementById("rkl2").innerHTML=rankHtml(-1);document.getElementById("rkv").hidden=false});
+document.getElementById("rkx").addEventListener("click",function(){document.getElementById("rkv").hidden=true});
 (function(){var sv=document.getElementById("setv"),inp=document.getElementById("codein"),mg=document.getElementById("codemsg"),go=document.getElementById("secgo");
   var CODES={"kairikinjyo":1,"かいりきんじょ":1,"かいりきんじょう":1};
   function sync(){go.hidden=!SV.secret}
