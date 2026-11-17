@@ -142,6 +142,7 @@ body.homeon .app{visibility:hidden}
     <button id="mute" aria-label="おと">🔊</button><button id="petbtn" aria-label="ペット" style="pointer-events:auto;background:var(--panel);border:2px solid var(--panel-line);color:#fff;border-radius:14px;min-height:40px;min-width:46px;font:inherit;font-size:16px;font-weight:800">🐾 なし</button><button id="mute2" aria-label="おやすみ" style="pointer-events:auto;background:var(--panel);border:2px solid var(--panel-line);color:#fff;border-radius:14px;min-height:40px;min-width:46px;font:inherit;font-size:20px">⏸</button>
   </div>
 </div>
+<canvas id="mini" width="320" height="200" style="position:fixed;right:max(10px,env(safe-area-inset-right,0px));top:max(120px,calc(env(safe-area-inset-top,0px) + 112px));width:150px;height:94px;border-radius:12px;border:2px solid var(--panel-line);background:rgba(6,35,61,.55);z-index:4;pointer-events:none;display:none"></canvas>
 <button id="boost" aria-label="ダッシュ">ダッシュ</button>
 <button id="inst" hidden aria-label="ほんのう">本能<small>Eキー</small></button>
 <div id="joy" aria-label="スティック"><div id="joyk"></div></div>
@@ -1164,6 +1165,19 @@ function draw(){
   var vg=ctx.createRadialGradient(CW/2,CH/2,Math.min(CW,CH)*.45,CW/2,CH/2,Math.max(CW,CH)*.78);vg.addColorStop(0,"rgba(0,20,50,0)");vg.addColorStop(1,"rgba(0,20,50,.28)");ctx.fillStyle=vg;ctx.fillRect(0,0,CW,CH);
   if(fadeT>0){ctx.fillStyle="rgba(0,0,0,"+Math.min(.6,fadeT*.9)+")";ctx.fillRect(0,0,CW,CH)}
   if(state!=="title"&&ZS!=="town"&&P){var dk=Math.max(0,Math.min(1,(cam.y-500)/Math.max(1500,SEABED-900)))*(ZS==="star"?.35:.86);if(dk>.01){var pp3=worldToScreen(P.x,P.y),dg=ctx.createRadialGradient(pp3.x,pp3.y,CH*.1,pp3.x,pp3.y,CH*.85);dg.addColorStop(0,"rgba(0,3,12,"+(dk*.3)+")");dg.addColorStop(1,"rgba(0,3,12,"+dk+")");ctx.fillStyle=dg;ctx.fillRect(0,0,CW,CH)}}
+  // minimap
+  (function(){var mc=document.getElementById("mini");var on=P&&(state==="playing"||state==="paused")&&!BT;mc.style.display=on?"block":"none";if(!on)return;
+    var m=mc.getContext("2d"),W=320,H=200;m.clearRect(0,0,W,H);
+    var inf=BL<-1e8,lo=inf?P.x-4000:BL,hi=inf?P.x+4000:BR,town=ZS==="town";
+    var y0=town?-3200:-300,y1=inCave?MZY0+MZROWS*MZC:SEABEDT+150;
+    function X(x){return (x-lo)/(hi-lo)*W}function Y(y){return (y-y0)/(y1-y0)*H}
+    var g=m.createLinearGradient(0,0,0,H);g.addColorStop(0,town?"#1a1a3a":"#7fc8ff");g.addColorStop(.12,town?"#3a4a6a":"#3aa7e8");g.addColorStop(1,"#08305a");m.fillStyle=g;m.fillRect(0,0,W,H);
+    if(SV.stage==="sea"&&!inCave&&!inSecret){var cols={beach:"#f2d98a",sea:"#2a8fd6",ice:"#9fe0f5",volcano:"#d9602a",ruins:"#b0a07a",coral:"#ff8aa8"};var xs=[lo,-3300].concat(ZB,[hi]);var nm=["beach","sea","ice","volcano","ruins","coral"];for(var i=0;i<nm.length;i++){var a=Math.max(lo,xs[i]),b=Math.min(hi,xs[i+1]);if(b>a){m.fillStyle=cols[nm[i]];m.globalAlpha=.4;m.fillRect(X(a),0,X(b)-X(a),H);m.globalAlpha=1}}}
+    if(!town){m.fillStyle="#c9a96b";m.fillRect(0,Y(SEABEDT),W,H-Y(SEABEDT))}
+    if(inCave){m.strokeStyle="rgba(255,255,255,.12)";for(var cx=0;cx<=MZCOLS;cx++){var xx=X(MZX0+cx*MZC);m.beginPath();m.moveTo(xx,Y(MZY0));m.lineTo(xx,Y(MZY0+MZROWS*MZC));m.stroke()}}
+    for(var q=0;q<ents.length;q++){var e=ents[q],d=e.def;if(e.dead||!d||d.town)continue;var big=d.r>60;var bad=d.danger||d.bite||d.lv>lv;m.fillStyle=bad?"#ff5a5a":"#7dffa0";m.beginPath();m.arc(X(e.x),Y(e.y),big?4:2,0,6.283);m.fill()}
+    m.fillStyle="#ffe45e";m.strokeStyle="#fff";m.lineWidth=3;m.beginPath();m.arc(X(P.x),Y(P.y),8,0,6.283);m.fill();m.stroke();
+  })();
   // hud
   var ib=document.getElementById("inst");ib.hidden=!(state==="playing"&&BASE[who]);
   if(!ib.hidden){var act=inst.t>0,rdy=nEat>=NEED;ib.disabled=act||!rdy;ib.classList.toggle("act",act);ib.classList.toggle("rdy",rdy&&!act);ib.innerHTML=act?"つかってる<small>あと "+Math.ceil(inst.t)+"</small>":(rdy?"本能<small>Eキー</small>":"本能<small>"+nEat+"/"+NEED+"</small>")}
