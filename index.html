@@ -1280,13 +1280,13 @@ function makeFishSprite(k,rr,mo){
 }
 
 function makeSquidSprite(open){
-  var W0=900,H0=420,oc=document.createElement("canvas");oc.width=W0;oc.height=H0;var o=oc.getContext("2d");
-  o.lineJoin="round";o.lineCap="round";var CY=210;
+  var W0=1020,H0=460,oc=document.createElement("canvas");oc.width=W0;oc.height=H0;var o=oc.getContext("2d");
+  o.lineJoin="round";o.lineCap="round";var CY=230;
   function arm(ang,len,w,col){var bx=742,by=CY+6,ex=bx+Math.cos(ang)*len,ey=by+Math.sin(ang)*len,mx=(bx+ex)/2,my=(by+ey)/2+Math.sin(ang)*8;
     o.fillStyle=col;o.beginPath();o.moveTo(bx,by-w);o.quadraticCurveTo(mx,my-w*.6,ex,ey);o.quadraticCurveTo(mx,my+w*.6,bx,by+w);o.closePath();o.fill();}
   var an=open?[-.78,-.56,-.36,-.16,.06,.26,.46,.68]:[-.2,-.14,-.08,-.03,.03,.08,.14,.2];
-  for(var a=0;a<8;a++)arm(an[a],open?112:104,7,a%2?"#d79c94":"#cf8f88");
-  o.strokeStyle="#cf8f88";o.lineWidth=7;for(var t=0;t<2;t++){var ta=open?(t?.2:-.3):(t?.05:-.05);o.beginPath();o.moveTo(742,CY+6);o.quadraticCurveTo(820,CY+6+Math.sin(ta)*120,872,CY+6+Math.sin(ta)*210);o.stroke();o.fillStyle="#b97a74";o.beginPath();o.ellipse(872,CY+6+Math.sin(ta)*210,13,8,ta,0,6.283);o.fill()}
+  for(var a=0;a<8;a++)arm(an[a],open?195:175,11,a%2?"#d79c94":"#cf8f88");
+  o.strokeStyle="#cf8f88";o.lineWidth=11;for(var t=0;t<2;t++){var ta=open?(t?.2:-.3):(t?.05:-.05);o.beginPath();o.moveTo(742,CY+6);o.quadraticCurveTo(880,CY+6+Math.sin(ta)*150,985,CY+6+Math.sin(ta)*260);o.stroke();o.fillStyle="#b97a74";o.beginPath();o.ellipse(985,CY+6+Math.sin(ta)*260,20,12,ta,0,6.283);o.fill()}
   var fg=o.createLinearGradient(0,CY-110,0,CY+110);fg.addColorStop(0,"rgba(236,196,190,.92)");fg.addColorStop(1,"rgba(250,232,228,.92)");
   o.fillStyle=fg;o.beginPath();o.moveTo(150,CY);o.bezierCurveTo(250,CY-84,400,CY-112,540,CY-96);o.bezierCurveTo(606,CY-88,640,CY-62,656,CY-40);o.lineTo(656,CY+40);o.bezierCurveTo(640,CY+62,606,CY+88,540,CY+96);o.bezierCurveTo(400,CY+112,250,CY+84,150,CY);o.closePath();o.fill();
   o.strokeStyle="rgba(190,120,118,.7)";o.lineWidth=3;o.stroke();
