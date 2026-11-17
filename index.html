@@ -347,7 +347,7 @@ var inst={t:0,cd:0},decoys=[],nEat=0,NEED=100;
 var state="title",P,ents,parts,texts,score,hunger,xp,lv,stam,stun,invul,time,eatT,shakeT,levelT,best=0,muted=false;
 var cam={x:0,y:300,z:1};
 var joy={on:false,x:0,y:0,m:0},ptr={x:0,y:0,on:false,type:"mouse"},keys={},boostBtn=false,audioCtx=null,bannerT=0;
-var SV={stage:"sea",pet:"",secret:0,goSecret:0,goMass:0,petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
+var SV={stage:"sea",pet:"",secret:0,goSecret:0,goMass:0,goBeach:0,petOwn:{M:0,S:0,G:0},coins:0,own:{J:0,N:0,S:0,M:0,G:1,H:0,T:0,g:0,m:0,s:0,K:0,R:0},ups:{J:{spd:0,food:0,dash:0},N:{spd:0,food:0,dash:0},S:{spd:0,food:0,dash:0},M:{spd:0,food:0,dash:0},G:{spd:0,food:0,dash:0},H:{spd:0,food:0,dash:0},T:{spd:0,food:0,dash:0},g:{spd:0,food:0,dash:0},m:{spd:0,food:0,dash:0},s:{spd:0,food:0,dash:0},K:{spd:0,food:0,dash:0},R:{spd:0,food:0,dash:0}},best:0,sel:"G",prog:{J:{lv:1,xp:0},N:{lv:1,xp:0},S:{lv:1,xp:0},M:{lv:1,xp:0},G:{lv:1,xp:0},H:{lv:1,xp:0},T:{lv:1,xp:0},g:{lv:1,xp:0},m:{lv:1,xp:0},s:{lv:1,xp:0},K:{lv:1,xp:0},R:{lv:1,xp:0}}};
 try{var _o=JSON.parse(localStorage.getItem("sametaro_save")||"null");if(_o){if(_o.pet==="M"||_o.pet==="S"||_o.pet==="G")SV.pet=_o.pet;if(SV.pet&&!(_o.petOwn&&_o.petOwn[SV.pet]))SV.pet="";if(_o.secret)SV.secret=1;if(_o.petOwn)for(var _pk in SV.petOwn)SV.petOwn[_pk]=_o.petOwn[_pk]?1:0;SV.coins=+_o.coins||0;SV.tut=_o.tut?1:0;SV.best=+_o.best||0;if(_o.own)for(var _k in SV.own)SV.own[_k]=_o.own[_k]?1:SV.own[_k];if(_o.ups)for(var _c in SV.ups)if(_o.ups[_c])for(var _u in SV.ups[_c])SV.ups[_c][_u]=Math.min(5,Math.max(0,+_o.ups[_c][_u]||0));if(_o.sel&&SV.own[_o.sel])SV.sel=_o.sel;if(_o.prog)for(var _p in SV.prog){var q=_o.prog[_p];if(q&&q.lv>=1&&q.lv<=11){SV.prog[_p]={lv:q.lv|0,xp:+q.xp||0}}}}}catch(e){}
 try{SV.best=Math.max(SV.best,+localStorage.getItem("sametaro_best")||0)}catch(e){}
 function save(){try{localStorage.setItem("sametaro_save",JSON.stringify(SV))}catch(e){}}
@@ -360,8 +360,9 @@ function PW(){var nw=SPR[who][0].naturalWidth||360;return lenM()*246*.85*(wb()==
 function reset(){
   P=null;inCave=false;inSecret=!!SV.goSecret;MASS=SV.goMass?1:0;applyStage();
   P={x:0,y:200,vx:0,vy:0,h:0,mx:0,my:0,ph:0,mo:0};
+  if(SV.goBeach&&who!=="R"&&who!=="H"){P.x=-5200;P.y=150;applyStage()}
   pet.x=P.x-120;pet.y=P.y;pet.cd=2;ents=[];parts=[];texts=[];score=0;hunger=100;xp=(SV.prog[who]||{xp:0}).xp;lv=(SV.prog[who]||{lv:1}).lv;stam=100;stun=0;invul=2;time=0;eatT=0;shakeT=0;levelT=0;
-  if(who==="H"){P.y=SEABED-PW()*.22-4;P.x=0}
+  if(who==="H"&&!SV.goBeach){P.y=SEABED-PW()*.22-4;P.x=0}
   if(who==="R"){P.y=SEABED-700;P.x=0}
   inst.t=0;inst.cd=0;nEat=0;decoys=[];spaceSeen=false;spaceMsgT=0;
   cam.x=P.x;cam.y=P.y;
@@ -1180,7 +1181,7 @@ function olCleanup(){olTok++;clearTimeout(olTimer);clearInterval(olSendT);clearI
 function olFail(t){olCleanup();olShow("つながらなかったよ",t,"もどる")}
 function loadPeer(cb){if(window.Peer)return cb();var sc=document.createElement("script");sc.src="https://cdn.jsdelivr.net/npm/peerjs@1.5.4/dist/peerjs.min.js";sc.onload=cb;sc.onerror=function(){olFail("ネットに つながって いないみたい。")};document.head.appendChild(sc)}
 function olStart(){
-  SV.goSecret=0;SV.goMass=0;
+  SV.goSecret=0;SV.goMass=0;SV.goBeach=0;
   if(!SV.tut){showTut(true);return}
   olCleanup();var tok=olTok;olShow("あいてを さがしてるよ…","いま あそんでる ひとと ランダムで たいせん！ 60びょうで たくさん たべた ほうが かち。","やめる");
   loadPeer(function(){if(tok===olTok)trySlot(1,tok)})
@@ -1284,7 +1285,7 @@ document.getElementById("homeBtn").addEventListener("click",goHome);
 document.getElementById("resume").addEventListener("click",togglePause);
 document.getElementById("mute2").addEventListener("click",togglePause);
 document.getElementById("pausehome").addEventListener("click",function(){if(state==="paused"){endRun()}goHome()});
-document.getElementById("go").addEventListener("click",function(){SV.goSecret=0;SV.goMass=0;if(!SV.tut){showTut(true)}else{start()}});
+document.getElementById("go").addEventListener("click",function(){SV.goSecret=0;SV.goMass=0;SV.goBeach=0;if(!SV.tut){showTut(true)}else{start()}});
 document.getElementById("fsbtn").addEventListener("click",function(){
   try{if(document.fullscreenElement){document.exitFullscreen()}else if(document.documentElement.requestFullscreen){document.documentElement.requestFullscreen().catch(function(){msg("この がめんでは ぜんがめんに できないよ")})}else{msg("この がめんでは ぜんがめんに できないよ")}}catch(e){msg("この がめんでは ぜんがめんに できないよ")}
 });
@@ -1354,11 +1355,11 @@ document.getElementById("tutbtn").addEventListener("click",function(){showTut(fa
   function sync(){go.hidden=!SV.secret}
   document.getElementById("setbtn").addEventListener("click",function(){inp.value="";mg.textContent=SV.secret?"ひみつのうみが ひらいて いるよ！":"";sync();sv.hidden=false});
   document.getElementById("setx").addEventListener("click",function(){sv.hidden=true});
-  function tryCode(){var v=inp.value.trim().toLowerCase().replace(/[\s\u3000]/g,"").replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)});if(v==="0722"){sv.hidden=true;SV.goMass=1;SV.goSecret=0;start();setTimeout(function(){banner(SV.sel==="R"?"ロボきんぎょまちだよ！ いっぱい たべよう！":"さかなが いっぱい！ たくさん たべよう！")},400);return}if(CODES[v]){SV.secret=1;save();mg.textContent="ひみつのうみが ひらいたよ！ ⭐";sync();snd(880,.2,"triangle",.2)}else mg.textContent="コードが ちがうよ"}
+  function tryCode(){var v=inp.value.trim().toLowerCase().replace(/[\s\u3000]/g,"").replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)});if(v==="すなはま"||v==="砂浜"||v==="sunahama"||v==="beach"){if(SV.sel==="R"||SV.sel==="H"){mg.textContent="この キャラは いけないよ。ほかの キャラを えらんでね";return}sv.hidden=true;SV.goMass=0;SV.goSecret=0;SV.goBeach=1;start();setTimeout(function(){banner("すなはまに きたよ！")},400);return}if(v==="0722"){SV.goBeach=0;sv.hidden=true;SV.goMass=1;SV.goSecret=0;start();setTimeout(function(){banner(SV.sel==="R"?"ロボきんぎょまちだよ！ いっぱい たべよう！":"さかなが いっぱい！ たくさん たべよう！")},400);return}if(CODES[v]){SV.secret=1;save();mg.textContent="ひみつのうみが ひらいたよ！ ⭐";sync();snd(880,.2,"triangle",.2)}else mg.textContent="コードが ちがうよ"}
   document.getElementById("codeok").addEventListener("click",tryCode);
   inp.addEventListener("keydown",function(e){e.stopPropagation();if(e.key==="Enter")tryCode()});
   inp.addEventListener("keyup",function(e){e.stopPropagation()});
-  go.addEventListener("click",function(){if(SV.sel==="R"||SV.sel==="H"){mg.textContent="この キャラは いけないよ。ほかの キャラを えらんでね";return}sv.hidden=true;SV.goSecret=1;SV.goMass=0;start()})})();
+  go.addEventListener("click",function(){if(SV.sel==="R"||SV.sel==="H"){mg.textContent="この キャラは いけないよ。ほかの キャラを えらんでね";return}sv.hidden=true;SV.goSecret=1;SV.goMass=0;SV.goBeach=0;start()})})();
 document.body.classList.add("homeon");renderHome();reset();bb.style.visibility="hidden";document.getElementById("pad").style.visibility="hidden";document.getElementById("joy").style.visibility="hidden";
 requestAnimationFrame(loop);
 })();
