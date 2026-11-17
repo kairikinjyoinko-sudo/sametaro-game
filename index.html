@@ -511,7 +511,7 @@ function update(dt){
   if(ZS!=="town"&&wasIn&&P.y<0){burst(P.x,0,"#ffffff",14,220);snd(300,.2,"sine",.1,600)}
   if(Math.hypot(P.vx,P.vy)>20){var th=Math.atan2(P.vy,P.vx);var dd=th-P.h;while(dd>Math.PI)dd-=6.283;while(dd<-Math.PI)dd+=6.283;P.h+=dd*Math.min(1,dt*7)}
   var fc=Math.cos(P.h)>=0?1:-1;
-  var md=who==="A"?W*.1:W*0.40;
+  var md=who==="A"?-W*.3:W*0.40;
   P.mx=P.x+Math.cos(P.h)*md;P.my=P.y+Math.sin(P.h)*md;
   var spd0=Math.hypot(P.vx,P.vy);P.ph+=dt*(4+spd0/50+(boosting?5:0));P.sp0=spd0;
   if(state==="playing"){
@@ -519,7 +519,7 @@ function update(dt){
     hunger-=(3.0+0.9*lv)*CHR[who].dec*(1-0.06*SV.ups[who].food)*dt*(boosting?1.35:1);
     if(hunger<=0){hunger=0;gameOver()}
   }
-  var er=W*0.32*CHR[who].eatr;
+  var er=W*0.32*CHR[who].eatr*(who==="A"?.55:1);
   P.near=false;
   for(var i=0;i<ents.length;i++){
     var e=ents[i],d=e.def;
