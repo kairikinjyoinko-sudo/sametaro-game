@@ -60,9 +60,9 @@ body{margin:0;background:var(--ink);color:var(--ui);font-family:"Hiragino Maru G
 @media (pointer:coarse){#joy{display:block}#boost{display:block}}
 #tut{z-index:9;background:rgba(4,25,46,.82)}
 #tut .card{width:min(460px,100%)}
-#tut .art{font-size:64px;line-height:1.1;min-height:84px;display:flex;align-items:center;justify-content:center;gap:6px}
+#tut .art{line-height:1.1;min-height:130px;display:block}
 #tut h2{margin:0;font-size:clamp(26px,7vw,34px);color:#ffe45e;text-shadow:0 3px 0 #b45309}
-#tut p{font-size:19px;line-height:1.7}
+#tut p{font-size:20px;line-height:1.5;font-weight:800}
 #tut .dots{display:flex;gap:8px;justify-content:center}#tut .dots i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.35)}#tut .dots i.on{background:#ffe45e}
 #tut .row{display:flex;gap:10px}#tut .row .big{flex:1;font-size:20px}
 #tut .skip{background:transparent;border:3px solid rgba(255,255,255,.6);box-shadow:none;font-size:16px!important;flex:.6!important}
@@ -1642,19 +1642,25 @@ bb.addEventListener("pointerdown",bon);bb.addEventListener("pointerup",boff);bb.
 })();
 // ---- チュートリアル
 var tutPage=0,tutThenStart=false;
+function tutSvg(inner){return '<svg viewBox="0 0 240 140" width="100%" style="max-width:340px;display:block;margin:0 auto" role="img" aria-hidden="true"><rect x="2" y="2" width="236" height="136" rx="18" fill="#0d4a7a" stroke="rgba(255,255,255,.35)" stroke-width="3"/>'+inner+'</svg>'}
+function tShark(x,y,s,fl){return '<g transform="translate('+x+','+y+') scale('+(fl?-s:s)+','+s+')"><path d="M-34 0 L-52 -16 L-48 0 L-52 16 Z" fill="#4a6c94"/><path d="M-6 -17 L6 -36 L16 -15 Z" fill="#4a6c94"/><ellipse cx="0" cy="0" rx="36" ry="17" fill="#6f93bd"/><path d="M-30 4 Q0 22 34 4 Q10 14 -30 4 Z" fill="#eef5fb"/><circle cx="18" cy="-4" r="3.6" fill="#fff"/><circle cx="19" cy="-4" r="1.9" fill="#10243a"/><path d="M26 5 Q31 7 35 4" stroke="#10243a" stroke-width="1.6" fill="none" stroke-linecap="round"/></g>'}
+function tFish(x,y,s,c1,c2){return '<g transform="translate('+x+','+y+') scale('+s+')"><path d="M-12 0 L-24 -9 L-22 0 L-24 9 Z" fill="'+c2+'"/><ellipse cx="0" cy="0" rx="14" ry="9" fill="'+c1+'"/><circle cx="7" cy="-2" r="2.6" fill="#fff"/><circle cx="7.6" cy="-2" r="1.3" fill="#10243a"/></g>'}
+function tStar(x,y,r,c){var p="";for(var j=0;j<10;j++){var q=j%2?r*.42:r,a=j*Math.PI/5-Math.PI/2;p+=(x+Math.cos(a)*q).toFixed(1)+","+(y+Math.sin(a)*q).toFixed(1)+" "}return '<polygon points="'+p+'" fill="'+c+'" stroke="#b45309" stroke-width="1.5"/>'}
+function tKey(x,y,l){return '<rect x="'+(x-15)+'" y="'+(y-15)+'" width="30" height="30" rx="7" fill="#fff" stroke="#0b3a5c" stroke-width="3"/><text x="'+x+'" y="'+(y+6)+'" text-anchor="middle" font-size="17" font-weight="900" fill="#0b3a5c" font-family="inherit">'+l+'</text>'}
 function tutPages(){
   var t=window.matchMedia&&matchMedia("(pointer:coarse)").matches;
+  var mv=t?tutSvg('<circle cx="86" cy="72" r="46" fill="rgba(255,255,255,.12)" stroke="#fff" stroke-width="4" stroke-dasharray="7 6"/><circle cx="104" cy="58" r="21" fill="#fff" stroke="#ff7a3d" stroke-width="5"/><path d="M104 44 L104 24 M97 31 L104 24 L111 31" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>'+tShark(190,90,.8,false)+'<path d="M150 58 L172 58 M166 52 L172 58 L166 64" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round"/>'):tutSvg(tKey(60,44,"W")+tKey(26,80,"A")+tKey(60,80,"S")+tKey(94,80,"D")+tShark(180,76,.9,false)+'<path d="M120 76 L140 76 M134 70 L140 76 L134 82" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round"/>');
   return [
-    {a:"🐟↔️🐟",h:"うごかしかた",p:t?"ひだりしたの まるい スティックを ゆびで うごかすと、ぐるっと 360どう すきな むきに およげるよ！ がめんを ゆびで おして ひっぱっても およげるよ。":"やじるしキー か WASDキーで うごくよ。ななめにも いけるよ！ キーを 2つ いっしょに おすと、ななめに すすめるよ。"},
-    {a:"🐟➡️🐠",h:"たべよう！",p:"じぶんより ちいさい おさかなに ちかづくと、ぱくっ！と たべるよ。まるい てんせんの わっかが ついた さかなは、まだ たべられないよ。"},
-    {a:"🍙❤️",h:"おなかに ちゅうい",p:"おなかゲージは だんだん へるよ。ゼロに なると ゲームオーバー！ くらげや ウニに あたっても へるから、きをつけてね。"},
-    {a:"💨",h:"ダッシュ",p:(t?"みぎしたの オレンジの「ダッシュ」ボタンを おすと":"スペースキー か Shiftキーを おすと")+"、はやく およげるよ。でも きいろい スタミナゲージが へるから、つかいすぎに ちゅうい！"},
-    {a:"⭐🔼",h:"おおきくなろう！",p:"たべると レベルアップして からだが おおきくなり、あたらしい さかなも たべられるよ。ハロウィンの なかまは、さかなを 100ひき たべると「ほんのう」で とくべつな ちからが つかえるよ"+(t?"（みぎしたの ボタン）":"（Eキー）")+"。"}
+    {a:mv,h:"うごく",p:t?"ゆびで ぐるっと うごかす":"やじるしキー か WASD"},
+    {a:tutSvg(tShark(52,70,.95,false)+'<path d="M96 70 L112 70 M106 64 L112 70 L106 76" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round"/>'+tFish(140,56,1.3,"#ffd23f","#ff8a1f")+tStar(140,30,10,"#ffe45e")+'<ellipse cx="200" cy="100" rx="26" ry="18" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="6 5"/>'+tFish(200,100,1.3,"#8ea2cc","#3d4d78")+'<path d="M182 84 L218 116 M218 84 L182 116" stroke="#ff4d5e" stroke-width="6" stroke-linecap="round"/>'),h:"たべる",p:"ちいさい さかなを ぱくっ！ わっかつきは まだ だめ"},
+    {a:tutSvg('<rect x="22" y="38" width="120" height="24" rx="12" fill="rgba(0,0,0,.45)" stroke="#fff" stroke-width="3"/><rect x="26" y="42" width="66" height="16" rx="8" fill="#3ddc84"/><rect x="22" y="82" width="120" height="24" rx="12" fill="rgba(0,0,0,.45)" stroke="#fff" stroke-width="3"/><rect x="26" y="86" width="14" height="16" rx="8" fill="#ff4d5e"/><path d="M82 66 L82 78 M76 72 L82 78 L88 72" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M178 36 Q178 14 198 14 Q218 14 218 36 Z" fill="#ff9de2"/><path d="M184 38 Q182 58 188 70 M198 38 Q200 62 196 78 M212 38 Q214 56 208 68" stroke="#c35cff" stroke-width="4" fill="none" stroke-linecap="round"/><circle cx="192" cy="28" r="3" fill="#3a1a5c"/><circle cx="204" cy="28" r="3" fill="#3a1a5c"/><path d="M150 90 L170 118 M170 90 L150 118" stroke="#ff4d5e" stroke-width="0" fill="none"/>'),h:"おなか",p:"ゼロで おしまい。くらげに ちゅうい"},
+    {a:tutSvg((t?'<circle cx="52" cy="70" r="36" fill="#ff7a3d" stroke="#fff" stroke-width="5"/><text x="52" y="76" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" font-family="inherit">ダッシュ</text>':'<rect x="14" y="52" width="80" height="36" rx="9" fill="#fff" stroke="#0b3a5c" stroke-width="3"/><text x="54" y="76" text-anchor="middle" font-size="17" font-weight="900" fill="#0b3a5c" font-family="inherit">Space</text>')+'<path d="M112 70 L126 70 M121 64 L126 70 L121 76" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M130 52 L160 52 M126 70 L156 70 M130 88 L160 88" stroke="rgba(255,255,255,.7)" stroke-width="4" stroke-linecap="round"/>'+tShark(196,70,.8,false)+'<rect x="150" y="112" width="70" height="10" rx="5" fill="rgba(0,0,0,.45)"/><rect x="152" y="114" width="40" height="6" rx="3" fill="#ffd23f"/>'),h:"ダッシュ",p:(t?"みぎしたの ボタン":"スペースキー")+"。きいろい ゲージが へるよ"},
+    {a:tutSvg(tShark(58,84,.6,false)+'<path d="M98 80 L116 80 M110 74 L116 80 L110 86" stroke="#ffe45e" stroke-width="4" fill="none" stroke-linecap="round"/>'+tShark(178,78,1.15,false)+tStar(212,26,14,"#ffe45e")+tStar(150,24,9,"#ffe45e")),h:"おおきく なろう",p:"たべて レベルアップ！ あたらしい さかなも たべられるよ"}
   ];
 }
 function tutShow(){
   var ps=tutPages(),pg=ps[tutPage];
-  document.getElementById("tuta").textContent=pg.a;document.getElementById("tuth").textContent=pg.h;document.getElementById("tutp").textContent=pg.p;
+  document.getElementById("tuta").innerHTML=pg.a;document.getElementById("tuth").textContent=pg.h;document.getElementById("tutp").textContent=pg.p;
   var d="";for(var i=0;i<ps.length;i++)d+='<i'+(i===tutPage?' class="on"':'')+'></i>';document.getElementById("tutd").innerHTML=d;
   document.getElementById("tutnext").textContent=tutPage===ps.length-1?(tutThenStart?"はじめる！":"とじる"):"つぎへ";
 }
