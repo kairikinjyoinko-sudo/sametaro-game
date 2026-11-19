@@ -692,6 +692,21 @@ function autoSave(){try{if((state==="playing"||state==="paused")&&!BT)endRun()}c
 document.addEventListener("visibilitychange",function(){if(document.hidden)autoSave()});
 window.addEventListener("pagehide",autoSave);window.addEventListener("beforeunload",autoSave);
 setInterval(autoSave,10000);
+var verSeen=null,verNew=false;
+function verTag(r){return (r.headers.get("etag")||"")+"|"+(r.headers.get("last-modified")||"")}
+function checkUpdate(){
+  try{
+    if(location.protocol.indexOf("http")!==0)return;
+    fetch(location.pathname,{method:"HEAD",cache:"no-store"}).then(function(r){
+      var v=verTag(r);if(v==="|")return;
+      if(verSeen===null){verSeen=v;return}
+      if(v!==verSeen)verNew=true;
+    }).catch(function(){});
+  }catch(e){}
+}
+function applyUpdate(){if(verNew&&state!=="playing"&&state!=="paused"){autoSave();location.reload()}}
+checkUpdate();setInterval(function(){checkUpdate();applyUpdate()},60000);
+document.addEventListener("visibilitychange",function(){if(!document.hidden){checkUpdate();setTimeout(applyUpdate,1500)}});
 function gameOver(){
   if(BT){battleEnd();return}
   state="over";
