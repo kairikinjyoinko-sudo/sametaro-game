@@ -398,7 +398,7 @@ function reset(){
   P=null;inCave=false;inDeep=false;inSecret=!!SV.goSecret;MASS=SV.goMass?1:0;applyStage();
   P={x:0,y:200,vx:0,vy:0,h:0,mx:0,my:0,ph:0,mo:0};
   if(SV.goBeach&&who!=="R"&&who!=="H"){P.x=-5200;P.y=150;applyStage()}
-  pet.x=P.x-120;pet.y=P.y;pet.cd=2;ents=[];parts=[];texts=[];score=0;hunger=100;xp=(SV.prog[who]||{xp:0}).xp;lv=(SV.prog[who]||{lv:1}).lv;stam=100;stun=0;invul=2;time=0;eatT=0;shakeT=0;levelT=0;
+  pet.x=P.x-120;pet.y=P.y;pet.cd=2;ents=[];parts=[];texts=[];runCoins=0;score=0;hunger=100;xp=(SV.prog[who]||{xp:0}).xp;lv=(SV.prog[who]||{lv:1}).lv;stam=100;stun=0;invul=2;time=0;eatT=0;shakeT=0;levelT=0;
   if(who==="H"&&!SV.goBeach){P.y=SEABED-PW()*.22-4;P.x=0}
   if(who==="R"){P.y=SEABED-700;P.x=0}
   inst.t=0;inst.cd=0;nEat=0;decoys=[];spaceSeen=false;spaceMsgT=0;
@@ -683,10 +683,15 @@ function update(dt){
   if(cam.y<minY)cam.y=minY;
   if(bannerT>0){bannerT-=dt;if(bannerT<=0)document.getElementById("banner").classList.remove("show")}
 }
+var runCoins=0;
 function endRun(){
-  var c=Math.floor(score/10)+lv*5;SV.coins+=c;SV.prog[who]={lv:lv,xp:xp};
+  var c=Math.floor(score/10)+lv*5;SV.coins+=Math.max(0,c-runCoins);runCoins=c;SV.prog[who]={lv:lv,xp:xp};
   if(score>SV.best)SV.best=score;best=SV.best;save();return c;
 }
+function autoSave(){try{if((state==="playing"||state==="paused")&&!BT)endRun()}catch(e){}}
+document.addEventListener("visibilitychange",function(){if(document.hidden)autoSave()});
+window.addEventListener("pagehide",autoSave);window.addEventListener("beforeunload",autoSave);
+setInterval(autoSave,10000);
 function gameOver(){
   if(BT){battleEnd();return}
   state="over";
