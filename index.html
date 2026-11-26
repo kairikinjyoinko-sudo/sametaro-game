@@ -1088,14 +1088,9 @@ var SPK={};
 function spkFin(c,pts,fill,stroke){c.beginPath();c.moveTo(pts[0][0],pts[0][1]);for(var i=1;i<pts.length;i++)c.lineTo(pts[i][0],pts[i][1]);c.closePath();c.fillStyle=fill;c.fill();if(stroke){c.strokeStyle=stroke;c.stroke()}}
 function spkCirc(c,x,y,r){c.beginPath();c.arc(x,y,r,0,6.283)}
 function spkEye(c,x,y,r,ring,iris,lid){
-  var g;
-  c.fillStyle="rgba(0,0,0,.2)";spkCirc(c,x+r*.04,y+r*.06,r*1.28);c.fill();
-  c.strokeStyle=lid||"rgba(60,40,10,.55)";c.lineWidth=Math.max(1,r*.16);spkCirc(c,x,y,r*1.1);c.stroke();
-  g=c.createRadialGradient(x-r*.2,y-r*.25,r*.1,x,y,r);g.addColorStop(0,"#ffffff");g.addColorStop(.55,ring);g.addColorStop(1,"rgba(40,30,10,.9)");c.fillStyle=g;spkCirc(c,x,y,r);c.fill();
-  g=c.createRadialGradient(x,y,r*.1,x,y,r*.78);g.addColorStop(0,"#0a0c10");g.addColorStop(.55,iris);g.addColorStop(1,"#1a1208");c.fillStyle=g;spkCirc(c,x,y,r*.78);c.fill();
-  c.fillStyle="#020306";spkCirc(c,x+r*.02,y,r*.44);c.fill();
-  c.fillStyle="rgba(255,255,255,.95)";spkCirc(c,x-r*.26,y-r*.3,r*.2);c.fill();
-  c.fillStyle="rgba(255,255,255,.55)";spkCirc(c,x+r*.24,y+r*.28,r*.09);c.fill();
+  c.fillStyle=ring;spkCirc(c,x,y,r);c.fill();c.strokeStyle=lid||"rgba(60,40,10,.6)";c.lineWidth=Math.max(1,r*.11);c.stroke();
+  c.fillStyle="#12151e";spkCirc(c,x+r*.14,y,r*.72);c.fill();
+  c.fillStyle="#fff";spkCirc(c,x+r*.36,y-r*.22,r*.22);c.fill();
 }
 function spkScales(c,x0,x1,y0,y1,sx,sy,rad,col,hi){
   for(var y=y0,row=0;y<y1;y+=sy,row++){for(var x=x0+(row%2?sx/2:0);x<x1;x+=sx){
@@ -1104,6 +1099,7 @@ function spkScales(c,x0,x1,y0,y1,sx,sy,rad,col,hi){
 }
 function drawKingyoArt(c,open){
   c.lineJoin="round";c.lineCap="round";
+  c.save();c.translate(0,215);c.scale(1,.74);c.translate(0,-215);
   function ray(x0,y0,x1,y1,col,w){c.strokeStyle=col;c.lineWidth=w;c.beginPath();c.moveTo(x0,y0);c.lineTo(x1,y1);c.stroke()}
   // flowing veil tail with scalloped edge
   var tg=c.createLinearGradient(0,0,300,0);tg.addColorStop(0,"rgba(255,185,95,.45)");tg.addColorStop(.6,"rgba(255,140,40,.8)");tg.addColorStop(1,"rgba(255,110,15,.95)");
@@ -1151,7 +1147,8 @@ function drawKingyoArt(c,open){
     c.fillStyle="rgba(255,255,255,.5)";c.beginPath();c.ellipse(694,232,8,3,.2,0,6.283);c.fill();
   }
   // eye
-  spkEye(c,646,190,26,"#f2c04a","#8a4a10","rgba(160,60,0,.6)");
+  c.restore();
+  spkEye(c,646,215+(190-215)*.74,26,"#f4c24a","#8a4a10","rgba(150,60,0,.7)");
 }
 function drawTamanArt(c,open){
   c.lineJoin="round";c.lineCap="round";
