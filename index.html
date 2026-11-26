@@ -436,6 +436,29 @@ function fill(any){
   for(var k in KINDS){if(!allowed(k))continue;var n=((ZS==="coral"||ZS==="beach")&&KINDS[k].nc)?KINDS[k].nc:KINDS[k].n;if(!KINDS[k].sp)n=Math.max(1,Math.round(n*DENS*((MASS&&!KINDS[k].danger&&!KINDS[k].bite&&!KINDS[k].friend)?8:1)));var c=countKind(k);var cnt=n-c;
     if(cnt>0)for(var i=0;i<Math.min(cnt,any?cnt:2);i++)spawn(k,any)}
 }
+/* BGM: マリンバ（どうがと おなじ おんがく）。あそんでる ときだけ ながれる */
+var bgmK=0,bgmNext=0,BGM_P=[523.25,587.33,659.25,783.99,880.0],BGM_S=[0,2,4,2,1,3,4,3];
+function bgmNote(f,t,v){
+  var o=audioCtx.createOscillator(),o2=audioCtx.createOscillator(),g=audioCtx.createGain();
+  o.type="sine";o2.type="sine";o.frequency.setValueAtTime(f,t);o2.frequency.setValueAtTime(f*3,t);
+  var g2=audioCtx.createGain();g2.gain.value=.3;
+  g.gain.setValueAtTime(0.0001,t);g.gain.linearRampToValueAtTime(v,t+.006);g.gain.exponentialRampToValueAtTime(.0005,t+.45);
+  o.connect(g);o2.connect(g2);g2.connect(g);g.connect(audioCtx.destination);
+  o.start(t);o2.start(t);o.stop(t+.5);o2.stop(t+.5);
+}
+setInterval(function(){
+  try{
+    if(state!=="playing"||muted||document.hidden){bgmNext=0;return}
+    if(!audioCtx)audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==="suspended")audioCtx.resume();
+    var now=audioCtx.currentTime;
+    if(!bgmNext||bgmNext<now-.2){bgmNext=now+.05;bgmK=0}
+    while(bgmNext<now+.6){
+      var k=bgmK%8,f=BGM_P[BGM_S[k]]*((k===0||k===4)?.5:1);
+      bgmNote(f,bgmNext,.06);bgmNext+=.4;bgmK++;
+    }
+  }catch(e){}
+},120);
 function snd(f,d,type,v,slide){
   if(muted)return;
   try{
