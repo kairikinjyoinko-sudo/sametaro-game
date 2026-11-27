@@ -1653,21 +1653,26 @@ function drawVolcano(){
 function drawBeachEnd(isSea){
   var c=ctx,z=cam.z,i,WX=isSea?8600:2500,EX=isSea?9250:3150;
   for(var sg=-1;sg<=1;sg+=2){if(isSea&&sg>0)continue;
-    var top=worldToScreen(0,-120).y,bot=worldToScreen(0,SEABED+900).y,l=worldToScreen(WX*sg,0).x;
+    var top=worldToScreen(0,-80).y,bot=worldToScreen(0,SEABED+900).y,l=worldToScreen(WX*sg,0).x,sd=worldToScreen((WX+700)*sg,0).x;
     if(sg>0?l>CW+40:l<-40)continue;
-    var x0=sg>0?l:-60,x1=sg>0?CW+60:l;
-    var g=c.createLinearGradient(0,top,0,bot);g.addColorStop(0,"#7a5a4c");g.addColorStop(.5,"#5b4238");g.addColorStop(1,"#2e211e");
-    c.fillStyle=g;c.beginPath();c.moveTo(x0,bot);c.lineTo(x0,top+rh(3)*40*z);for(i=1;i<=8;i++)c.lineTo(x0+i*(x1-x0)/8,top+rh(i*2.3+sg)*40*z);c.lineTo(x1,bot);c.closePath();c.fill();
-    c.strokeStyle="rgba(0,0,0,.55)";c.lineWidth=Math.max(1.5,3*z);c.lineCap="round";
-    for(i=0;i<12;i++){var cx=x0+30*z+i*(x1-x0)/11*.95+rh(i+sg*5)*20*z,y0=top+(40+rh(i*3)*60)*z,L=(160+rh(i*5)*380)*z;c.beginPath();c.moveTo(cx,y0);c.lineTo(cx+(rh(i*7)-.5)*14*z,y0+L*.5);c.lineTo(cx+(rh(i*9)-.5)*14*z,y0+L);c.stroke()}
-    // tunnel opening at sand level
-    var fl=worldToScreen(0,SEABED-HF(WX*sg)+6).y,ch=250*z,tx0=sg>0?l:-60,tx1=sg>0?CW+60:l;
-    var tg=c.createLinearGradient(tx0,0,tx1,0);var warm="rgba(255,236,170,.9)";
-    c.fillStyle="#140d0a";c.beginPath();c.moveTo(tx0,fl+30*z);c.lineTo(tx0,fl-ch*.8);c.quadraticCurveTo(tx0+sg*30*z,fl-ch,tx0+sg*110*z,fl-ch);c.lineTo(tx1,fl-ch);c.lineTo(tx1,fl+30*z);c.closePath();c.fill();
-    var ex=worldToScreen(EX*sg,0).x,lg=c.createRadialGradient(ex,fl-ch*.4,5,ex,fl-ch*.4,260*z);lg.addColorStop(0,warm);lg.addColorStop(1,"rgba(255,220,120,0)");c.fillStyle=lg;c.fillRect(Math.min(tx0,tx1),fl-ch,Math.abs(tx1-tx0),ch+30*z);
-    c.fillStyle="#b79c78";c.fillRect(Math.min(tx0,tx1),fl-4*z,Math.abs(tx1-tx0),34*z);
-    c.strokeStyle="rgba(0,0,0,.65)";c.lineWidth=Math.max(2,4*z);c.beginPath();c.moveTo(tx0,fl-ch*.8);c.quadraticCurveTo(tx0+sg*30*z,fl-ch,tx0+sg*110*z,fl-ch);c.lineTo(tx1,fl-ch);c.stroke();
-    c.font="900 "+Math.round(24*z)+"px Hiragino Maru Gothic ProN, Yu Gothic, sans-serif";c.textAlign="center";c.lineWidth=5;c.strokeStyle="rgba(0,0,0,.6)";var tt=isSea?"← ひがたへ":(sg>0?"うみへ →":"← うみへ"),tp=worldToScreen((WX-50)*sg,0).x;c.strokeText(tt,tp,fl-ch-12*z);c.fillStyle="#fff";c.fillText(tt,tp,fl-ch-12*z)
+    var xa=sg>0?l:-60,xb=sg>0?CW+60:l,N=14;
+    // sand mass fades in from the open water (soft edge, no hard wall)
+    var vg=c.createLinearGradient(0,top,0,bot);vg.addColorStop(0,"#f6e8bd");vg.addColorStop(.35,"#e9d29a");vg.addColorStop(1,"#c2a46c");
+    var fw=520*z,near=l-sg*fw,far=(sg>0?CW+60:-60);
+    if(!window.__sandTmp)window.__sandTmp=document.createElement("canvas");var tc=window.__sandTmp;if(tc.width!==cv.width||tc.height!==cv.height){tc.width=cv.width;tc.height=cv.height}
+    var tx=tc.getContext("2d");tx.setTransform(1,0,0,1,0,0);tx.clearRect(0,0,tc.width,tc.height);tx.setTransform(ctx.getTransform());tx.globalCompositeOperation="source-over";
+    tx.fillStyle=vg;tx.beginPath();tx.moveTo(Math.min(near,far),bot);for(var q0=0;q0<=40;q0++){var qx0=Math.min(near,far)+q0/40*Math.abs(far-near);tx.lineTo(qx0,top+Math.sin(qx0*.004+sg)*30*z-20*z*Math.abs(Math.sin(qx0*.0011)))}tx.lineTo(Math.max(near,far),bot);tx.closePath();tx.fill();
+    tx.globalCompositeOperation="destination-in";var mg=tx.createLinearGradient(near,0,near+sg*fw,0);mg.addColorStop(0,"rgba(0,0,0,0)");mg.addColorStop(1,"rgba(0,0,0,1)");tx.fillStyle=mg;tx.fillRect(-10,-10,CW+20,CH+20);
+    c.save();c.setTransform(1,0,0,1,0,0);c.drawImage(tc,0,0);c.restore();
+    // soft sand ripples
+    c.strokeStyle="rgba(150,120,70,.22)";c.lineWidth=Math.max(1,2*z);for(i=0;i<9;i++){var ry=top+(60+i*70)*z;c.beginPath();for(var q=0;q<=20;q++){var qx=near+sg*(q/20)*Math.abs(far-near);if(q===0)c.moveTo(qx,ry);else c.lineTo(qx,ry+Math.sin(q*.9+i)*5*z)}c.stroke()}
+    // channel (the passage): lighter, water-to-sand glow
+    var fl=worldToScreen(0,SEABED-HF(WX*sg)+6).y,ch=250*z,tx0=sg>0?l-200*z:-60,tx1=sg>0?CW+60:l+200*z;
+    var cgr=c.createLinearGradient(sg>0?l-200*z:l+200*z,0,worldToScreen(EX*sg,0).x,0);cgr.addColorStop(0,"rgba(120,215,230,0)");cgr.addColorStop(.5,"rgba(215,232,205,.55)");cgr.addColorStop(1,"rgba(255,244,200,.95)");
+    c.fillStyle=cgr;c.beginPath();c.moveTo(tx0,fl+30*z);c.lineTo(tx0,fl-ch);c.lineTo(tx1,fl-ch);c.lineTo(tx1,fl+30*z);c.closePath();c.fill();
+    var fg=c.createLinearGradient(sg>0?l-200*z:l+200*z,0,worldToScreen(EX*sg,0).x,0);fg.addColorStop(0,"rgba(243,226,179,0)");fg.addColorStop(.5,"rgba(243,226,179,1)");fg.addColorStop(1,"#f3e2b3");
+    c.fillStyle=fg;c.fillRect(Math.min(tx0,tx1),fl-4*z,Math.abs(tx1-tx0),34*z);
+    c.font="900 "+Math.round(24*z)+"px Hiragino Maru Gothic ProN, Yu Gothic, sans-serif";c.textAlign="center";c.lineWidth=5;c.strokeStyle="rgba(0,0,0,.45)";var tt=isSea?"← ひがたへ":(sg>0?"うみへ →":"← うみへ"),tp=worldToScreen((WX-50)*sg,0).x;c.strokeText(tt,tp,fl-ch-12*z);c.fillStyle="#fff";c.fillText(tt,tp,fl-ch-12*z)
   }
 }
 function drawHoleRoom(sbB){
