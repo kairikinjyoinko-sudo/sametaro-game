@@ -1757,7 +1757,7 @@ function drawTetra1(x,y,r,sd){
 }
 
 function drawQuay(){
-  var z=cam.z,c=ctx,wA=BR-620,wB=BR+600,sbY=SEABED-HF(BR-200)+10,topY=sbY-575,botY=sbY+400;
+  var z=cam.z,c=ctx,wA=BR-620,wB=BR+600,sbY=SEABED-HF(BR-200)+10,topY=-70,botY=SEABED+900;
   var a=worldToScreen(wA,topY),b=worldToScreen(wB,botY);
   if(b.x<-60||a.x>CW+60)return;
   var w=b.x-a.x,h=b.y-a.y,i;
@@ -1787,6 +1787,32 @@ function drawQuay(){
   // rope railing
   c.strokeStyle="#c9c3b0";c.lineWidth=Math.max(1,3*z);c.beginPath();c.moveTo(a.x+w*.62,a.y-52*z);c.quadraticCurveTo(a.x+w*.72,a.y-30*z,a.x+w*.82,a.y-52*z);c.stroke();
   c.fillStyle="#7a7d80";c.fillRect(a.x+w*.62-4*z,a.y-70*z,8*z,58*z);c.fillRect(a.x+w*.82-4*z,a.y-70*z,8*z,58*z);
+  // protruding catwalk
+  var g=fisherGeo(),pc=worldToScreen(wA-340,topY),u=z,gy0=a.y-16*u;
+  c.fillStyle="#b6b8b2";c.fillRect(pc.x,a.y,a.x-pc.x+2,38*u);c.fillStyle="#e1e2dc";c.fillRect(pc.x,a.y-16*u,a.x-pc.x+2,18*u);
+  c.fillStyle="rgba(60,64,60,.3)";c.fillRect(pc.x,a.y+38*u,a.x-pc.x,8*u);
+  c.strokeStyle="rgba(70,72,68,.4)";c.lineWidth=Math.max(1,2.5*u);for(i=1;i<7;i++){var cx2=pc.x+i*(a.x-pc.x)/7;c.beginPath();c.moveTo(cx2,a.y-14*u);c.lineTo(cx2,a.y+36*u);c.stroke()}
+  c.strokeStyle="#8d908b";c.lineWidth=Math.max(2,9*u);c.beginPath();c.moveTo(a.x,a.y+230*u);c.lineTo(pc.x+30*u,a.y+40*u);c.stroke();
+  c.fillStyle="#8d908b";c.fillRect(pc.x-4*u,a.y-60*u,8*u,50*u);
+  // fisherman (faces left)
+  var fs=worldToScreen(g.fx,topY),fx=fs.x,fy=gy0,hk=hookT>0;
+  c.fillStyle="#2f7fd0";c.fillRect(fx+44*u,fy-34*u,26*u,34*u);c.fillStyle="#1e5fa8";c.fillRect(fx+42*u,fy-36*u,30*u,7*u);
+  c.fillStyle="#3b4a6b";c.fillRect(fx-14*u,fy-50*u,13*u,50*u);c.fillRect(fx+2*u,fy-50*u,13*u,50*u);
+  c.fillStyle="#222";c.fillRect(fx-20*u,fy-6*u,20*u,6*u);c.fillRect(fx+2*u,fy-6*u,20*u,6*u);
+  c.fillStyle="#ff8a2a";c.beginPath();c.roundRect?c.roundRect(fx-20*u,fy-108*u,42*u,62*u,10*u):c.rect(fx-20*u,fy-108*u,42*u,62*u);c.fill();
+  c.fillStyle="#ffd34a";c.fillRect(fx-20*u,fy-72*u,42*u,6*u);
+  c.fillStyle="#f2c9a0";c.beginPath();c.arc(fx,fy-126*u,17*u,0,6.283);c.fill();
+  c.fillStyle="#e24b4b";c.beginPath();c.arc(fx,fy-130*u,18*u,Math.PI,0);c.fill();c.fillRect(fx-34*u,fy-132*u,30*u,6*u);
+  c.fillStyle="#222";c.beginPath();c.arc(fx-8*u,fy-124*u,2.4*u,0,6.283);c.fill();
+  c.strokeStyle="#c8651a";c.lineWidth=Math.max(2,9*u);c.lineCap="round";
+  var gx=fx-30*u,gyy=fy-92*u;c.beginPath();c.moveTo(fx-10*u,fy-98*u);c.lineTo(gx,gyy);c.stroke();
+  // rod, line, hook
+  var tp=worldToScreen(g.tipX,g.tipY+(hk?70+Math.sin(time*30)*5:0)),hp=worldToScreen(g.hx,g.hy);
+  c.strokeStyle="#3a2a1c";c.lineWidth=Math.max(1.5,5*u);c.beginPath();c.moveTo(gx+10*u,gyy+14*u);c.quadraticCurveTo((gx+tp.x)/2,Math.min(gyy,tp.y)-30*u+(hk?50*u:0),tp.x,tp.y);c.stroke();
+  c.strokeStyle="rgba(255,255,255,.75)";c.lineWidth=Math.max(1,1.6*u);c.beginPath();c.moveTo(tp.x,tp.y);c.lineTo(hp.x,hp.y-14*u);c.stroke();
+  c.strokeStyle="#dfe6ea";c.lineWidth=Math.max(1.5,3*u);c.beginPath();c.moveTo(hp.x,hp.y-14*u);c.lineTo(hp.x,hp.y+6*u);c.arc(hp.x-8*u,hp.y+6*u,8*u,0,Math.PI);c.stroke();
+  c.fillStyle="#ff5a5a";c.beginPath();c.ellipse(hp.x-14*u,hp.y+14*u,7*u,4*u,.5,0,6.283);c.fill();
+  if(hk){c.fillStyle="#ff3b3b";c.font="900 "+Math.round(44*u)+"px sans-serif";c.textAlign="center";c.fillText("!",fx-4*u,fy-160*u)}
 }
 function drawTetra(){
   var z=cam.z,c=ctx;
@@ -2350,11 +2376,25 @@ function draw(){
   document.getElementById("lv").textContent="レベル "+(lv-1)+nx+"　"+lenM().toFixed(1)+"m";
 }
 var last=0;
+var hookT=0,hookCD=0;
+function fisherOn(){return SV.stage==="sea"&&!inCave&&!inDeep&&!inSecret&&who!=="R"&&ZS!=="cave"}
+function fisherGeo(){var wA=BR-620,topY=-70,tipX=wA-440,tipY=topY-240,baseHY=topY+520+Math.sin(time*1.4)*34;
+  var f=hookCD>0?Math.max(0,Math.min(1,3-hookCD)):1,hy=tipY+90+(baseHY-tipY-90)*f;if(hookT>0)hy-=(2-hookT)*60;
+  return {wA:wA,topY:topY,fx:wA-200,tipX:tipX,tipY:tipY,hx:tipX+Math.sin(time*.9)*10,hy:hy,f:f}}
+function fisherPost(dt){
+  if(!P||state!=="playing"||!fisherOn()){hookT=0;return}
+  if(Math.abs(P.x-(BR-900))>2400)return;
+  hookCD=Math.max(0,hookCD-dt);var g=fisherGeo();
+  if(hookT>0){hookT-=dt;P.x=g.hx;P.y=g.hy+PW()*.12;P.vx=0;P.vy=0;
+    if(hookT<=0){hookT=0;hookCD=3;invul=Math.max(invul,1.5)}}
+  else if(hookCD<=2&&invul<=0){var d=Math.hypot(P.mx-g.hx,P.my-g.hy);
+    if(d<PW()*.45+28){hookT=2;shakeT=.3;float(P.x,P.y-70,"つられた！","#ffe08a");snd(300,.2,"sawtooth",.1,180)}}
+}
 var __touch=(window.matchMedia&&matchMedia("(pointer:coarse)").matches)||("ontouchstart" in window);
 function loop(ts){
   if(__touch&&ts-last<30){requestAnimationFrame(loop);return}
   var dt=Math.min(0.05,(ts-last)/1000||0.016);last=ts;
-  if(state!=="paused")update(dt);draw();requestAnimationFrame(loop);
+  if(state!=="paused"){update(dt);fisherPost(dt)}draw();requestAnimationFrame(loop);
 }
 var BT=null,olPeer=null,olConn=null,olTok=0,olTimer=0,olSendT=0,olHudT=0,PRE="sametaro-lobby-v1-";
 function olShow(h,t,b){document.getElementById("olh").textContent=h;document.getElementById("olp").textContent=t;document.getElementById("olok").textContent=b||"やめる";document.getElementById("olv").hidden=false}
