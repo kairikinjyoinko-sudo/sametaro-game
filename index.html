@@ -625,7 +625,7 @@ function update(dt){
   var spd0=Math.hypot(P.vx,P.vy);P.ph+=dt*(4+spd0/50+(boosting?5:0));P.sp0=spd0;
   if(state==="playing"){
     if(BT&&state==="playing"){BT.t-=dt;if(BT.t<=0)battleEnd()}
-    hunger-=(3.0+0.9*lv)*CHR[who].dec*(1-0.06*SV.ups[who].food)*dt*(boosting?1.35:1);
+    hunger-=(3.0+0.9*lv)*0.72*CHR[who].dec*(1-0.06*SV.ups[who].food)*dt*(boosting?1.35:1);
     if(hunger<=0){hunger=0;gameOver()}
   }
   var er=W*0.32*CHR[who].eatr*((who==="A"||who==="O")?.55:1);
