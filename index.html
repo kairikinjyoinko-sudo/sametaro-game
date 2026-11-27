@@ -1739,7 +1739,7 @@ function drawTetra(){
   }
 }
 var __o3={cv:null,cx:null};
-function render3D(sx,sy,half,R,fn){
+function render3D(sx,sy,half,R,fn,strong,bk){bk=bk||.16;
   if(half>560||!__o3.cv&&false){fn();return}
   var px=Math.ceil(half*2*DPR);
   if(!__o3.cv){__o3.cv=document.createElement("canvas");__o3.cx=__o3.cv.getContext("2d")}
@@ -1748,6 +1748,18 @@ function render3D(sx,sy,half,R,fn){
   ox.setTransform(1,0,0,1,0,0);ox.globalCompositeOperation="source-over";ox.globalAlpha=1;ox.clearRect(0,0,oc.width,oc.height);
   ox.setTransform(DPR,0,0,DPR,-bx*DPR,-by*DPR);
   ctx=ox;try{fn()}catch(err){}ctx=main;
+  if(strong&&("filter" in ox)){
+    var sz=px,sc=.5,mw=Math.max(8,Math.ceil(sz*sc));
+    if(!__o3.m){__o3.m=document.createElement("canvas");__o3.l=document.createElement("canvas");__o3.mx=__o3.m.getContext("2d");__o3.lx=__o3.l.getContext("2d")}
+    var mc=__o3.m,lc=__o3.l,mx=__o3.mx,lx=__o3.lx;if(mc.width<mw){mc.width=mw;mc.height=mw;lc.width=mw;lc.height=mw}
+    mx.setTransform(1,0,0,1,0,0);mx.globalCompositeOperation="source-over";mx.clearRect(0,0,mc.width,mc.height);
+    mx.filter="blur("+Math.max(2,R*bk*DPR*sc)+"px)";mx.drawImage(oc,0,0,sz,sz,0,0,mw,mw);mx.filter="none";
+    lx.setTransform(1,0,0,1,0,0);lx.globalCompositeOperation="source-over";lx.clearRect(0,0,lc.width,lc.height);lx.fillStyle="#001a33";lx.fillRect(0,0,mw,mw);lx.globalCompositeOperation="destination-out";lx.drawImage(mc,0,0,mw,mw,0,0,mw,mw);lx.globalCompositeOperation="source-over";
+    ox.setTransform(1,0,0,1,0,0);ox.globalCompositeOperation="source-atop";ox.globalAlpha=bk<.1?.5:.75;ox.drawImage(lc,0,0,mw,mw,0,0,sz,sz);
+    var off=Math.max(1.2,R*(bk<.1?.035:.07)*DPR*sc);
+    lx.clearRect(0,0,lc.width,lc.height);lx.globalCompositeOperation="source-over";lx.drawImage(oc,0,0,sz,sz,0,0,mw,mw);lx.globalCompositeOperation="destination-out";lx.drawImage(oc,0,0,sz,sz,off,off*1.4,mw,mw);lx.globalCompositeOperation="source-in";lx.fillStyle="#ffffff";lx.fillRect(0,0,mw,mw);lx.globalCompositeOperation="source-over";
+    ox.globalAlpha=.7;ox.drawImage(lc,0,0,mw,mw,0,0,sz,sz);ox.globalAlpha=1;
+  }
   ox.setTransform(DPR,0,0,DPR,0,0);ox.globalCompositeOperation="source-atop";
   var g=ox.createLinearGradient(0,half-R*1.0,0,half+R*1.0);g.addColorStop(0,"rgba(255,255,255,.30)");g.addColorStop(.45,"rgba(255,255,255,0)");g.addColorStop(.6,"rgba(0,18,44,.06)");g.addColorStop(1,"rgba(0,18,44,.40)");
   ox.fillStyle=g;ox.fillRect(0,0,half*2,half*2);
@@ -1773,21 +1785,7 @@ function drawFish3D(e){
   var sp=worldToScreen(e.x,e.y),R=e.r*cam.z;
   if(R<24||sp.x<-R*4||sp.x>CW+R*4||sp.y<-R*4||sp.y>CH+R*4){drawFish(e);return}
   var half=Math.round(R*3.4);if(half>560){drawFish(e);return}
-  var px=Math.ceil(half*2*DPR);
-  if(!__o3.cv){__o3.cv=document.createElement("canvas");__o3.cx=__o3.cv.getContext("2d")}
-  var oc=__o3.cv,ox=__o3.cx;if(oc.width<px||oc.height<px){oc.width=Math.max(px,oc.width);oc.height=Math.max(px,oc.height)}
-  var main=ctx,bx=sp.x-half,by=sp.y-half;
-  ox.setTransform(1,0,0,1,0,0);ox.globalCompositeOperation="source-over";ox.globalAlpha=1;ox.clearRect(0,0,oc.width,oc.height);
-  ox.setTransform(DPR,0,0,DPR,-bx*DPR,-by*DPR);
-  ctx=ox;try{drawFish(e)}catch(err){}ctx=main;
-  // volume lighting: light from above-left
-  ox.setTransform(DPR,0,0,DPR,0,0);ox.globalCompositeOperation="source-atop";
-  var g=ox.createLinearGradient(0,half-R*1.0,0,half+R*1.0);g.addColorStop(0,"rgba(255,255,255,.30)");g.addColorStop(.45,"rgba(255,255,255,0)");g.addColorStop(.6,"rgba(0,18,44,.06)");g.addColorStop(1,"rgba(0,18,44,.42)");
-  ox.fillStyle=g;ox.fillRect(0,0,half*2,half*2);
-  var sg=ox.createRadialGradient(half-R*.35,half-R*.45,0,half-R*.35,half-R*.45,R*.9);sg.addColorStop(0,"rgba(255,255,255,.26)");sg.addColorStop(1,"rgba(255,255,255,0)");ox.fillStyle=sg;ox.fillRect(0,0,half*2,half*2);
-  ox.globalCompositeOperation="source-over";
-  main.save();main.shadowColor="rgba(0,20,45,.38)";main.shadowBlur=Math.min(26,R*.35);main.shadowOffsetX=R*.06;main.shadowOffsetY=R*.16;
-  main.drawImage(oc,0,0,px,px,bx,by,half*2,half*2);main.restore();
+  render3D(sp.x,sp.y,half,R,function(){drawFish(e)},R>=34);
 }
 function drawFish(e){
   if(e.k==="mega"){drawMega(e);return}
@@ -2216,7 +2214,7 @@ function draw(){
   if(state==="playing"&&SV.pet){var pp=worldToScreen(pet.x,pet.y);drawChar(SV.pet,pp.x,pp.y,PW()*.26*cam.z,pet.face>0?0:Math.PI,time*6,.6,0,1)}
   var ph0=(P.y<0&&ZS!=="town")?Math.atan2(P.vy,P.vx):P.h;
   var amp=Math.min(1.5,.45+(P.sp0||0)/lvDef().sp*.9);
-  render3D(ps.x,ps.y,Math.round(W*1.7),W*.55,function(){drawChar(who,ps.x,ps.y,W,ph0,P.ph,amp,P.mo,(inst.t>0&&who==="g")?.28:((invul>0&&Math.floor(time*14)%2===0)?.45:1),function(){if(levelT>0){var k=1+Math.sin(levelT*Math.PI)*0.25;ctx.scale(k,k)}})});
+  render3D(ps.x,ps.y,Math.round(W*1.7),W*.55,function(){drawChar(who,ps.x,ps.y,W,ph0,P.ph,amp,P.mo,(inst.t>0&&who==="g")?.28:((invul>0&&Math.floor(time*14)%2===0)?.45:1),function(){if(levelT>0){var k=1+Math.sin(levelT*Math.PI)*0.25;ctx.scale(k,k)}})},true,.05);
   for(var dq=0;dq<decoys.length;dq++){var dz=worldToScreen(decoys[dq].x,decoys[dq].y);drawChar("m",dz.x,dz.y,PW()*cam.z*.8,Math.sin(decoys[dq].t*1.5)*.3+(dz.x<ps.x?Math.PI:0),decoys[dq].t*4,.5,0,.8)}
   if(inst.t>0&&who==="s"&&state==="playing"){
     var LA2=laserDir(),lsf2=Math.max(.6,Math.min(2.2,lenM()/2)),LL2=1100+500*lsf2,lo2=laserOrg(),m0=worldToScreen(lo2.x,lo2.y),m1=worldToScreen(lo2.x+Math.cos(LA2)*LL2,lo2.y+Math.sin(LA2)*LL2);
