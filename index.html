@@ -1739,7 +1739,7 @@ function drawTetra(){
   }
 }
 var __o3={cv:null,cx:null};
-function render3D(sx,sy,half,R,fn,strong,bk){bk=bk||.16;
+function render3D(sx,sy,half,R,fn,strong,bk,gl){bk=bk||.16;
   if(half>560||!__o3.cv&&false){fn();return}
   var px=Math.ceil(half*2*DPR);
   if(!__o3.cv){__o3.cv=document.createElement("canvas");__o3.cx=__o3.cv.getContext("2d")}
@@ -1764,6 +1764,23 @@ function render3D(sx,sy,half,R,fn,strong,bk){bk=bk||.16;
   var g=ox.createLinearGradient(0,half-R*1.0,0,half+R*1.0);g.addColorStop(0,"rgba(255,255,255,.30)");g.addColorStop(.45,"rgba(255,255,255,0)");g.addColorStop(.6,"rgba(0,18,44,.06)");g.addColorStop(1,"rgba(0,18,44,.40)");
   ox.fillStyle=g;ox.fillRect(0,0,half*2,half*2);
   var sg=ox.createRadialGradient(half-R*.35,half-R*.45,0,half-R*.35,half-R*.45,R*.9);sg.addColorStop(0,"rgba(255,255,255,.24)");sg.addColorStop(1,"rgba(255,255,255,0)");ox.fillStyle=sg;ox.fillRect(0,0,half*2,half*2);
+  if(gl){
+    // stronger belly shade
+    var bg=ox.createLinearGradient(0,half-R*.2,0,half+R*.9);bg.addColorStop(0,"rgba(0,20,70,0)");bg.addColorStop(1,"rgba(0,20,70,.34)");ox.fillStyle=bg;ox.fillRect(0,0,half*2,half*2);
+    // glossy streak along the back
+    ox.save();ox.translate(half-R*.05,half-R*.46);ox.scale(1,.2);var hg=ox.createRadialGradient(0,0,0,0,0,R*.85);hg.addColorStop(0,"rgba(255,255,255,.55)");hg.addColorStop(.6,"rgba(255,255,255,.14)");hg.addColorStop(1,"rgba(255,255,255,0)");ox.fillStyle=hg;ox.fillRect(-R,-R*2,R*2,R*4);ox.restore();
+    // small hot spot
+    var hs=ox.createRadialGradient(half+R*.25,half-R*.5,0,half+R*.25,half-R*.5,R*.22);hs.addColorStop(0,"rgba(255,255,255,.7)");hs.addColorStop(1,"rgba(255,255,255,0)");ox.fillStyle=hs;ox.fillRect(0,0,half*2,half*2);
+    // cyan rim light from below (water bounce)
+    ox.setTransform(1,0,0,1,0,0);
+    var sz2=px,mw2=Math.max(8,Math.ceil(sz2*.5)),o2=Math.max(1.5,R*.05*DPR*.5);
+    if(!__o3.l){__o3.m=document.createElement("canvas");__o3.l=document.createElement("canvas");__o3.mx=__o3.m.getContext("2d");__o3.lx=__o3.l.getContext("2d")}
+    var lc2=__o3.l,lx2=__o3.lx;if(lc2.width<mw2){lc2.width=mw2;lc2.height=mw2;__o3.m.width=mw2;__o3.m.height=mw2}
+    lx2.setTransform(1,0,0,1,0,0);lx2.globalCompositeOperation="source-over";lx2.clearRect(0,0,lc2.width,lc2.height);
+    lx2.drawImage(oc,0,0,sz2,sz2,0,0,mw2,mw2);lx2.globalCompositeOperation="destination-out";lx2.drawImage(oc,0,0,sz2,sz2,0,-o2*1.6,mw2,mw2);lx2.globalCompositeOperation="source-in";lx2.fillStyle="#8cf3ff";lx2.fillRect(0,0,mw2,mw2);lx2.globalCompositeOperation="source-over";
+    ox.globalAlpha=.45;ox.drawImage(lc2,0,0,mw2,mw2,0,0,sz2,sz2);ox.globalAlpha=1;
+    ox.setTransform(DPR,0,0,DPR,0,0);
+  }
   ox.globalCompositeOperation="source-over";
   main.save();main.shadowColor="rgba(0,20,45,.38)";main.shadowBlur=Math.min(26,R*.35);main.shadowOffsetX=R*.06;main.shadowOffsetY=R*.16;
   main.drawImage(oc,0,0,px,px,bx,by,half*2,half*2);main.restore();
@@ -2214,7 +2231,7 @@ function draw(){
   if(state==="playing"&&SV.pet){var pp=worldToScreen(pet.x,pet.y);drawChar(SV.pet,pp.x,pp.y,PW()*.26*cam.z,pet.face>0?0:Math.PI,time*6,.6,0,1)}
   var ph0=(P.y<0&&ZS!=="town")?Math.atan2(P.vy,P.vx):P.h;
   var amp=Math.min(1.5,.45+(P.sp0||0)/lvDef().sp*.9);
-  render3D(ps.x,ps.y,Math.round(W*1.7),W*.55,function(){drawChar(who,ps.x,ps.y,W,ph0,P.ph,amp,P.mo,(inst.t>0&&who==="g")?.28:((invul>0&&Math.floor(time*14)%2===0)?.45:1),function(){if(levelT>0){var k=1+Math.sin(levelT*Math.PI)*0.25;ctx.scale(k,k)}})},true,.05);
+  render3D(ps.x,ps.y,Math.round(W*1.7),W*.55,function(){drawChar(who,ps.x,ps.y,W,ph0,P.ph,amp,P.mo,(inst.t>0&&who==="g")?.28:((invul>0&&Math.floor(time*14)%2===0)?.45:1),function(){if(levelT>0){var k=1+Math.sin(levelT*Math.PI)*0.25;ctx.scale(k,k)}})},true,.1,true);
   for(var dq=0;dq<decoys.length;dq++){var dz=worldToScreen(decoys[dq].x,decoys[dq].y);drawChar("m",dz.x,dz.y,PW()*cam.z*.8,Math.sin(decoys[dq].t*1.5)*.3+(dz.x<ps.x?Math.PI:0),decoys[dq].t*4,.5,0,.8)}
   if(inst.t>0&&who==="s"&&state==="playing"){
     var LA2=laserDir(),lsf2=Math.max(.6,Math.min(2.2,lenM()/2)),LL2=1100+500*lsf2,lo2=laserOrg(),m0=worldToScreen(lo2.x,lo2.y),m1=worldToScreen(lo2.x+Math.cos(LA2)*LL2,lo2.y+Math.sin(LA2)*LL2);
