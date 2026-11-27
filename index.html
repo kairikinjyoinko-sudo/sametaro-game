@@ -231,7 +231,7 @@ var CHR={J:{note:"5mまで・さかな いがいは たべれない",name:"カ�
 var SQF=[];var BASE={g:"G",m:"M",s:"S",O:"O"};var SAMEM={Z:"S"};function wb(){return BASE[who]||SAMEM[who]||who}
 var who="G";
 var SBD=4800,CAVEB=6300,SEABED=4800,SEABEDT=4800,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
-var PAL={sea:{ridge:"rgba(18,48,72,.7)",g0:"#2d5873",g1:"#0e2236",hi:"rgba(140,200,230,.35)",rock:"#2c4256"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(10,36,60,.85)",g0:"#25506f",g1:"#071a2c",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"},star:{ridge:"rgba(120,70,190,.6)",g0:"#6a38a8",g1:"#1d0f42",hi:"rgba(255,220,255,.55)",rock:"#4a2a80"}};
+var PAL={sea:{ridge:"rgba(150,125,85,.5)",g0:"#d9c496",g1:"#76664a",hi:"rgba(255,246,215,.55)",rock:"#7f8b84"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(10,36,60,.85)",g0:"#25506f",g1:"#071a2c",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"},star:{ridge:"rgba(120,70,190,.6)",g0:"#6a38a8",g1:"#1d0f42",hi:"rgba(255,220,255,.55)",rock:"#4a2a80"}};
 PAL.deep=Object.assign({},PAL.sea,{ridge:"rgba(6,16,28,.8)",g0:"#1c3a50",g1:"#050c16",rock:"#1a2c3a"});
 var SBZ={sea:2600,coral:2600,cave:2300,beach:1100,ice:2600,volcano:2600,ruins:2600,star:3200};
 var MASS=0,inSecret=false,inDeep=false,inCave=false,inHole=false,zoneCD=0,spaceSeen=false,spaceMsgT=0;function spaceT(){return ZS==="town"?Math.max(0,Math.min(1,(400-cam.y)/2800)):0}
@@ -645,6 +645,7 @@ function update(dt){
   }
   var er=W*0.32*CHR[who].eatr*((who==="A"||who==="O")?.55:1);
   P.near=false;
+  if(ZS==="sea"&&SV.stage==="sea")schoolEat(er);
   for(var i=0;i<ents.length;i++){
     var e=ents[i],d=e.def;
     if(e.boss){e.t+=dt;megaAI(e,dt,W);continue}
@@ -1593,19 +1594,47 @@ function drawReefFish(x,y,s,dir,col,tm){
   c.fillStyle="rgba(255,255,255,.55)";c.beginPath();c.ellipse(s*.15,0,s*.08,s*.4,0,0,6.283);c.fill();
   c.fillStyle="#111";c.beginPath();c.arc(s*.5,-s*.1,Math.max(.8,s*.09),0,6.283);c.fill();c.restore();
 }
+var SCHE={};
+function schoolFish(m,i,tm,raw){
+  if(SCHE[m*1000+i]>tm)return null;
+  var SZ=2600,big=rh(m*1.9)>.5,cx0=(m+.5)*SZ+rh(m*3.3)*600,cyb=900+rh(m*7.7)*(SEABED-2000),sp=.25+rh(m)*.2;
+  var cx=cx0+Math.sin(tm*.07+m)*500,cy=cyb+Math.sin(tm*.11+m*2)*120;
+  var u=rh(i*1.37+m),v=rh(i*2.91+m*3),ph=tm*sp+u*6.283,rx=(big?420:280)*(.3+u*.8),ry=(big?230:150)*(.25+v*.85);
+  var fx=cx+Math.cos(ph)*rx,fy=cy+Math.sin(ph+v*3)*ry+Math.sin(tm*.9+i)*8;
+  if(P&&!raw){var dx=fx-P.x,dy=fy-P.y,dd=Math.hypot(dx,dy);if(dd<170&&dd>1){var pu=(170-dd)*.3;fx+=dx/dd*pu;fy+=dy/dd*pu}}
+  return {x:fx,y:fy,vx:-Math.sin(ph),big:big,pal:rh(m*4.1)>.5?["#8fd8b0","#3f9a8c"]:["#b9d8ea","#5f8fb0"],s:7+rh(i*3.3+m)*5}
+}
+function schoolN(m){return rh(m*1.9)>.5?130:80}
 function drawSchools(){
   var c=ctx,z=cam.z,tm=time,SZ=2600,m0=Math.floor((cam.x-CW/2/z)/SZ)-1,m1=Math.ceil((cam.x+CW/2/z)/SZ)+1;
-  for(var m=m0;m<=m1;m++){if(rh(m*5.9+2.2)<.35)continue;
-    var big=rh(m*1.9)>.5,N=big?130:80,cx0=(m+.5)*SZ+rh(m*3.3)*600,cyb=900+rh(m*7.7)*(SEABED-2000),sp=.25+rh(m)*.2,dirS=rh(m*2.5)>.5?1:-1;
-    var cx=cx0+Math.sin(tm*.07+m)*500,cy=cyb+Math.sin(tm*.11+m*2)*120,pal=rh(m*4.1)>.5?["#8fd8b0","#3f9a8c"]:["#b9d8ea","#5f8fb0"];
-    for(var i=0;i<N;i++){var u=rh(i*1.37+m),v=rh(i*2.91+m*3),ph=tm*sp+u*6.283,rx=(big?420:280)*(.3+u*.8),ry=(big?230:150)*(.25+v*.85);
-      var fx=cx+Math.cos(ph)*rx,fy=cy+Math.sin(ph*1.0+v*3)*ry+Math.sin(tm*.9+i)*8;
-      var vx=-Math.sin(ph),sc=worldToScreen(fx,fy);if(sc.x<-60||sc.x>CW+60||sc.y<-60||sc.y>CH+60)continue;
-      drawReefFish(sc.x,sc.y,(7+rh(i*3.3+m)*5)*z,vx>=0?1:-1,pal,tm*.8+i)}
+  for(var m=m0;m<=m1;m++){if(rh(m*5.9+2.2)<.35)continue;var N=schoolN(m);
+    for(var i=0;i<N;i++){var f=schoolFish(m,i,tm);if(!f)continue;var sc=worldToScreen(f.x,f.y);if(sc.x<-60||sc.x>CW+60||sc.y<-60||sc.y>CH+60)continue;
+      drawReefFish(sc.x,sc.y,f.s*z,f.vx>=0?1:-1,f.pal,tm*.8+i)}
   }
 }
+function schoolEat(er){
+  var SZ=2600,m0=Math.floor((P.x-900)/SZ),m1=Math.floor((P.x+900)/SZ);
+  for(var m=m0;m<=m1;m++){if(rh(m*5.9+2.2)<.35)continue;var N=schoolN(m);
+    for(var i=0;i<N;i++){var f=schoolFish(m,i,time,true);if(!f)continue;
+      if(Math.hypot(f.x-P.mx,f.y-P.my)<er+30){SCHE[m*1000+i]=time+35;eat({def:KINDS.tiny,x:f.x,y:f.y,r:9,k:"tiny"})}}}
+}
+function drawSandDetail(sbB){
+  var c=ctx,z=cam.z,i,k,x3,wx;
+  for(k=0;k<5;k++){var off=(10+k*14)*z;c.strokeStyle="rgba(110,85,48,"+(.26-k*.03)+")";c.lineWidth=Math.max(1,(2.4-k*.3)*z);c.beginPath();
+    for(x3=0;x3<=CW+20;x3+=20){wx=cam.x+(x3-CW/2)/z;var yy=sbB-HF(wx)*z+off+Math.sin(wx*.028+k*1.7)*3.2*z+Math.sin(wx*.09+k)*1.4*z;if(x3===0)c.moveTo(x3,yy);else c.lineTo(x3,yy)}c.stroke();
+    c.strokeStyle="rgba(255,247,222,"+(.22-k*.03)+")";c.lineWidth=Math.max(.8,1.4*z);c.beginPath();
+    for(x3=0;x3<=CW+20;x3+=20){wx=cam.x+(x3-CW/2)/z;var y2=sbB-HF(wx)*z+off-4*z+Math.sin(wx*.028+k*1.7)*3.2*z+Math.sin(wx*.09+k)*1.4*z;if(x3===0)c.moveTo(x3,y2);else c.lineTo(x3,y2)}c.stroke()}
+  var q0=Math.floor((cam.x-CW/2/z)/16)-1,q1=Math.ceil((cam.x+CW/2/z)/16)+1;
+  for(var q=q0;q<=q1;q++){var hh=rh(q*2.37),wxq=q*16+hh*14,sx=CW/2+(wxq-cam.x)*z,sy=sbB-HF(wxq)*z+(6+rh(q*5.1)*80)*z;
+    c.fillStyle=hh>.5?"rgba(95,72,40,.45)":"rgba(255,248,225,.5)";c.beginPath();c.arc(sx,sy,Math.max(.7,(.8+hh*1.4)*z),0,6.283);c.fill()}
+  var s0=Math.floor((cam.x-CW/2/z)/230)-1,s1=Math.ceil((cam.x+CW/2/z)/230)+1;
+  for(var u=s0;u<=s1;u++){var hu=rh(u*4.9);if(hu<.45)continue;var wxu=u*230+hu*160,sxu=CW/2+(wxu-cam.x)*z,syu=sbB-HF(wxu)*z+(8+rh(u*1.3)*24)*z,rr=(5+rh(u*2.2)*7)*z;
+    if(hu<.7){c.fillStyle="#d89a84";c.beginPath();c.ellipse(sxu,syu,rr,rr*.8,0,Math.PI,0);c.fill();c.strokeStyle="rgba(120,60,45,.6)";c.lineWidth=Math.max(.7,z);for(var rb=-2;rb<=2;rb++){c.beginPath();c.moveTo(sxu,syu);c.lineTo(sxu+rb*rr*.4,syu-rr*.8);c.stroke()}}
+    else if(hu<.85){c.fillStyle="#efe3cc";c.beginPath();c.ellipse(sxu,syu,rr*.9,rr*.7,0,0,6.283);c.fill();c.strokeStyle="rgba(150,110,80,.7)";c.lineWidth=Math.max(.7,z);c.beginPath();c.arc(sxu,syu,rr*.4,0,5);c.stroke()}
+    else{c.fillStyle="#8e8b82";c.beginPath();c.ellipse(sxu,syu,rr*.8,rr*.5,0,0,6.283);c.fill();c.fillStyle="rgba(255,255,255,.25)";c.beginPath();c.ellipse(sxu-rr*.2,syu-rr*.15,rr*.3,rr*.18,0,0,6.283);c.fill()}}
+}
 function drawReefDecor(sbB){
-  var c=ctx,z=cam.z,tm=time,i;
+  var c=ctx,z=cam.z,tm=time,i;drawSandDetail(sbB);
   var CS=170,c0=Math.floor((cam.x-CW/2/z)/CS)-1,c1=Math.ceil((cam.x+CW/2/z)/CS)+1;
   for(var ci=c0;ci<=c1;ci++){
     var m=Math.floor(ci/9),rf=reefy(m),h=rh(ci*1.37);
@@ -1613,7 +1642,7 @@ function drawReefDecor(sbB){
     if(rf){
       if(rh(ci*5.1)>.35){c.fillStyle="rgba(240,226,190,.28)";c.beginPath();c.ellipse(sx,y+2*z,95*z,12*z,0,0,6.283);c.fill()}
       if(h>.28)drawRock(sx,y,(12+h*h*h*150)*z,ci*7.3);if(rh(ci*8.8)>.5){var px2=sx+(rh(ci*6.6)-.5)*150*z;drawRock(px2,y,(7+rh(ci*2.2)*16)*z,ci*3.1+5);drawRock(px2+30*z,y,(5+rh(ci*1.2)*10)*z,ci*3.7+9)}
-      var nc=h>.5?2:1;for(i=0;i<nc;i++)drawCoralBit(sx+(i?(rh(ci+i)*70-35)*z:0)+(h>.28?(rh(ci*3)>.5?1:-1)*46*z:0),y,(24+rh(ci*4.4+i)*30)*z,ci*11+i*5,tm);
+      var nc=h>.5?2:1;for(i=0;i<nc;i++)drawCoralBit(sx+(i?(rh(ci+i)*140-70)*z:0)+(h>.28?(rh(ci*3)>.5?1:-1)*90*z:0),y,(48+rh(ci*4.4+i)*64)*z,ci*11+i*5,tm);
     }else if(h>.7){drawRock(sx,y,(10+h*h*90)*z,ci*7.3)}
   }
   var m0=Math.floor((cam.x-CW/2/z)/1530)-1,m1=Math.ceil((cam.x+CW/2/z)/1530)+1;
