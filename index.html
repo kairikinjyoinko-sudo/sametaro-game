@@ -179,7 +179,7 @@ body.homeon .app{visibility:hidden}
           <button class="pick" data-w="N"><img alt=""><b>マグロ</b><small>4mまで</small></button>
           <button class="pick" data-w="R"><img alt=""><b>ロボキンギョ</b><small>8mまで・まち</small></button>
         </div>
-        <div class="stages" id="stages"><button class="stg" data-s="sea"><b>🌊 うみ</b><small>ひだり→うみべ ／ みぎ→どうくつ</small></button><button class="stg" data-s="coral"><b>🪸 さんごの うみ</b><small>あたらしい さかなが いっぱい</small></button><button class="stg" data-s="cave"><b>🦇 どうくつ</b><small>くらい！ かべが あるよ</small></button><button class="stg" data-s="beach"><b>🏖️ うみべ</b><small>あさい うみ・カニが いる</small></button><button class="stg" data-s="ice"><b>🧊 こおりの うみ</b><small>つめたい！ ペンギンウオが いる</small></button><button class="stg" data-s="volcano"><b>🌋 かざんの うみ</b><small>あつい！ ひかる さかなが いる</small></button><button class="stg" data-s="ruins"><b>🏛️ いせきの うみ</b><small>ふるい はしら・たからの さかな</small></button></div>
+        <div class="stages" id="stages"><button class="stg" data-s="sea"><b>🌊 うみ</b><small>ひだり→うみべ ／ みぎ→どうくつ</small></button><button class="stg" data-s="coral"><b>🪸 さんごの うみ</b><small>あたらしい さかなが いっぱい</small></button><button class="stg" data-s="cave"><b>🦇 どうくつ</b><small>くらい！ かべが あるよ</small></button><button class="stg" data-s="beach"><b>🏖️ うみべ</b><small>あさい うみ・カニが いる</small></button></div>
         <div class="ups" id="ups"></div>
         <div class="small" id="hmsg">レベル5から、サメ太郎は くらげと ウニ、マーダイは くらげが たべられるよ。ブロきちは たべられないよ。</div>
       </div>
@@ -231,7 +231,7 @@ var CHR={J:{note:"5mまで・さかな いがいは たべれない",name:"カ�
 var SQF=[];var BASE={g:"G",m:"M",s:"S",O:"O"};var SAMEM={Z:"S"};function wb(){return BASE[who]||SAMEM[who]||who}
 var who="G";
 var SBD=4800,CAVEB=6300,SEABED=4800,SEABEDT=4800,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
-var PAL={sea:{ridge:"rgba(18,48,72,.7)",g0:"#2d5873",g1:"#0e2236",hi:"rgba(140,200,230,.35)",rock:"#2c4256"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(40,26,66,.85)",g0:"#3d2f58",g1:"#120c20",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"},star:{ridge:"rgba(120,70,190,.6)",g0:"#6a38a8",g1:"#1d0f42",hi:"rgba(255,220,255,.55)",rock:"#4a2a80"}};
+var PAL={sea:{ridge:"rgba(18,48,72,.7)",g0:"#2d5873",g1:"#0e2236",hi:"rgba(140,200,230,.35)",rock:"#2c4256"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(10,36,60,.85)",g0:"#25506f",g1:"#071a2c",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"},star:{ridge:"rgba(120,70,190,.6)",g0:"#6a38a8",g1:"#1d0f42",hi:"rgba(255,220,255,.55)",rock:"#4a2a80"}};
 PAL.deep=Object.assign({},PAL.sea,{ridge:"rgba(6,16,28,.8)",g0:"#1c3a50",g1:"#050c16",rock:"#1a2c3a"});
 var SBZ={sea:2600,coral:2600,cave:2300,beach:1100,ice:2600,volcano:2600,ruins:2600,star:3200};
 var MASS=0,inSecret=false,inDeep=false,inCave=false,inHole=false,zoneCD=0,spaceSeen=false,spaceMsgT=0;function spaceT(){return ZS==="town"?Math.max(0,Math.min(1,(400-cam.y)/2800)):0}
@@ -243,13 +243,13 @@ function seabedAt(x){
   if(SV.stage==="beach"){if(inHole)return 3000;var ax=Math.min(1,Math.abs(x)/3000);return 480+640*Math.exp(-Math.pow(x/1500,2))+60*ax}
   if(SV.stage==="cave")return 2300;
   return 2600}
-var ZB=[3800,7800,11800,15800],ZN=["sea","ice","volcano","ruins","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
+var ZB=[5200],ZN=["sea","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
 function zoneAt(x){if(x<-3300)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
 function applyStage(snap){
   var px=(P&&P.x)||0;ZS=SV.stage;if(who==="R")ZS="town";
   if(SV.stage==="sea"&&who!=="R"){ZS=inSecret?"star":(inDeep?"deep":(inCave?"cave":zoneAt(px)))}
   SEABEDT=seabedAt(px);if(snap!==false)SEABED=SEABEDT;
-  if(SV.stage==="beach"){if(inHole){ZS="cave";BL=-1500;BR=1500}else{BL=-3150;BR=3150}}else if(SV.stage==="cave"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inSecret){BL=-4500;BR=4500}else if(inDeep){BL=-3500;BR=3500}else if(inCave){BL=-6160;BR=6160}else{BL=-9600;BR=19800}}else{BL=-1e9;BR=1e9}
+  if(SV.stage==="beach"){if(inHole){ZS="cave";BL=-1500;BR=1500}else{BL=-3150;BR=3150}}else if(SV.stage==="cave"||SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"){BL=-3200;BR=3200}else if(SV.stage==="sea"){if(inSecret){BL=-4500;BR=4500}else if(inDeep){BL=-3500;BR=3500}else if(inCave){BL=-6160;BR=6160}else{BL=-9600;BR=10000}}else{BL=-1e9;BR=1e9}
   if(who==="R"){BL=-5000;BR=5000}}
 var MZ=[],MZB={},MZC=560,MZX0=-6160,MZY0=600,MZCOLS=22,MZROWS=10;
 function mzAdd(x,y,r){var c={x:x,y:y,r:r};MZ.push(c);var k=Math.floor(x/400)+","+Math.floor(y/400);(MZB[k]=MZB[k]||[]).push(c)}
@@ -305,8 +305,8 @@ function megaAI(e,dt,W){
 }
 function goSeaFromBeach(){
   SV.stage="sea";try{save()}catch(e){}inHole=false;inCave=false;inDeep=false;inSecret=false;
-  P.x=-5000;applyStage(true);P.y=SEABED-HF(P.x)-260;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;pet.x=P.x;pet.y=P.y;
-  fadeT=.8;banner("うみに ついたよ！");decoys=[];ents=[];for(var zi=0;zi<14;zi++)fill(true)}
+  P.x=-8950;applyStage(true);P.y=SEABED-HF(P.x)-130;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;pet.x=P.x;pet.y=P.y;
+  fadeT=.3;banner("うみに ついたよ！");decoys=[];ents=[];for(var zi=0;zi<14;zi++)fill(true)}
 function beachHoleCheck(){
   if(Math.abs(P.x)>2500){var ce=SEABED-HF(P.x)-230;if(P.y<ce){P.y=ce;if(P.vy<0)P.vy=0}}
   if(P.x>3050||P.x<-3050){goSeaFromBeach()}
@@ -314,7 +314,7 @@ function beachHoleCheck(){
 function goBeachFromSea(){
   SV.stage="beach";try{save()}catch(e){}inHole=false;inCave=false;inDeep=false;inSecret=false;
   P.x=2950;applyStage(true);P.y=SEABED-HF(P.x)-200;P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;pet.x=P.x;pet.y=P.y;
-  fadeT=.8;banner("ひがたに ついたよ！");decoys=[];ents=[];for(var zi=0;zi<14;zi++)fill(true)}
+  fadeT=.3;banner("ひがたに ついたよ！");decoys=[];ents=[];for(var zi=0;zi<14;zi++)fill(true)}
 function zoneCheck(){
   if(SV.stage==="sea"&&who!=="R"&&!inCave&&!inDeep&&!inSecret&&P.x<-8600){var ce2=SEABED-HF(P.x)-230;if(P.y<ce2){P.y=ce2;if(P.vy<0)P.vy=0}if(P.x<-9300){goBeachFromSea();return}}
   if(SV.stage==="beach"&&who!=="R"){beachHoleCheck();if(inHole)ZS="cave";SEABEDT=seabedAt(P.x);return}
@@ -415,7 +415,7 @@ function lvDef(){return LV[lv-1]}
 function lenM(){return LMAX[who]*(0.14+0.86*(lv-1)/10)}
 function PW(){var nw=who==="A"?360:who==="O"?720:(SPR[who][0].naturalWidth||360);return lenM()*246*.85*(wb()==="S"?0.7:1)*360/nw}
 function reset(){
-  P=null;inCave=false;inHole=false;inDeep=false;inSecret=!!SV.goSecret;MASS=SV.goMass?1:0;applyStage();
+  if(SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins")SV.stage="sea";P=null;inCave=false;inHole=false;inDeep=false;inSecret=!!SV.goSecret;MASS=SV.goMass?1:0;applyStage();
   P={x:0,y:200,vx:0,vy:0,h:0,mx:0,my:0,ph:0,mo:0};
   if(SV.goBeach&&who!=="R"&&who!=="H"){P.x=-5200;P.y=150;applyStage()}
   pet.x=P.x-120;pet.y=P.y;pet.cd=2;ents=[];parts=[];texts=[];runCoins=0;score=0;hunger=100;xp=(SV.prog[who]||{xp:0}).xp;lv=(SV.prog[who]||{lv:1}).lv;stam=100;stun=0;invul=2;time=0;eatT=0;shakeT=0;levelT=0;
@@ -842,7 +842,7 @@ function skyGradZ(ZS){
   if(ZS==="star"){g.addColorStop(0,"#3a1470");g.addColorStop(f(-100),"#b86ad8");g.addColorStop(f(0),"#7a3fc0");g.addColorStop(f(600),"#3c1f86");g.addColorStop(f(1400),"#1c1054");g.addColorStop(1,"#07041f");return g}
   if(ZS==="deep"){g.addColorStop(0,"#0a2a4a");g.addColorStop(.5,"#06182f");g.addColorStop(1,"#010610");return g}
   if(ZS==="cave"&&SV.stage==="beach"){g.addColorStop(0,"#3a2a24");g.addColorStop(1,"#1c1411");return g}
-  if(ZS==="cave"){g.addColorStop(0,"#1a1430");g.addColorStop(1,"#05030c");return g}
+  if(ZS==="cave"){g.addColorStop(0,"#1f6fae");g.addColorStop(.35,"#0f4274");g.addColorStop(1,"#041829");return g}
   if(ZS==="ice"){g.addColorStop(0,"#dff3ff");g.addColorStop(f(-100),"#ffffff");g.addColorStop(f(0),"#9fe3f2");g.addColorStop(f(600),"#4fb3d8");g.addColorStop(f(1400),"#256a9c");g.addColorStop(1,"#0b2745");return g}
   if(ZS==="volcano"){g.addColorStop(0,"#ff9a5a");g.addColorStop(f(-100),"#ffd0a0");g.addColorStop(f(0),"#a04a4a");g.addColorStop(f(600),"#5a1f2e");g.addColorStop(f(1400),"#2a0f1c");g.addColorStop(1,"#12060c");return g}
   if(ZS==="ruins"){g.addColorStop(0,"#bfe8d0");g.addColorStop(f(-100),"#effff4");g.addColorStop(f(0),"#52d4b0");g.addColorStop(f(600),"#1f9a8a");g.addColorStop(f(1400),"#15566a");g.addColorStop(1,"#082433");return g}
@@ -2064,10 +2064,10 @@ function draw(){
   if(ZS==="star"&&state!=="title"){ctx.save();for(var tw=0;tw<60;tw++){var tx=((tw*137.5+cam.x*.15*(1+tw%3*.2))%CW+CW)%CW,ty=((tw*71.3+cam.y*.12*(1+tw%4*.15))%CH+CH)%CH,ta=.25+.6*Math.abs(Math.sin(time*1.6+tw));ctx.fillStyle="rgba(255,240,255,"+ta+")";ctx.beginPath();ctx.arc(tx,ty,(1+tw%3)*.9,0,6.283);ctx.fill()}ctx.restore()}
   if(inCave){ctx.save();var mz0=CW/2-cam.x*cam.z,mz1=CH/2-cam.y*cam.z,cz=cam.z,vis2=[];
     for(var mq=0;mq<MZ.length;mq++){var mm=MZ[mq],sx=mz0+mm.x*cz,sy=mz1+mm.y*cz,sr=mm.r*cz;if(sx<-sr-8||sx>CW+sr+8||sy<-sr-8||sy>CH+sr+8)continue;vis2.push([sx,sy,sr,mq])}
-    ctx.fillStyle="#0a0612";for(var v1=0;v1<vis2.length;v1++){var q1=vis2[v1];ctx.beginPath();ctx.arc(q1[0],q1[1],q1[2]+5*cz,0,6.283);ctx.fill()}
-    for(var v2=0;v2<vis2.length;v2++){var q2=vis2[v2],tn=(q2[3]*37%11)/11,gcol=ctx.createRadialGradient(q2[0]-q2[2]*.3,q2[1]-q2[2]*.3,q2[2]*.1,q2[0],q2[1],q2[2]);gcol.addColorStop(0,"rgb("+(80+tn*22|0)+","+(74+tn*18|0)+","+(94+tn*18|0)+")");gcol.addColorStop(1,"rgb("+(66+tn*18|0)+","+(60+tn*14|0)+","+(80+tn*16|0)+")");ctx.fillStyle=gcol;ctx.beginPath();ctx.arc(q2[0],q2[1],q2[2],0,6.283);ctx.fill()}
+    ctx.fillStyle="#04101c";for(var v1=0;v1<vis2.length;v1++){var q1=vis2[v1];ctx.beginPath();ctx.arc(q1[0],q1[1],q1[2]+5*cz,0,6.283);ctx.fill()}
+    for(var v2=0;v2<vis2.length;v2++){var q2=vis2[v2],tn=(q2[3]*37%11)/11,gcol=ctx.createRadialGradient(q2[0]-q2[2]*.3,q2[1]-q2[2]*.3,q2[2]*.1,q2[0],q2[1],q2[2]);gcol.addColorStop(0,"rgb("+(54+tn*18|0)+","+(92+tn*20|0)+","+(122+tn*22|0)+")");gcol.addColorStop(1,"rgb("+(36+tn*14|0)+","+(66+tn*16|0)+","+(92+tn*18|0)+")");ctx.fillStyle=gcol;ctx.beginPath();ctx.arc(q2[0],q2[1],q2[2],0,6.283);ctx.fill()}
     for(var v3=0;v3<vis2.length;v3++){var q3=vis2[v3],id3=q3[3];
-      if(id3%6===0){ctx.fillStyle="#3f3a50";ctx.beginPath();ctx.moveTo(q3[0]-q3[2]*.25,q3[1]+q3[2]*.85);ctx.lineTo(q3[0],q3[1]+q3[2]*(1.3+(id3%5)*.12));ctx.lineTo(q3[0]+q3[2]*.25,q3[1]+q3[2]*.85);ctx.closePath();ctx.fill()}
+      if(id3%6===0){ctx.fillStyle="#2d4a63";ctx.beginPath();ctx.moveTo(q3[0]-q3[2]*.25,q3[1]+q3[2]*.85);ctx.lineTo(q3[0],q3[1]+q3[2]*(1.3+(id3%5)*.12));ctx.lineTo(q3[0]+q3[2]*.25,q3[1]+q3[2]*.85);ctx.closePath();ctx.fill()}
       if(id3%23===0){var cc2=id3%2?"#b58cff":"#6ff0ff";ctx.shadowColor=cc2;ctx.shadowBlur=20*cz;ctx.fillStyle=cc2;for(var k3=0;k3<3;k3++){var ox=(k3-1)*q3[2]*.35,hh=q3[2]*(.5+k3%2*.3);ctx.beginPath();ctx.moveTo(q3[0]+ox-5*cz,q3[1]);ctx.lineTo(q3[0]+ox,q3[1]-hh);ctx.lineTo(q3[0]+ox+5*cz,q3[1]);ctx.closePath();ctx.fill()}ctx.shadowBlur=0}}
     ctx.restore()}
   // entities
@@ -2115,7 +2115,7 @@ function draw(){
     var y0=town?-3200:-300,y1=inCave?MZY0+MZROWS*MZC:SEABEDT+150;
     function X(x){return (x-lo)/(hi-lo)*W}function Y(y){return (y-y0)/(y1-y0)*H}
     var g=m.createLinearGradient(0,0,0,H);g.addColorStop(0,town?"#1a1a3a":"#7fc8ff");g.addColorStop(.12,town?"#3a4a6a":"#3aa7e8");g.addColorStop(1,"#08305a");m.fillStyle=g;m.fillRect(0,0,W,H);
-    if(SV.stage==="sea"&&!inCave&&!inSecret&&!inDeep){var cols={beach:"#f2d98a",sea:"#2a8fd6",ice:"#9fe0f5",volcano:"#d9602a",ruins:"#b0a07a",coral:"#ff8aa8"};var xs=[lo,-3300].concat(ZB,[hi]);var nm=["beach","sea","ice","volcano","ruins","coral"];for(var i=0;i<nm.length;i++){var a=Math.max(lo,xs[i]),b=Math.min(hi,xs[i+1]);if(b>a){m.fillStyle=cols[nm[i]];m.globalAlpha=.4;m.fillRect(X(a),0,X(b)-X(a),H);m.globalAlpha=1}}}
+    if(SV.stage==="sea"&&!inCave&&!inSecret&&!inDeep){var cols={beach:"#f2d98a",sea:"#2a8fd6",ice:"#9fe0f5",volcano:"#d9602a",ruins:"#b0a07a",coral:"#ff8aa8"};var xs=[lo,-3300].concat(ZB,[hi]);var nm=["beach","sea","coral"];for(var i=0;i<nm.length;i++){var a=Math.max(lo,xs[i]),b=Math.min(hi,xs[i+1]);if(b>a){m.fillStyle=cols[nm[i]];m.globalAlpha=.4;m.fillRect(X(a),0,X(b)-X(a),H);m.globalAlpha=1}}}
     if(!town){m.fillStyle="#c9a96b";m.fillRect(0,Y(SEABEDT),W,H-Y(SEABEDT))}
     if(inCave){m.strokeStyle="rgba(255,255,255,.12)";for(var cx=0;cx<=MZCOLS;cx++){var xx=X(MZX0+cx*MZC);m.beginPath();m.moveTo(xx,Y(MZY0));m.lineTo(xx,Y(MZY0+MZROWS*MZC));m.stroke()}}
     var pl=.55+.45*Math.sin(time*5);function glow(gx,gy,rad){var gg=m.createRadialGradient(gx,gy,1,gx,gy,rad);gg.addColorStop(0,"rgba(255,235,80,"+(.95*pl)+")");gg.addColorStop(1,"rgba(255,220,0,0)");m.fillStyle=gg;m.beginPath();m.arc(gx,gy,rad,0,6.283);m.fill();m.fillStyle="#ffe45e";m.beginPath();m.arc(gx,gy,4,0,6.283);m.fill()}
