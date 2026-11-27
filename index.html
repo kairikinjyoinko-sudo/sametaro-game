@@ -1640,7 +1640,7 @@ function drawReefCarpet(sbB){
   c.lineCap="round";
   for(var LY=0;LY<2;LY++)for(var ci=c0;ci<=c1;ci++){
     var h=rh(ci*3.17+.4+LY*11.3);if(h<.06)continue;
-    var wx=ci*CS+rh(ci*1.9+LY*5)*CS;if(wx<-3200||wx>7500||Math.abs(wx-3200)<430||Math.abs(wx+1100)<430)continue;
+    var wx=ci*CS+rh(ci*1.9+LY*5)*CS;if(wx<-9100||wx>9300||Math.abs(wx-3200)<430||Math.abs(wx+1100)<430)continue;
     var sx=CW/2+(wx-cam.x)*z;if(sx<-120*z||sx>CW+120*z)continue;
     var sy=sbB-HF(wx)*z+(LY?40+rh(ci*5.3)*110:6+rh(ci*5.3)*34)*z,rr=(14+rh(ci*7.7+LY)*30)*z*(LY?1.35:.85)*(1+(rh(ci*.7)>.92?1.1:0));
     var pc=RCOL[(h*97|0)%(RCOL.length-1)];if(rh(ci*2.2)>.93)pc=RCOL[7];
@@ -1755,11 +1755,45 @@ function drawTetra1(x,y,r,sd){
   var bg=c.createRadialGradient(x-r*.15,y-r*.15,r*.05,x,y,r*.5);bg.addColorStop(0,"#eeefef");bg.addColorStop(1,"#b3b6b7");c.fillStyle=bg;c.beginPath();c.arc(x,y,r*.46,0,6.283);c.fill();
   c.fillStyle="rgba(70,140,90,.28)";c.beginPath();c.ellipse(x-r*.15,y+r*.55,r*.5,r*.14,0,0,6.283);c.fill();
 }
+
+function drawQuay(){
+  var z=cam.z,c=ctx,wA=BR-620,wB=BR+600,sbY=SEABED-HF(BR-200)+10,topY=sbY-575,botY=sbY+400;
+  var a=worldToScreen(wA,topY),b=worldToScreen(wB,botY);
+  if(b.x<-60||a.x>CW+60)return;
+  var w=b.x-a.x,h=b.y-a.y,i;
+  // wall face
+  var g=c.createLinearGradient(a.x,0,a.x+w,0);g.addColorStop(0,"#cfd0ca");g.addColorStop(1,"#a9aba5");c.fillStyle=g;c.fillRect(a.x,a.y,w,h);
+  // slab top
+  c.fillStyle="#bfc0ba";c.fillRect(a.x-8*z,a.y,w+8*z,64*z);
+  c.fillStyle="#e6e7e1";c.fillRect(a.x-8*z,a.y-16*z,w+8*z,18*z);
+  c.fillStyle="rgba(60,64,60,.28)";c.fillRect(a.x-8*z,a.y+64*z,w,10*z);
+  // vertical expansion joints + stains
+  c.strokeStyle="rgba(70,72,68,.35)";c.lineWidth=Math.max(1,3*z);
+  for(i=0;i<=6;i++){var jx=a.x+(i*165+40)*z;if(jx>a.x+w)break;c.beginPath();c.moveTo(jx,a.y+64*z);c.lineTo(jx,b.y);c.stroke()}
+  c.fillStyle="rgba(80,70,55,.10)";for(i=0;i<9;i++){var sxx=a.x+(rh(i*3.1)*w),sw=(14+rh(i*7.7)*30)*z;c.fillRect(sxx,a.y+64*z,sw,(120+rh(i)*380)*z)}
+  // barnacle / wet band near bottom
+  var wg=c.createLinearGradient(0,b.y-300*z,0,b.y);wg.addColorStop(0,"rgba(50,70,60,0)");wg.addColorStop(1,"rgba(50,70,60,.45)");c.fillStyle=wg;c.fillRect(a.x,b.y-300*z,w,300*z);
+  // rubber fenders
+  c.fillStyle="#26292c";for(i=0;i<4;i++){var fx=a.x+(i*165+105)*z;if(fx>a.x+w-20*z)break;c.beginPath();c.roundRect?c.roundRect(fx-18*z,a.y+110*z,36*z,130*z,10*z):c.rect(fx-18*z,a.y+110*z,36*z,130*z);c.fill()}
+  // ladder
+  var lx=a.x+26*z;c.strokeStyle="#6a4a38";c.lineWidth=Math.max(1.5,5*z);c.beginPath();c.moveTo(lx,a.y+10*z);c.lineTo(lx,a.y+330*z);c.moveTo(lx+34*z,a.y+10*z);c.lineTo(lx+34*z,a.y+330*z);c.stroke();
+  c.lineWidth=Math.max(1,3.5*z);for(i=0;i<8;i++){var ly=a.y+(40+i*38)*z;c.beginPath();c.moveTo(lx,ly);c.lineTo(lx+34*z,ly);c.stroke()}
+  // bollards
+  for(i=0;i<3;i++){var bx=a.x+(100+i*300)*z;c.fillStyle="#34383b";c.fillRect(bx-14*z,a.y-46*z,28*z,34*z);c.fillStyle="#4c5256";c.fillRect(bx-20*z,a.y-56*z,40*z,14*z);c.fillStyle="#d2542a";c.fillRect(bx-14*z,a.y-14*z,28*z,5*z)}
+  // lamp post
+  var px=a.x+(w*.48);c.fillStyle="#5d6266";c.fillRect(px-5*z,a.y-300*z,10*z,290*z);c.fillRect(px-5*z,a.y-300*z,50*z,8*z);
+  c.fillStyle="#fff6c8";c.beginPath();c.ellipse(px+44*z,a.y-290*z,16*z,8*z,0,0,6.283);c.fill();
+  var gl=c.createRadialGradient(px+44*z,a.y-285*z,2,px+44*z,a.y-285*z,160*z);gl.addColorStop(0,"rgba(255,245,200,.35)");gl.addColorStop(1,"rgba(255,245,200,0)");c.fillStyle=gl;c.fillRect(px-130*z,a.y-450*z,330*z,320*z);
+  // rope railing
+  c.strokeStyle="#c9c3b0";c.lineWidth=Math.max(1,3*z);c.beginPath();c.moveTo(a.x+w*.62,a.y-52*z);c.quadraticCurveTo(a.x+w*.72,a.y-30*z,a.x+w*.82,a.y-52*z);c.stroke();
+  c.fillStyle="#7a7d80";c.fillRect(a.x+w*.62-4*z,a.y-70*z,8*z,58*z);c.fillRect(a.x+w*.82-4*z,a.y-70*z,8*z,58*z);
+}
 function drawTetra(){
   var z=cam.z,c=ctx;
   for(var sd=-1;sd<=1;sd+=2){
     var edge=sd<0?BL:BR,inner=edge-sd*900,sx0=worldToScreen(edge,0).x,sx1=worldToScreen(inner,0).x;
     if(Math.max(sx0,sx1)<-300||Math.min(sx0,sx1)>CW+300)continue;
+    if(sd===1)drawQuay();
     // mound (sand+rubble) base
     var cols=9,rowsMax=7;
     for(var ci=cols-1;ci>=0;ci--){var d=(ci+.5)/cols,wx=inner+sd*(ci+.5)*100,sbY=SEABED-HF(wx)+10,hmax=Math.max(1,Math.round(rowsMax*(.15+d*.85)));
@@ -2172,6 +2206,7 @@ function draw(){
         if(ssd>.8){var st3=Math.sin(time*2+sq)*.3+.7,rr3=(14+ssd*10)*cam.z*st3,cy3=sy3-sh3-30*cam.z;ctx.beginPath();for(var pt=0;pt<10;pt++){var an3=-1.5708+pt*.6283,rd3=pt%2?rr3*.45:rr3;ctx.lineTo(sx3+Math.cos(an3)*rd3,cy3+Math.sin(an3)*rd3)}ctx.closePath();ctx.fill()}
         ctx.shadowBlur=0}
     }else if(ZS==="beach"){
+      if(SV.stage==="sea")drawReefCarpet(sbB);
       for(var bw=-40;bw<CW+80;bw+=130){var bq=cam.x+(bw-CW/2)/cam.z,bi=Math.round(bq/130),bs=Math.abs(Math.sin(bi*8.3));sb=sbB-HF(bq)*cam.z;if(bs<.3)continue;var by2=sb-12*cam.z,br2=(10+bs*14)*cam.z;
         if(bi%3===0){ctx.fillStyle="#ff8f6b";ctx.beginPath();for(var pt=0;pt<10;pt++){var an=pt/10*6.283-1.57,rr2=(pt%2?br2*.45:br2*1.3);ctx.lineTo(bw+Math.cos(an)*rr2,by2+Math.sin(an)*rr2)}ctx.closePath();ctx.fill()}
         else{ctx.fillStyle="#fff1e0";ctx.strokeStyle="#e0b090";ctx.lineWidth=2*cam.z;ctx.beginPath();ctx.moveTo(bw-br2,by2+br2*.5);ctx.quadraticCurveTo(bw,by2-br2*1.4,bw+br2,by2+br2*.5);ctx.closePath();ctx.fill();ctx.stroke();ctx.beginPath();ctx.moveTo(bw,by2-br2*.8);ctx.lineTo(bw,by2+br2*.5);ctx.stroke()}}
