@@ -1712,15 +1712,19 @@ function drawHoleRoom(sbB){
   c.font="900 "+Math.round(26*z)+"px Hiragino Maru Gothic ProN, Yu Gothic, sans-serif";c.textAlign="center";c.lineWidth=5;c.strokeStyle="rgba(0,0,0,.6)";c.strokeText("でぐち ↑",ex.x,ex.y-90*z);c.fillStyle="#fff";c.fillText("でぐち ↑",ex.x,ex.y-90*z);
 }
 function drawTetra1(x,y,r,sd){
-  var c=ctx,i;c.lineCap="round";
-  var legs=[[0,-1],[-.9,.55],[.9,.55],[.25,.3]];
-  var rot=(rh(sd)-.5)*.5;
-  for(i=0;i<4;i++){var a=Math.atan2(legs[i][1],legs[i][0])+rot,L=r*(i===3?.55:1),ex=x+Math.cos(a)*L,ey=y+Math.sin(a)*L;
-    var g=c.createLinearGradient(x,y-r,x,y+r);g.addColorStop(0,"#d5d8d6");g.addColorStop(1,"#7e8582");
-    c.strokeStyle=i===3?"#a8aeab":g;c.lineWidth=r*.62;c.beginPath();c.moveTo(x,y);c.lineTo(ex,ey);c.stroke();
-    c.strokeStyle="rgba(40,50,48,.35)";c.lineWidth=Math.max(1,r*.05);c.beginPath();c.arc(ex,ey,r*.31,0,6.283);c.stroke()}
-  c.fillStyle="#c4c9c6";c.beginPath();c.arc(x,y,r*.38,0,6.283);c.fill();
-  c.fillStyle="rgba(70,140,90,.35)";c.beginPath();c.ellipse(x-r*.2,y+r*.5,r*.5,r*.15,0,0,6.283);c.fill();
+  var c=ctx,i,rot=(rh(sd)-.5)*.6;
+  // four tapered legs: back leg first, then up / down-left / down-right
+  var legs=[[.28,.22,.62,1],[0,-1,1,0],[-.9,.58,1,0],[.9,.58,1,0]];
+  for(i=0;i<4;i++){var an=Math.atan2(legs[i][1],legs[i][0])+(i===0?0:rot),L=r*legs[i][2]*(i===0?.9:1),dx=Math.cos(an),dy=Math.sin(an),nx=-dy,ny=dx,w0=r*.46,w1=r*.3;
+    var ex=x+dx*L,ey=y+dy*L;
+    var g=c.createLinearGradient(x+nx*w0,y+ny*w0,x-nx*w0,y-ny*w0);g.addColorStop(0,"#eceded");g.addColorStop(.55,"#cfd1d1");g.addColorStop(1,i===0?"#8d9091":"#a2a5a6");
+    c.fillStyle=g;c.beginPath();c.moveTo(x+nx*w0,y+ny*w0);c.lineTo(ex+nx*w1,ey+ny*w1);c.lineTo(ex-nx*w1,ey-ny*w1);c.lineTo(x-nx*w0,y-ny*w0);c.closePath();c.fill();
+    // flat end face
+    c.fillStyle=i===0?"#b9bcbc":"#dcdedd";c.beginPath();c.ellipse(ex,ey,w1,w1*.5,an+1.5708,0,6.283);c.fill();
+    c.strokeStyle="rgba(60,66,68,.35)";c.lineWidth=Math.max(.8,r*.03);c.stroke();
+    c.beginPath();c.moveTo(x+nx*w0,y+ny*w0);c.lineTo(ex+nx*w1,ey+ny*w1);c.moveTo(x-nx*w0,y-ny*w0);c.lineTo(ex-nx*w1,ey-ny*w1);c.stroke()}
+  var bg=c.createRadialGradient(x-r*.15,y-r*.15,r*.05,x,y,r*.5);bg.addColorStop(0,"#eeefef");bg.addColorStop(1,"#b3b6b7");c.fillStyle=bg;c.beginPath();c.arc(x,y,r*.46,0,6.283);c.fill();
+  c.fillStyle="rgba(70,140,90,.28)";c.beginPath();c.ellipse(x-r*.15,y+r*.55,r*.5,r*.14,0,0,6.283);c.fill();
 }
 function drawTetra(){
   var z=cam.z,c=ctx;
