@@ -179,7 +179,7 @@ body.homeon .app{visibility:hidden}
           <button class="pick" data-w="N"><img alt=""><b>マグロ</b><small>4mまで</small></button>
           <button class="pick" data-w="R"><img alt=""><b>ロボキンギョ</b><small>8mまで・まち</small></button>
         </div>
-        <div class="stages" id="stages"><button class="stg" data-s="sea"><b>🌊 うみ</b><small>ひだり→うみべ ／ みぎ→どうくつ</small></button><button class="stg" data-s="coral"><b>🪸 さんごの うみ</b><small>あたらしい さかなが いっぱい</small></button><button class="stg" data-s="cave"><b>🦇 どうくつ</b><small>くらい！ かべが あるよ</small></button></div>
+        <div class="stages" id="stages"><button class="stg" data-s="sea"><b>🌊 うみ</b><small>りょうはしは ひがた ／ テトラポット</small></button></div>
         <div class="ups" id="ups"></div>
         <div class="small" id="hmsg">レベル5から、サメ太郎は くらげと ウニ、マーダイは くらげが たべられるよ。ブロきちは たべられないよ。</div>
       </div>
@@ -239,12 +239,12 @@ function mixc(a,b,t){var x=parseInt(a.slice(1),16),y=parseInt(b.slice(1),16),r=f
 function HF(x){if(ZS==="town"||who==="R")return 0;return Math.sin(x*.0034)*70+Math.sin(x*.0087+1)*40+Math.sin(x*.013)*18}
 function seabedAt(x){
   if(who==="R")return 1500;
-  if(SV.stage==="sea"){if(who==="R")return 2600;if(inSecret)return 3200;if(inDeep)return 5200;if(inCave)return CAVEB;if(x>=-1500)return SBD;return SBD-(SBD-500)*Math.min(1,(-1500-x)/6000)}
+  if(SV.stage==="sea"){if(who==="R")return 2600;if(inSecret)return 3200;if(inDeep)return 5200;if(inCave)return CAVEB;if(x>=-1500){if(x<=6800)return SBD;var rq=Math.min(1,(x-6800)/2600);return SBD-(SBD-520)*(rq*rq*(3-2*rq))}return SBD-(SBD-500)*Math.min(1,(-1500-x)/6000)}
   if(SV.stage==="beach"){if(inHole)return 3000;var ax=Math.min(1,Math.abs(x)/3000);return 480+640*Math.exp(-Math.pow(x/1500,2))+60*ax}
   if(SV.stage==="cave")return 2300;
   return 2600}
-var ZB=[5200],ZN=["sea","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
-function zoneAt(x){if(x<-3300)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
+var ZB=[1e9],ZN=["sea","coral"],ZMSG={sea:"ふつうの うみに もどったよ",beach:"うみべに きたよ！",ice:"こおりの うみに きたよ！ さむいね",volcano:"かざんの うみに きたよ！ あついね",ruins:"いせきの うみに きたよ！",coral:"さんごの うみに きたよ！"},zbT=0;
+function zoneAt(x){if(x<-3300||x>7600)return"beach";var z=0;for(var i=0;i<ZB.length;i++)if(x>=ZB[i])z=i+1;return ZN[z]}
 function applyStage(snap){
   var px=(P&&P.x)||0;ZS=SV.stage;if(who==="R")ZS="town";
   if(SV.stage==="sea"&&who!=="R"){ZS=inSecret?"star":(inDeep?"deep":(inCave?"cave":zoneAt(px)))}
@@ -415,7 +415,7 @@ function lvDef(){return LV[lv-1]}
 function lenM(){return LMAX[who]*(0.14+0.86*(lv-1)/10)}
 function PW(){var nw=who==="A"?360:who==="O"?720:(SPR[who][0].naturalWidth||360);return lenM()*246*.85*(wb()==="S"?0.7:1)*360/nw}
 function reset(){
-  if(SV.stage==="ice"||SV.stage==="volcano"||SV.stage==="ruins"||SV.stage==="beach")SV.stage="sea";P=null;inCave=false;inHole=false;inDeep=false;inSecret=!!SV.goSecret;MASS=SV.goMass?1:0;applyStage();
+  SV.stage="sea";P=null;inCave=false;inHole=false;inDeep=false;inSecret=!!SV.goSecret;MASS=SV.goMass?1:0;applyStage();
   P={x:0,y:200,vx:0,vy:0,h:0,mx:0,my:0,ph:0,mo:0};
   if(SV.goBeach&&who!=="R"&&who!=="H"){P.x=-5200;P.y=150;applyStage()}
   pet.x=P.x-120;pet.y=P.y;pet.cd=2;ents=[];parts=[];texts=[];runCoins=0;score=0;hunger=100;xp=(SV.prog[who]||{xp:0}).xp;lv=(SV.prog[who]||{lv:1}).lv;stam=100;stun=0;invul=2;time=0;eatT=0;shakeT=0;levelT=0;
@@ -623,7 +623,7 @@ function update(dt){
   var wasIn=P.y>=0||ZS==="town";
   P.x+=P.vx*dt;P.y+=P.vy*dt;
   if(inCave){var prr=Math.max(36,PW()*.12);for(var mi=0;mi<6;mi++){var wm=wallHit(P.x,P.y,prr);if(!wm)break;var dx_=P.x-wm.x,dy_=P.y-wm.y,dd=Math.hypot(dx_,dy_);if(dd<.001){dx_=0;dy_=-1;dd=1}var pu=wm.r+prr-dd+1;P.x+=dx_/dd*pu;P.y+=dy_/dd*pu;var vn=P.vx*dx_/dd+P.vy*dy_/dd;if(vn<0){P.vx-=vn*dx_/dd;P.vy-=vn*dy_/dd}}}
-  if(SV.stage==="beach"&&who!=="R"){if(P.x>BR-60){P.x=BR-60;P.vx=Math.min(P.vx,0)}if(P.x<BL+60){P.x=BL+60;P.vx=Math.max(P.vx,0)}}else if(BR<1e8&&!inCave&&who!=="R"){if(P.x>BR-120||P.x<BL+120){P.x=P.x>0?BL+400:BR-400;cam.x=P.x;pet.x=P.x-120;pet.y=P.y;fadeT=.7;banner("はしに ついたよ！ はんたいがわに ワープ！");decoys=[];ents=[];for(var wz=0;wz<12;wz++)fill(true)}}
+  if(SV.stage==="beach"&&who!=="R"){if(P.x>BR-60){P.x=BR-60;P.vx=Math.min(P.vx,0)}if(P.x<BL+60){P.x=BL+60;P.vx=Math.max(P.vx,0)}}else if(SV.stage==="sea"&&!inCave&&!inDeep&&!inSecret&&who!=="R"){var tlo=BL+850,thi=BR-850;if(P.x>thi){P.x=thi;P.vx=Math.min(P.vx,0)}if(P.x<tlo){P.x=tlo;P.vx=Math.max(P.vx,0)}}else if(BR<1e8&&!inCave&&who!=="R"){if(P.x>BR-120||P.x<BL+120){P.x=P.x>0?BL+400:BR-400;cam.x=P.x;pet.x=P.x-120;pet.y=P.y;fadeT=.7;banner("はしに ついたよ！ はんたいがわに ワープ！");decoys=[];ents=[];for(var wz=0;wz<12;wz++)fill(true)}}
   else if(BR<1e8){var pb=BR-W*.5,pl=BL+W*.5;if(P.x>pb){P.x=pb;if(P.vx>0)P.vx=0}else if(P.x<pl){P.x=pl;if(P.vx<0)P.vx=0}}
   if(SV.pet){var tx=P.x-Math.cos(P.h)*PW()*.9,ty=P.y-PW()*.5+Math.sin(time*2)*14;pet.vx=tx-pet.x;pet.x+=(tx-pet.x)*Math.min(1,dt*2.6);pet.y+=(ty-pet.y)*Math.min(1,dt*2.6);if(Math.abs(pet.vx)>4)pet.face=pet.vx>0?1:-1;pet.ph+=dt*8;pet.cd-=dt;if(Math.hypot(pet.x-P.x,pet.y-P.y)>2500){pet.x=P.x;pet.y=P.y}}
   zoneCheck();SEABED+=(SEABEDT-SEABED)*Math.min(1,dt*2.2);if(((time*10)|0)%7===0)ents=ents.filter(function(e){return e.k==="friend"||e.boss||allowed(e.k)||Math.abs(e.x-P.x)<1000});fadeT=Math.max(0,fadeT-dt);
@@ -1711,6 +1711,29 @@ function drawHoleRoom(sbB){
   var ex=worldToScreen(1300,SEABED-HF(1300)+6),lg=c.createRadialGradient(ex.x,ex.y,5,ex.x,ex.y,200*z);lg.addColorStop(0,"rgba(255,244,190,.95)");lg.addColorStop(.6,"rgba(255,220,120,.4)");lg.addColorStop(1,"rgba(255,220,120,0)");c.fillStyle=lg;c.beginPath();c.ellipse(ex.x,ex.y,200*z,90*z,0,0,6.283);c.fill();
   c.font="900 "+Math.round(26*z)+"px Hiragino Maru Gothic ProN, Yu Gothic, sans-serif";c.textAlign="center";c.lineWidth=5;c.strokeStyle="rgba(0,0,0,.6)";c.strokeText("でぐち ↑",ex.x,ex.y-90*z);c.fillStyle="#fff";c.fillText("でぐち ↑",ex.x,ex.y-90*z);
 }
+function drawTetra1(x,y,r,sd){
+  var c=ctx,i;c.lineCap="round";
+  var legs=[[-.95,-.55],[.95,-.55],[-.2,.95],[.35,-.1]];
+  var rot=(rh(sd)-.5)*.5;
+  for(i=0;i<4;i++){var a=Math.atan2(legs[i][1],legs[i][0])+rot,L=r*(i===3?.55:1),ex=x+Math.cos(a)*L,ey=y+Math.sin(a)*L;
+    var g=c.createLinearGradient(x,y-r,x,y+r);g.addColorStop(0,"#d5d8d6");g.addColorStop(1,"#7e8582");
+    c.strokeStyle=i===3?"#a8aeab":g;c.lineWidth=r*.62;c.beginPath();c.moveTo(x,y);c.lineTo(ex,ey);c.stroke();
+    c.strokeStyle="rgba(40,50,48,.35)";c.lineWidth=Math.max(1,r*.05);c.beginPath();c.arc(ex,ey,r*.31,0,6.283);c.stroke()}
+  c.fillStyle="#c4c9c6";c.beginPath();c.arc(x,y,r*.38,0,6.283);c.fill();
+  c.fillStyle="rgba(70,140,90,.35)";c.beginPath();c.ellipse(x-r*.2,y+r*.5,r*.5,r*.15,0,0,6.283);c.fill();
+}
+function drawTetra(){
+  var z=cam.z,c=ctx;
+  for(var sd=-1;sd<=1;sd+=2){
+    var edge=sd<0?BL:BR,inner=edge-sd*900,sx0=worldToScreen(edge,0).x,sx1=worldToScreen(inner,0).x;
+    if(Math.max(sx0,sx1)<-300||Math.min(sx0,sx1)>CW+300)continue;
+    // mound (sand+rubble) base
+    var cols=9,rowsMax=7;
+    for(var ci=cols-1;ci>=0;ci--){var d=(ci+.5)/cols,wx=inner+sd*(ci+.5)*100,sbY=SEABED-HF(wx)+10,hmax=Math.max(1,Math.round(rowsMax*(1-d*.85)));
+      for(var rw=0;rw<hmax;rw++){var jx=(rh(ci*7.3+rw*2.1+sd)-.5)*34,jy=(rh(ci*3.9+rw*5.7)-.5)*18,rr=64+rh(ci+rw*9)*16;
+        var sp=worldToScreen(wx+jx+(rw%2)*40*sd,sbY-rw*78+jy-40);drawTetra1(sp.x,sp.y,rr*z,ci*13+rw*5+(sd+1)*30)}}
+  }
+}
 function drawFish(e){
   if(e.k==="mega"){drawMega(e);return}
   if(e.k==="friend"){var fs=worldToScreen(e.x,e.y);if(fs.x<-300||fs.x>CW+300||fs.y<-300||fs.y>CH+300)return;
@@ -2057,6 +2080,7 @@ function draw(){
   if(ZS==="sea")drawSchools();
   if(ZS==="volcano")drawVolcano();
   if(ZS==="beach"&&SV.stage==="beach")drawBeachEnd(false);
+  if(SV.stage==="sea"&&!inCave&&!inDeep&&!inSecret&&who!=="R")drawTetra();
   // far fish silhouettes
   ctx.fillStyle="rgba(10,40,80,.18)";
   if(ZS!=="town")for(var f=0;f<8;f++){var fx=((f*290+time*(18+f*4)-cam.x*0.3*cam.z)%(CW+300)+CW+300)%(CW+300)-150;var fy=surf+(300+f*260)*cam.z*0.7-cam.y*0.0;ctx.beginPath();ctx.ellipse(fx,fy,30,12,0,0,6.283);ctx.fill();ctx.beginPath();ctx.moveTo(fx-26,fy);ctx.lineTo(fx-48,fy-12);ctx.lineTo(fx-48,fy+12);ctx.fill()}
