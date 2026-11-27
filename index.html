@@ -1713,7 +1713,7 @@ function drawHoleRoom(sbB){
 }
 function drawTetra1(x,y,r,sd){
   var c=ctx,i;c.lineCap="round";
-  var legs=[[-.95,-.55],[.95,-.55],[-.2,.95],[.35,-.1]];
+  var legs=[[0,-1],[-.9,.55],[.9,.55],[.25,.3]];
   var rot=(rh(sd)-.5)*.5;
   for(i=0;i<4;i++){var a=Math.atan2(legs[i][1],legs[i][0])+rot,L=r*(i===3?.55:1),ex=x+Math.cos(a)*L,ey=y+Math.sin(a)*L;
     var g=c.createLinearGradient(x,y-r,x,y+r);g.addColorStop(0,"#d5d8d6");g.addColorStop(1,"#7e8582");
@@ -1729,7 +1729,7 @@ function drawTetra(){
     if(Math.max(sx0,sx1)<-300||Math.min(sx0,sx1)>CW+300)continue;
     // mound (sand+rubble) base
     var cols=9,rowsMax=7;
-    for(var ci=cols-1;ci>=0;ci--){var d=(ci+.5)/cols,wx=inner+sd*(ci+.5)*100,sbY=SEABED-HF(wx)+10,hmax=Math.max(1,Math.round(rowsMax*(1-d*.85)));
+    for(var ci=cols-1;ci>=0;ci--){var d=(ci+.5)/cols,wx=inner+sd*(ci+.5)*100,sbY=SEABED-HF(wx)+10,hmax=Math.max(1,Math.round(rowsMax*(.15+d*.85)));
       for(var rw=0;rw<hmax;rw++){var jx=(rh(ci*7.3+rw*2.1+sd)-.5)*34,jy=(rh(ci*3.9+rw*5.7)-.5)*18,rr=64+rh(ci+rw*9)*16;
         var sp=worldToScreen(wx+jx+(rw%2)*40*sd,sbY-rw*78+jy-40);drawTetra1(sp.x,sp.y,rr*z,ci*13+rw*5+(sd+1)*30)}}
   }
