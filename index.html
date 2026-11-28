@@ -335,13 +335,13 @@ function zoneCheck(){
 var LVN=[0,8,22,45,80,125,185,260,355,470,620],LVS=[360,380,400,430,460,490,520,550,580,610,640];
 var LV=LVN.map(function(n,i){return {need:n,sp:LVS[i]}});
 var MAXLV=11;
-var LMAX={J:5,N:3,S:5,M:4,G:3,H:2,T:1,g:3,m:4,s:5,K:2.5,A:.3,O:.6,Z:5,R:8},LVIS={J:5,N:4,S:5,M:4,G:3,H:2,T:3.5,g:3,m:4,s:5,K:2.5,A:3,O:2.4,Z:5,R:8};
+var LMAX={J:5,N:3,S:5,M:4,G:3,H:2,T:1,g:3,m:4,s:5,K:2.5,A:.3,O:.6,Z:5,R:8},LVIS={J:5,N:3,S:5,M:4,G:3,H:2,T:3.5,g:3,m:4,s:5,K:2.5,A:3,O:2.4,Z:5,R:8};
 var KINDS={
  tiny:{r:11,lv:1,food:7,xp:1,pts:10,spd:90,c1:"#ffd23f",c2:"#ff8a1f",y0:60,y1:900,n:20},
  small:{r:17,lv:2,food:10,xp:2,pts:20,spd:110,c1:"#7ee8ff",c2:"#2aa6ff",y0:200,y1:1500,n:13},
  gold:{r:26,lv:3,food:15,xp:3,pts:40,spd:120,c1:"#ff8d9a",c2:"#ff3f60",y0:500,y1:2200,n:9},
  tuna:{r:44,lv:4,food:24,xp:5,pts:80,spd:170,c1:"#8ea2cc",c2:"#3d4d78",y0:900,y1:2500,n:6,bite:1},
- maguro:{r:152,lv:9,food:70,xp:22,pts:600,spd:130,c1:"#1f3763",c2:"#0a1230",c3:"#d8e6ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"マグロ"},
+ maguro:{r:102,lv:9,food:70,xp:22,pts:600,spd:130,c1:"#1f3763",c2:"#0a1230",c3:"#d8e6ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"マグロ"},
  kajiki:{r:175,lv:10,food:80,xp:28,pts:800,spd:150,c1:"#2a58a6",c2:"#0d1f48",c3:"#bcd4ff",pat:"stripes",y0:700,y1:2300,n:1,bite:1,nm:"カジキマグロ"},
  hoshiuo:{r:16,lv:1,food:9,xp:1,pts:16,spd:80,c1:"#ffe45e",c2:"#ff9d2e",c3:"#fff7b0",pat:"glow",y0:300,y1:2400,n:20,st:"star",nm:"ホシウオ"},
  tsukiuo:{r:30,lv:3,food:16,xp:3,pts:50,spd:60,c1:"#e9e4ff",c2:"#8a7cc8",c3:"#b9b0ff",pat:"spots",y0:400,y1:2400,n:12,st:"star",nm:"ツキウオ"},
