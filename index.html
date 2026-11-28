@@ -432,6 +432,9 @@ function spawn(k,anywhere){
   var d=KINDS[k],e={k:k,r:d.r,def:d,t:rnd(0,6),dir:Math.random()<.5?-1:1,vx:0,vy:0,hit:0};
   if(d.sp)e.r=Math.max(30,PW()*rnd(.42,.5));
   if(k==="tiny"||k==="small"||k==="gold"){e.grow=1;e.r=d.r*rnd(.6,1.5)}
+  if(k==="kajiki")e.r=122*rnd(.72,1.28);
+  else if(k==="maguro")e.r=102*rnd(.72,1.28);
+  else if(k==="tuna")e.r=44*rnd(.6,1.4);
   if(SMALLK[k]){e.grow=0;e.r=8+22*Math.pow(Math.random(),1.25)}
   var off=anywhere?rnd(-1700,1700):(Math.random()<.5?-1:1)*rnd(900,1700);
   e.x=P.x+off;if(BR<1e8&&(e.x<BL+150||e.x>BR-150)){e.x=P.x-off;if(e.x<BL+150||e.x>BR-150)e.x=rnd(Math.max(BL+150,P.x-1700),Math.min(BR-150,P.x+1700))}
@@ -1882,8 +1885,9 @@ function drawTetra(){
   }
 }
 var __o3={cv:null,cx:null};
+var FX3D=false;
 function render3D(sx,sy,half,R,fn,strong,bk,gl){bk=bk||.16;
-  if(half>560||!__o3.cv&&false){fn();return}
+  if(!FX3D||half>560||!__o3.cv&&false){fn();return}
   var px=Math.ceil(half*2*DPR);
   if(!__o3.cv){__o3.cv=document.createElement("canvas");__o3.cx=__o3.cv.getContext("2d")}
   var oc=__o3.cv,ox=__o3.cx;if(oc.width<px||oc.height<px){oc.width=Math.max(px,oc.width);oc.height=Math.max(px,oc.height)}
