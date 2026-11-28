@@ -1097,7 +1097,7 @@ function realEye(r){var c=ctx,x=.66*r,y=-.15*r,er=.15*r;
 
 function drawTunaShape(e,r,d,face){
   var c=ctx;c.scale(face,1);
-  var sw=Math.sin(e.t*8+e.x*.01)*r*.2,DK="#0a1230",BL="#1f3763",ST="#5f7fa8",SV="#dfe7f1";
+  var sw=Math.sin(e.t*8+e.x*.01)*r*.2,DK="#0b1322",BL="#1e2f4c",ST="#7d8ea0",SV="#e4e9ed";
   var X=function(v){return v*r};
   // tail (crescent)
   c.fillStyle=DK;c.beginPath();c.moveTo(X(-1.0),X(-.09));c.quadraticCurveTo(X(-1.3),X(-.12)+sw*.4,X(-1.85),X(-.85)+sw);c.quadraticCurveTo(X(-1.5),sw*.5,X(-1.85),X(.85)+sw);c.quadraticCurveTo(X(-1.3),X(.12)+sw*.4,X(-1.0),X(.09));c.closePath();c.fill();
@@ -1112,7 +1112,7 @@ function drawTunaShape(e,r,d,face){
   c.fillStyle=BL;c.beginPath();c.moveTo(X(.5),X(-.62));c.quadraticCurveTo(X(.32),X(-1.1),X(.1),X(-1.02));c.quadraticCurveTo(X(-.05),X(-.8),X(-.2),X(-.64));c.closePath();c.fill();c.strokeStyle="rgba(0,0,0,.3)";c.lineWidth=Math.max(.8,r*.03);c.stroke();
   // body
   var bp=function(){c.beginPath();c.moveTo(X(1.55),X(.06));c.bezierCurveTo(X(1.35),X(-.28),X(.85),X(-.66),X(.3),X(-.68));c.bezierCurveTo(X(-.2),X(-.7),X(-.65),X(-.45),X(-1.0),X(-.12));c.lineTo(X(-1.1),X(-.09));c.lineTo(X(-1.1),X(.09));c.lineTo(X(-1.0),X(.12));c.bezierCurveTo(X(-.9),X(.22),X(-.6),X(.46),X(-.2),X(.58));c.bezierCurveTo(X(.4),X(.74),X(1.15),X(.46),X(1.55),X(.06));c.closePath()};
-  var g=c.createLinearGradient(0,X(-.7),0,X(.72));g.addColorStop(0,DK);g.addColorStop(.3,BL);g.addColorStop(.48,ST);g.addColorStop(.62,"#b9c9dc");g.addColorStop(.78,SV);g.addColorStop(1,"#f6f9fc");
+  var g=c.createLinearGradient(0,X(-.7),0,X(.72));g.addColorStop(0,DK);g.addColorStop(.3,BL);g.addColorStop(.48,ST);g.addColorStop(.62,"#c3ccd4");g.addColorStop(.78,SV);g.addColorStop(1,"#f7f8f8");
   bp();c.fillStyle=g;c.fill();
   c.save();bp();c.clip();
   // dark back sheen + flank line
@@ -1139,7 +1139,7 @@ function drawTunaShape(e,r,d,face){
 }
 function drawMarlinShape(e,r,d,face){
   var c=ctx;c.scale(face,1);var SX=1.28,SY=.86;c.scale(SX,SY);
-  var sw=Math.sin(e.t*8+e.x*.01)*r*.2,DK="#0d1f48",BL="#2a58a6",ST="#6f95c8",SV="#dbe4ef";
+  var sw=Math.sin(e.t*8+e.x*.01)*r*.2,DK="#0d1530",BL="#1c2d58",ST="#8a8a90",SV="#d3cfcb";
   var X=function(v){return v*r};
   // tail (tall crescent)
   c.fillStyle=DK;c.beginPath();c.moveTo(X(-.95),X(-.07));c.quadraticCurveTo(X(-1.2),X(-.1)+sw*.4,X(-1.7),X(-1.0)+sw);c.quadraticCurveTo(X(-1.4),sw*.5,X(-1.6),X(1.0)+sw);c.quadraticCurveTo(X(-1.2),X(.1)+sw*.4,X(-.95),X(.07));c.closePath();c.fill();
@@ -1155,7 +1155,7 @@ function drawMarlinShape(e,r,d,face){
   c.strokeStyle="rgba(120,160,230,.35)";c.lineWidth=Math.max(.6,r*.02);for(var i=0;i<4;i++){c.beginPath();c.moveTo(X(.7-i*.25),X(-.5));c.lineTo(X(.55-i*.12),X(-.98+i*.12));c.stroke()}
   // body
   var bp=function(){c.beginPath();c.moveTo(X(1.38),X(.05));c.bezierCurveTo(X(1.2),X(-.2),X(.85),X(-.5),X(.35),X(-.54));c.bezierCurveTo(X(-.15),X(-.56),X(-.6),X(-.38),X(-.9),X(-.1));c.lineTo(X(-1.0),X(-.07));c.lineTo(X(-1.0),X(.07));c.lineTo(X(-.9),X(.1));c.bezierCurveTo(X(-.6),X(.34),X(-.15),X(.5),X(.35),X(.52));c.bezierCurveTo(X(.9),X(.5),X(1.2),X(.28),X(1.38),X(.05));c.closePath()};
-  var g=c.createLinearGradient(0,X(-.56),0,X(.54));g.addColorStop(0,DK);g.addColorStop(.28,"#173a7c");g.addColorStop(.46,ST);g.addColorStop(.6,"#c3d1e2");g.addColorStop(.78,SV);g.addColorStop(1,"#f4f7fb");
+  var g=c.createLinearGradient(0,X(-.56),0,X(.54));g.addColorStop(0,DK);g.addColorStop(.28,"#1a2b56");g.addColorStop(.44,ST);g.addColorStop(.6,"#b4afab");g.addColorStop(.78,SV);g.addColorStop(1,"#ebeae8");
   bp();c.fillStyle=g;c.fill();
   c.save();bp();c.clip();
   // vertical light-blue bars on flank
@@ -2624,6 +2624,34 @@ function makeSquidSprite(open,ph){ph=ph||0;
 (function(){SQF=[];SQBOX=null;(function(){var o1=makeSquidSprite(1,0);SQF.push([makeSquidSprite(0,0),o1]);for(var q=1;q<8;q++)SQF.push([makeSquidSprite(0,q*.7854),makeSquidSprite(1,q*.7854)])})();SPR.A=[SQF[0][0],SQF[0][1]];SPR.O=[makeOctoSprite(0),makeOctoSprite(1)];SPR.J=[makeFishSprite("kajiki",100,0),makeFishSprite("kajiki",100,1)];SPR.N=[makeFishSprite("maguro",100,0),makeFishSprite("maguro",100,1)];SPR.K=SPX("kingyo");SPR.T=SPX("taman");SPR.H=SPX("hirame")})();
 Array.prototype.forEach.call(document.querySelectorAll(".ppick"),function(b){var k=b.getAttribute("data-p");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){if(!SV.petOwn[k]){if(SV.coins>=PCP[k]){SV.coins-=PCP[k];SV.petOwn[k]=1;SV.pet=k;save();petLabel();renderHome();msg("ペットを かったよ！");return}msg("コインが たりないよ");return}SV.pet=SV.pet===k?"":k;save();petLabel();pet.x=P?P.x-120:0;renderHome();msg(SV.pet?"ミニの ペットが ついてくるよ！":"ペットは おやすみ")})});
 Array.prototype.forEach.call(document.querySelectorAll(".pick"),function(b){var k=b.getAttribute("data-w");b.querySelector("img").src=SPR[k][0].src;b.addEventListener("click",function(){pickChar(k)})});
+(function(){
+  function hex(h){return [parseInt(h.substr(1,2),16),parseInt(h.substr(3,2),16),parseInt(h.substr(5,2),16)]}
+  function recolor(w,k,stops){
+    var img=SPR[w][k];stops=stops.map(function(t){return [t[0],hex(t[1])]});
+    function go(){
+      var W=img.naturalWidth,H=img.naturalHeight;if(!W)return;
+      var c=document.createElement("canvas");c.width=W;c.height=H;var x=c.getContext("2d");x.drawImage(img,0,0);
+      var id=x.getImageData(0,0,W,H),d=id.data,i,hist=new Uint32Array(256),n=0;
+      for(i=0;i<d.length;i+=4){if(d[i+3]>200){hist[Math.round(.299*d[i]+.587*d[i+1]+.114*d[i+2])]++;n++}}
+      var lo=0,hi=255,a=0;for(i=0;i<256;i++){a+=hist[i];if(a>n*.02){lo=i;break}}a=0;for(i=255;i>=0;i--){a+=hist[i];if(a>n*.02){hi=i;break}}
+      var rg=Math.max(40,hi-lo);
+      for(i=0;i<d.length;i+=4){
+        if(!d[i+3])continue;var r=d[i],g=d[i+1],b=d[i+2];
+        if(r>150&&g>110&&b<120&&r-b>70)continue;            // keep yellow/red parts
+        if(r>110&&r>b+40)continue;                            // keep warm parts (mouth etc.)
+        var L=Math.max(0,Math.min(1,((.299*r+.587*g+.114*b)-lo)/rg)),j=0;
+        while(j<stops.length-2&&L>stops[j+1][0])j++;
+        var s0=stops[j],s1=stops[j+1],t=Math.max(0,Math.min(1,(L-s0[0])/(s1[0]-s0[0])));
+        d[i]=s0[1][0]+(s1[1][0]-s0[1][0])*t;d[i+1]=s0[1][1]+(s1[1][1]-s0[1][1])*t;d[i+2]=s0[1][2]+(s1[1][2]-s0[1][2])*t}
+      x.putImageData(id,0,0);
+      var ni=new Image();ni.onload=function(){SPR[w][k]=ni;if(k===0){var pb=document.querySelector('.pick[data-w="'+w+'"] img');if(pb)pb.src=ni.src;if(SV&&SV.sel===w){var hi2=document.getElementById("heroimg");if(hi2)hi2.src=ni.src}}};
+      ni.src=c.toDataURL("image/png")}
+    if(img.complete&&img.naturalWidth)go();else img.addEventListener("load",go)}
+  var TUNA=[[0,"#0a1220"],[.3,"#1b2b48"],[.55,"#6f8093"],[.8,"#cdd5dc"],[1,"#f6f7f7"]];
+  var MARL=[[0,"#0b1226"],[.3,"#1b2b55"],[.55,"#7d7d84"],[.8,"#c6c2be"],[1,"#eceae8"]];
+  for(var k=0;k<2;k++){recolor("N",k,TUNA);recolor("J",k,MARL)}
+})();
+
 Array.prototype.forEach.call(document.querySelectorAll(".stg"),function(b){b.addEventListener("click",function(){SV.stage=b.getAttribute("data-s");save();who=SV.sel;reset();renderHome();msg({coral:"さんごの うみに いくよ！ ルリスズメと チョウチョウウオが いるよ。",cave:"どうくつに いくよ！ くらいから きをつけてね。チョウチンアンコウが いるよ。",beach:"うみべに いくよ！ あさいから カニが いっぱい いるよ。",ice:"こおりの うみに いくよ！ ペンギンウオや オーロラダイが いるよ。",volcano:"かざんの うみに いくよ！ マグマで ひかる さかなが いるよ。",ruins:"いせきの うみに いくよ！ ひかる コガネウオや ステンドウオが いるよ。",sea:"ふつうの うみに もどったよ。"}[SV.stage])})});
 document.getElementById("homeBtn").addEventListener("click",goHome);
 document.getElementById("resume").addEventListener("click",togglePause);
