@@ -230,7 +230,7 @@ var SPR={S:[mkImg("iVBORw0KGgoAAAANSUhEUgAAAWgAAADSCAYAAABnw1pyAACX2UlEQVR42uy9d
 var CHR={J:{note:"3.5mまで・さかな いがいは たべれない",name:"カジキマグロ",sp:1.1,dec:1.1,eatr:1,dmg:1,sc:1},N:{note:"3mまで・たべれない:クラゲ",name:"マグロ",sp:1.25,dec:1.1,eatr:.95,dmg:1,sc:.95},S:{note:"5mまで・たべれない:エイ",name:"サメ太郎",sp:1,dec:1,eatr:1,dmg:1,sc:1},M:{note:"4mまで・はやい・たべれない:ウニ",name:"マーダイ",sp:1.18,dec:1.05,eatr:.95,dmg:1,sc:.9},G:{note:"3mまで・たべれない:ウニ クラゲ",name:"ブロきち",sp:.85,dec:.7,eatr:1.3,dmg:.7,sc:1.1},H:{note:"60cmまで・たべれる:ウニ カニ こざかな だけ",name:"ヒラメ",sp:.8,dec:.6,eatr:1.15,dmg:.6,sc:1},T:{note:"1mまで・たべれない:カジキ",name:"タマン",sp:1.1,dec:.9,eatr:1,dmg:.85,sc:.95},g:{note:"3mまで・たべれない:ウニ クラゲ",name:"ハロウィンブロきち",sp:.85,dec:.7,eatr:1.3,dmg:.7,sc:1.1},m:{note:"4mまで・たべれない:ウニ",name:"ハロウィンマーダイ",sp:1.18,dec:1.05,eatr:.95,dmg:1,sc:.9},s:{note:"5mまで・たべれない:エイ",name:"ハロウィンサメ太郎",sp:1,dec:1,eatr:1,dmg:1,sc:1},K:{note:"10cmまで・たべれる:こざかな だけ",name:"キンギョ",sp:1.12,dec:.9,eatr:1.1,dmg:.9,sc:1},O:{note:"60cmまで・すみ・たべれない:クラゲ",name:"タコ",sp:.95,dec:1,eatr:1.4,dmg:.9,sc:1},A:{note:"30cmまで・すばやい・たべれない:クラゲ",name:"アオリイカ",sp:1.15,dec:.9,eatr:1.05,dmg:.8,sc:1},Z:{note:"5mまで・たべれない:エイ",name:"テカリヤマ",sp:1,dec:1,eatr:1,dmg:1,sc:1},R:{note:"8mまで・まち",name:"ロボキンギョ",sp:.95,dec:.5,eatr:1,dmg:.5,sc:1}};
 var SQF=[];var BASE={g:"G",m:"M",s:"S",O:"O"};var SAMEM={Z:"S"};function wb(){return BASE[who]||SAMEM[who]||who}
 var who="G";
-var SBD=8000,CAVEB=6300,SEABED=8000,SEABEDT=8000,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
+var SBD=16000,CAVEB=6300,SEABED=16000,SEABEDT=16000,BL=-1e9,BR=1e9,ZS="sea",fadeT=0;
 var PAL={sea:{ridge:"rgba(150,125,85,.5)",g0:"#d9c496",g1:"#76664a",hi:"rgba(255,246,215,.55)",rock:"#7f8b84"},coral:{ridge:"rgba(160,130,95,.55)",g0:"#d7bf94",g1:"#7a6248",hi:"rgba(255,244,214,.55)",rock:"#8f7a62"},cave:{ridge:"rgba(10,36,60,.85)",g0:"#25506f",g1:"#071a2c",hi:"rgba(190,150,255,.45)",rock:"#2a2040"},town:{ridge:"rgba(70,80,100,.6)",g0:"#4e5361",g1:"#2a2d36",hi:"rgba(255,255,255,.3)",rock:"#555b6a"},ice:{ridge:"rgba(200,230,245,.6)",g0:"#cfe6f2",g1:"#6f93ad",hi:"rgba(255,255,255,.7)",rock:"#8fb0c6"},volcano:{ridge:"rgba(120,40,30,.7)",g0:"#4a2420",g1:"#1b0c0c",hi:"rgba(255,120,60,.45)",rock:"#3a1c1a"},ruins:{ridge:"rgba(70,110,90,.6)",g0:"#6f9a86",g1:"#26453f",hi:"rgba(200,255,225,.4)",rock:"#4b7566"},beach:{ridge:"rgba(214,196,150,.55)",g0:"#f3e2b3",g1:"#c2a46c",hi:"rgba(255,252,225,.7)",rock:"#a28a66"},star:{ridge:"rgba(120,70,190,.6)",g0:"#6a38a8",g1:"#1d0f42",hi:"rgba(255,220,255,.55)",rock:"#4a2a80"}};
 PAL.deep=Object.assign({},PAL.sea,{ridge:"rgba(6,16,28,.8)",g0:"#1c3a50",g1:"#050c16",rock:"#1a2c3a"});
 var SBZ={sea:2600,coral:2600,cave:2300,beach:1100,ice:2600,volcano:2600,ruins:2600,star:3200};
@@ -283,17 +283,23 @@ function teleportDeep(on){zoneCD=2;inDeep=on;applyStage(true);ents=[];decoys=[];
   P.vx=0;P.vy=0;cam.x=P.x;cam.y=P.y;fadeT=.8;
   for(var zi=0;zi<14;zi++)fill(true);
   if(on){var d=KINDS.mega;ents.push({k:"mega",r:d.r,def:d,t:0,dir:-1,face:-1,vx:0,vy:0,hit:0,x:700,y:4200,boss:1,hp:d.hp,mhp:d.hp,mode:"swim",mt:3,cool:0,pcool:0,flash:0})}}
+var megaCD=0;
+function megaCheck(dt){
+  if(SV.stage!=="sea"||who==="R"||ZS==="town"||ZS==="star"||ZS==="cave"||ZS==="deep"||!P)return;
+  for(var q=0;q<ents.length;q++)if(ents[q].k==="mega"&&!ents[q].dead)return;
+  megaCD-=dt;if(megaCD>0||P.y<9000)return;
+  var d=KINDS.mega;megaCD=90;ents.push({k:"mega",r:d.r,def:d,t:0,dir:-1,face:-1,vx:0,vy:0,hit:0,x:P.x+(Math.random()<.5?-1:1)*3200,y:SEABED-HF(P.x)-1400,boss:1,hp:d.hp,mhp:d.hp,mode:"swim",mt:3,cool:0,pcool:0,flash:0});banner("ふかい うみに メガロドンが いる…！")}
 function megaAI(e,dt,W){
   var d=e.def;e.biteT=Math.max(0,(e.biteT||0)-dt);e.pcool=Math.max(0,e.pcool-dt);e.flash=Math.max(0,e.flash-dt);e.mt-=dt;
   var dx=P.x-e.x,dy=P.y-e.y,dist=Math.hypot(dx,dy)||1;
-  if(e.mode==="swim"){e.vx+=(dx/dist*170-e.vx)*dt*1.4;e.vy+=(dy/dist*120-e.vy)*dt*1.4;if(Math.abs(dx)>60)e.face=dx<0?-1:1;if(e.mt<=0&&dist<1700){e.mode="wind";e.mt=.9}}
+  if(e.mode==="swim"){var ag=dist<3800;e.vx+=((ag?dx/dist*170:Math.cos(e.t*.3)*60)-e.vx)*dt*1.4;e.vy+=((ag?dy/dist*120:Math.sin(e.t*.2)*30)-e.vy)*dt*1.4;if(Math.abs(dx)>60)e.face=dx<0?-1:1;if(e.mt<=0&&dist<1700){e.mode="wind";e.mt=.9}}
   else if(e.mode==="wind"){e.vx*=1-Math.min(1,dt*3);e.vy*=1-Math.min(1,dt*3);if(Math.abs(dx)>60)e.face=dx<0?-1:1;if(e.mt<=0){e.mode="lunge";e.mt=.75;e.lx=dx/dist;e.ly=dy/dist;snd(110,.4,"sawtooth",.2,60)}}
   else if(e.mode==="lunge"){e.vx=e.lx*1050;e.vy=e.ly*1050;if(Math.abs(e.lx)>.2)e.face=e.lx<0?-1:1;if(e.mt<=0){e.mode="rest";e.mt=1.5}}
   else{e.vx*=1-Math.min(1,dt*2);e.vy*=1-Math.min(1,dt*2);if(e.mt<=0){e.mode="swim";e.mt=2.2+Math.random()*1.2}}
   var ink=inst.t>0&&who==="O";if(ink){e.mode="rest";e.mt=1;e.vx*=.8;e.vy*=.8;e.frz=true}else e.frz=false;
   e.x+=e.vx*dt;e.y+=e.vy*dt;
   if(e.x>BR-e.r){e.x=BR-e.r}else if(e.x<BL+e.r){e.x=BL+e.r}
-  var fl=SEABED-HF(e.x)-e.r*.45;if(e.y>fl)e.y=fl;if(e.y<SEABED-3600)e.y=SEABED-3600;
+  var fl=SEABED-HF(e.x)-e.r*.45;if(e.y>fl)e.y=fl;if(e.y<SEABED-5200)e.y=SEABED-5200;
   if(state!=="playing")return;
   var mx=e.x+e.face*e.r*1.0,my=e.y+e.r*.1;
   if(!ink&&Math.hypot(mx-P.x,my-P.y)<e.r*.3+W*.3){var wi=invul>0;hurt(e,e.mode==="lunge"?30:14);if(!wi){e.biteT=.5;snd(140,.15,"square",.2,60)}}
@@ -363,15 +369,15 @@ var KINDS={
  ika:{r:32,lv:4,food:20,xp:4,pts:75,spd:120,c1:"#ffd2e0",c2:"#e8648f",y0:300,y1:2000,n:4,so:1,nm:"イカ",noS:1},
  kame:{r:60,lv:6,food:30,xp:7,pts:140,spd:55,c1:"#7bd389",c2:"#2e8b57",y0:200,y1:1500,n:3,so:1,nm:"ウミガメ"},
  ei:{r:88,lv:8,food:40,xp:11,pts:260,spd:70,c1:"#8aa4c8",c2:"#4a628a",y0:1200,y1:2300,n:2,so:1,nm:"エイ",noS:1},
- demeni:{r:28,lv:3,food:16,xp:3,pts:55,spd:40,c1:"#3a4a5e",c2:"#1b2634",y0:3600,y1:6800,n:6,st:"abyss",nm:"デメニギス"},
- houraieso:{r:32,lv:4,food:20,xp:4,pts:75,spd:85,c1:"#41546a",c2:"#16202e",y0:3400,y1:7000,n:6,st:"abyss",nm:"ホウライエソ"},
- fukuro:{r:50,lv:7,food:32,xp:7,pts:150,spd:42,c1:"#2a2438",c2:"#ff7ad9",y0:4800,y1:7400,n:4,st:"abyss",nm:"フクロウナギ"},
- mitsukuri:{r:58,lv:8,food:36,xp:8,pts:190,spd:55,c1:"#e6a9b4",c2:"#9c6572",y0:4500,y1:7400,n:3,st:"abyss",nm:"ミツクリザメ"},
- hadaka:{r:13,lv:1,food:8,xp:1,pts:14,spd:70,c1:"#7d8fb0",c2:"#2a3550",y0:3000,y1:7400,n:16,st:"abyss",nm:"ハダカイワシ"},
- ryuguu:{r:78,lv:6,food:60,xp:8,pts:220,spd:50,c1:"#dfe6ee",c2:"#ff4a52",y0:3800,y1:7200,n:4,st:"abyss",nm:"リュウグウノツカイ"},
- chochin:{r:52,lv:5,food:34,xp:6,pts:140,spd:38,c1:"#3b2f3a",c2:"#7dffe0",y0:5400,y1:7500,n:4,st:"abyss",nm:"チョウチンアンコウ"},
+ demeni:{r:28,lv:3,food:16,xp:3,pts:55,spd:40,c1:"#3a4a5e",c2:"#1b2634",y0:3600,y1:10000,n:6,st:"abyss",nm:"デメニギス"},
+ houraieso:{r:32,lv:4,food:20,xp:4,pts:75,spd:85,c1:"#41546a",c2:"#16202e",y0:3400,y1:11000,n:6,st:"abyss",nm:"ホウライエソ"},
+ fukuro:{r:50,lv:7,food:32,xp:7,pts:150,spd:42,c1:"#2a2438",c2:"#ff7ad9",y0:4800,y1:13000,n:4,st:"abyss",nm:"フクロウナギ"},
+ mitsukuri:{r:58,lv:8,food:36,xp:8,pts:190,spd:55,c1:"#e6a9b4",c2:"#9c6572",y0:4500,y1:13500,n:3,st:"abyss",nm:"ミツクリザメ"},
+ hadaka:{r:13,lv:1,food:8,xp:1,pts:14,spd:70,c1:"#7d8fb0",c2:"#2a3550",y0:3000,y1:14000,n:16,st:"abyss",nm:"ハダカイワシ"},
+ ryuguu:{r:78,lv:6,food:60,xp:8,pts:220,spd:50,c1:"#dfe6ee",c2:"#ff4a52",y0:3800,y1:12000,n:4,st:"abyss",nm:"リュウグウノツカイ"},
+ chochin:{r:52,lv:5,food:34,xp:6,pts:140,spd:38,c1:"#3b2f3a",c2:"#7dffe0",y0:5400,y1:15000,n:4,st:"abyss",nm:"チョウチンアンコウ"},
  mune:{r:16,lv:2,food:10,xp:2,pts:22,spd:65,c1:"#c9d6e4",c2:"#46586e",y0:3200,y1:6600,n:14,st:"abyss",nm:"ムネエソ"},
- daiou:{r:105,lv:9,food:45,xp:12,pts:300,spd:50,c1:"#d9a0b8",c2:"#8e3b62",y0:5200,y1:7500,n:3,st:"abyss",noS:1,nm:"ダイオウイカ"},
+ daiou:{r:105,lv:9,food:45,xp:12,pts:300,spd:50,c1:"#d9a0b8",c2:"#8e3b62",y0:5200,y1:14500,n:3,st:"abyss",noS:1,nm:"ダイオウイカ"},
  yado:{r:20,lv:2,food:10,xp:2,pts:22,spd:30,c1:"#ffb36b",c2:"#c9622b",y0:0,y1:0,n:6,nc:16,ho:1,crab:1,nm:"ヤドカリ"},
  dokutsu:{r:16,lv:1,food:8,xp:1,pts:14,spd:60,c1:"#eeeeff",c2:"#b9b9dc",y0:300,y1:2000,n:14,st:"cave",nm:"どうくつうお"},
  anko:{r:44,lv:5,food:28,xp:5,pts:100,spd:40,c1:"#6a5a8a",c2:"#2b2040",y0:700,y1:2100,n:6,st:"cave",nm:"チョウチンアンコウ"},
@@ -635,7 +641,7 @@ function update(dt){
   if(SV.stage==="beach"&&who!=="R"){if(P.x>BR-60){P.x=BR-60;P.vx=Math.min(P.vx,0)}if(P.x<BL+60){P.x=BL+60;P.vx=Math.max(P.vx,0)}}else if(SV.stage==="sea"&&!inCave&&!inDeep&&!inSecret&&who!=="R"){var tlo=BL+850,thi=BR-850;if(P.x>thi){P.x=thi;P.vx=Math.min(P.vx,0)}if(P.x<tlo){P.x=tlo;P.vx=Math.max(P.vx,0)}}else if(BR<1e8&&!inCave&&who!=="R"){if(P.x>BR-120||P.x<BL+120){P.x=P.x>0?BL+400:BR-400;cam.x=P.x;pet.x=P.x-120;pet.y=P.y;fadeT=.7;banner("はしに ついたよ！ はんたいがわに ワープ！");decoys=[];ents=[];for(var wz=0;wz<12;wz++)fill(true)}}
   else if(BR<1e8){var pb=BR-W*.5,pl=BL+W*.5;if(P.x>pb){P.x=pb;if(P.vx>0)P.vx=0}else if(P.x<pl){P.x=pl;if(P.vx<0)P.vx=0}}
   if(SV.pet){var tx=P.x-Math.cos(P.h)*PW()*.9,ty=P.y-PW()*.5+Math.sin(time*2)*14;pet.vx=tx-pet.x;pet.x+=(tx-pet.x)*Math.min(1,dt*2.6);pet.y+=(ty-pet.y)*Math.min(1,dt*2.6);if(Math.abs(pet.vx)>4)pet.face=pet.vx>0?1:-1;pet.ph+=dt*8;pet.cd-=dt;if(Math.hypot(pet.x-P.x,pet.y-P.y)>2500){pet.x=P.x;pet.y=P.y}}
-  zoneCheck();SEABED+=(SEABEDT-SEABED)*Math.min(1,dt*2.2);if(((time*10)|0)%7===0)ents=ents.filter(function(e){return e.k==="friend"||e.boss||allowed(e.k)||Math.abs(e.x-P.x)<1000});fadeT=Math.max(0,fadeT-dt);
+  megaCheck(dt);zoneCheck();SEABED+=(SEABEDT-SEABED)*Math.min(1,dt*2.2);if(((time*10)|0)%7===0)ents=ents.filter(function(e){return e.k==="friend"||e.boss||allowed(e.k)||Math.abs(e.x-P.x)<1000});fadeT=Math.max(0,fadeT-dt);
   if(ZS==="cave"&&P.y<70){P.y=70;if(P.vy<0)P.vy=0}
   if(ZS==="town"&&lv-1<10&&P.y<-400){P.y=-400;if(P.vy<0)P.vy=0;if(time>spaceMsgT){spaceMsgT=time+4;banner("レベル10から うちゅうに いけるよ")}}
   var flP=SEABED-HF(P.x)-W*.22;if(P.y>flP){P.y=flP;if(P.vy>0)P.vy=0}
@@ -860,7 +866,7 @@ function skyGradZ(ZS){
   if(ZS==="coral"){g.addColorStop(0,"#ffd9a8");g.addColorStop(f(-100),"#fff1d6");g.addColorStop(f(0),"#6fe6e0");
     g.addColorStop(f(600),"#26b8c4");g.addColorStop(f(1400),"#17709a");g.addColorStop(1,"#082a45");return g}
   g.addColorStop(0,"#8fd8ff");g.addColorStop(f(-100),"#dff6ff");g.addColorStop(f(0),"#5ccbf5");
-  g.addColorStop(f(600),"#37b3e2");g.addColorStop(f(1400),"#2b8cc6");g.addColorStop(f(3000),"#1d6aa8");g.addColorStop(f(4800),"#124a80");g.addColorStop(f(6400),"#0a2a52");g.addColorStop(f(7600),"#04122c");g.addColorStop(1,"#020a1c");
+  g.addColorStop(f(600),"#37b3e2");g.addColorStop(f(1400),"#2b8cc6");g.addColorStop(f(3000),"#1d6aa8");g.addColorStop(f(5000),"#144f86");g.addColorStop(f(8500),"#0a2a52");g.addColorStop(f(12000),"#04122c");g.addColorStop(f(15000),"#01040e");g.addColorStop(1,"#000208");
   return g;
 }
 function drawChar(w,sx,sy,W,h,ph,amp,mouth,alpha,extra){
