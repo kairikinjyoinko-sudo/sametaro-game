@@ -427,10 +427,12 @@ function reset(){
   for(var i=0;i<60;i++)fill(true);
 }
 function countKind(k){var n=0;for(var i=0;i<ents.length;i++)if(ents[i].k===k)n++;return n}
+var SMALLK={tiny:1,small:1,gold:1,hoshiuo:1,ruri:1,chou:1,tatsu:1,hadaka:1};
 function spawn(k,anywhere){
   var d=KINDS[k],e={k:k,r:d.r,def:d,t:rnd(0,6),dir:Math.random()<.5?-1:1,vx:0,vy:0,hit:0};
   if(d.sp)e.r=Math.max(30,PW()*rnd(.42,.5));
   if(k==="tiny"||k==="small"||k==="gold"){e.grow=1;e.r=d.r*rnd(.6,1.5)}
+  if(SMALLK[k]){e.grow=0;e.r=8+22*Math.pow(Math.random(),1.25)}
   var off=anywhere?rnd(-1700,1700):(Math.random()<.5?-1:1)*rnd(900,1700);
   e.x=P.x+off;if(BR<1e8&&(e.x<BL+150||e.x>BR-150)){e.x=P.x-off;if(e.x<BL+150||e.x>BR-150)e.x=rnd(Math.max(BL+150,P.x-1700),Math.min(BR-150,P.x+1700))}
   if((k==="tiny"||k==="small"||k==="gold"||k==="tuna"||k==="taman")&&ZS==="sea"&&Math.random()<.65){var rcx=reefNear(P.x);if(rcx!==null)e.x=rcx+rnd(-650,650)}
@@ -717,14 +719,14 @@ function update(dt){
     if(d.danger){
       var edD=(lv-1)>=5&&!cantEat(e.k,d);
       if(edD){
-        if(cd<er+e.r)eat(e);
+        if(cd<er*.5+e.r*.62)eat(e);
         else if(cd<er+e.r+W*.5)P.near=true;
       }else{
         var bd=Math.hypot(e.x-P.x,e.y-P.y);
         if(bd<W*0.3+e.r*0.85||cd<W*.2+e.r)hurt(e,d.dmg);
       }
     }else if(d.lv<=lv&&!(d.noS&&wb()==="S")&&!cantEat(e.k,d)){
-      if(cd<er+e.r)eat(e);
+      if(cd<er*.5+e.r*.62)eat(e);
       else if(cd<er+e.r+W*.5)P.near=true;
     }else if(d.bite){
       if(Math.hypot(e.x-P.x,e.y-P.y)<W*.3+e.r*.9){hurt(e,10)}
@@ -1668,7 +1670,7 @@ function schoolEat(er){
   var SZ=2600,m0=Math.floor((P.x-900)/SZ),m1=Math.floor((P.x+900)/SZ);
   for(var m=m0;m<=m1;m++){if(rh(m*5.9+2.2)<.35)continue;var N=schoolN(m);
     for(var i=0;i<N;i++){var f=schoolFish(m,i,time,true);if(!f)continue;
-      if(Math.hypot(f.x-P.mx,f.y-P.my)<er+30){SCHE[m*1000+i]=time+35;eat({def:KINDS.tiny,x:f.x,y:f.y,r:9,k:"tiny"})}}}
+      if(Math.hypot(f.x-P.mx,f.y-P.my)<er*.5+16){SCHE[m*1000+i]=time+35;eat({def:KINDS.tiny,x:f.x,y:f.y,r:9,k:"tiny"})}}}
 }
 function drawSandDetail(sbB){
   var c=ctx,z=cam.z,i,k,x3,wx;
