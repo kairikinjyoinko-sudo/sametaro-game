@@ -919,9 +919,9 @@ function drawChar(w,sx,sy,W,h,ph,amp,mouth,alpha,extra){
   var oldWave=(w==="A"||w==="O");
   function slices(img){var nh=img.naturalHeight,nw=img.naturalWidth,k;
     if(oldWave){for(k=0;k<N;k++){var uu=(k+.5)/N,o0=Math.sin(ph-uu*5.4)*amp*hh*.085*Math.pow(uu,1.2)+Math.sin(ph*.5)*amp*hh*.012;ctx.drawImage(img,k*sw,0,sw,nh,-ww/2+k*dw,-hh/2+o0,dw+0.9,hh)}return}
-    var u0=.6,ov=.1,bob=Math.sin(ph*.5)*amp*hh*.012,ang2=Math.max(-.3,Math.min(.3,Math.sin(ph)*amp*.22)),x0=-ww/2+ww*u0;
-    ctx.save();ctx.translate(x0,bob);ctx.rotate(ang2);ctx.drawImage(img,nw*(u0-ov),0,nw*(1-u0+ov),nh,-ww*ov,-hh/2,ww*(1-u0+ov)+.8,hh);ctx.restore();
-    ctx.drawImage(img,0,0,nw*u0,nh,-ww/2,-hh/2+bob,ww*u0+.8,hh)}
+    var u0=.58,M=16,bob=Math.sin(ph*.5)*amp*hh*.012,aT=Math.max(-.42,Math.min(.42,Math.sin(ph)*amp*.3)),px=-ww/2+ww*u0,py=bob,sd=ww*(1-u0)/M,j;
+    for(j=0;j<M;j++){var f=(j+.5)/M,th=aT*Math.pow(f,1.6);ctx.save();ctx.translate(px,py);ctx.rotate(th);ctx.drawImage(img,nw*(u0+(1-u0)*j/M),0,nw*(1-u0)/M,nh,0,-hh/2,sd+1.3,hh);ctx.restore();px+=Math.cos(th)*sd;py+=Math.sin(th)*sd}
+    ctx.drawImage(img,0,0,nw*u0,nh,-ww/2,-hh/2+bob,ww*u0+1,hh)}
   ctx.globalAlpha=al;
   slices(A);
   if(mouth>0.03){ctx.globalAlpha=al*mouth;
